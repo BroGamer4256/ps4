@@ -8,10 +8,10 @@
 	void *x ();                                                               \
 	void *x##Addr = x ();                                                     \
 	void *x () {                                                              \
-		constexpr const char *x##Data[] = { __VA_ARGS__ };                    \
+		const char *x##Data[] = { __VA_ARGS__ };                              \
 		constexpr size_t x##Size = _countof (x##Data);                        \
 		if (!x##Addr) {                                                       \
-			if constexpr (x##Size == 2) {                                     \
+			if (x##Size == 2) {                                               \
 				x##Addr = sigScan (x##Data[0], x##Data[1], (void *)(y));      \
 				if (x##Addr)                                                  \
 					return x##Addr;                                           \
