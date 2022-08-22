@@ -25,7 +25,6 @@ HOOK (u8, __stdcall, printOpenDialog, 0x1401dea20) {
 
 HOOK (void, __stdcall, ChangeSubGameState, 0x152c49dd0, i32 state,
 	  i32 subState) {
-	printf ("%d %d\n", state, subState);
 	if (state == 9)	 // MAINMENU_SWITCH
 		state = 6;	 // CS_MENU
 	if (state == 10) // GAME_SWITCH
@@ -33,13 +32,27 @@ HOOK (void, __stdcall, ChangeSubGameState, 0x152c49dd0, i32 state,
 	return originalChangeSubGameState (state, subState);
 }
 
+FUNCTION_PTR (void, __fastcall, DrawTextBox, 0x1401acda0, u64 a1, i32 a2);
+FUNCTION_PTR (void, __fastcall, HideTextBox, 0x1401acad0, u64 a1, i32 a2);
 HOOK (u64, __fastcall, GalleryLoop, 0x1401AD590, u64 a1) {
-	if (*(i32 *)(a1 + 104) == 6) {
+	static i32 previous = 4;
+	if (*(i32 *)(a1 + 104) == 3 && previous != *(i32 *)(a1 + 112)) {
+		HideTextBox (a1 + 1168, previous);
+		DrawTextBox (a1 + 1168, *(i32 *)(a1 + 112));
+		previous = *(i32 *)(a1 + 112);
+	} else if (*(i32 *)(a1 + 104) == 6) {
 		*(i32 *)(a1 + 108) = 1;
 		*(i32 *)(a1 + 17816) = 5;
 		*(i32 *)(a1 + 104) = 14;
+		previous = 4;
+	} else if (*(i32 *)(a1 + 104) == 4) {
+		previous = *(i32 *)(a1 + 112) + 1;
+		if (previous == 5)
+			previous = 3;
 	}
-	return originalGalleryLoop (a1);
+	u64 value = originalGalleryLoop (a1);
+
+	return value;
 }
 
 extern "C" __declspec(dllexport) void Init () {
@@ -50,6 +63,13 @@ extern "C" __declspec(dllexport) void Init () {
 
 	// 1.00 Samyuu, 1.02 BroGamer
 	WRITE_MEMORY (0x1414AB9E3, u8, 0x01);
+
+	// Stop calls to DrawTextBox
+	WRITE_NOP (0x1401ad859, 5);
+	WRITE_NOP (0x1401ad713, 5);
+
+	// Stop call to HideTextBox
+	WRITE_NOP (0x1401ad64c, 5);
 }
 
 extern "C" __declspec(dllexport) void PreInit () {
