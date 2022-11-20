@@ -117,14 +117,9 @@ size_t __fastcall gallery_loop(int* addr) {
 }
 
 
-// Main entry-point of the mod
-extern "C" __declspec(dllexport) void init() {
+extern "C" __declspec(dllexport) void pre_init() {
     const MODULEINFO& divamegamix = megamixplus::module_info();
 
-    // 1.00 => 1401ACA10
-    // 1.01 => 1401ACBC0
-    // 1.02 => 1401ACAD0
-    toggle_text_box = (TypeToggleTextBox)Sig::find(divamegamix.lpBaseOfDll, divamegamix.SizeOfImage, pattern_text_box_toggle);
     // 1.00 => 140CC5108
     // 1.01 => 140CBF190
     // 1.02 => 140CBE1F0
@@ -133,6 +128,19 @@ extern "C" __declspec(dllexport) void init() {
     // 1.01 => 140CBF178
     // 1.02 => 140CBE200
     const void* address_pv_db_switch1 = Sig::find<Sig::StrEq<"pv_db_switch.txt">>(divamegamix.lpBaseOfDll, divamegamix.SizeOfImage);
+
+    megamixplus::write_scalar<unsigned char>((void*)address_pv_db_switch0, 0);
+    megamixplus::write_scalar<unsigned char>((void*)address_pv_db_switch1, 0);
+}
+
+// Main entry-point of the mod
+extern "C" __declspec(dllexport) void init() {
+    const MODULEINFO& divamegamix = megamixplus::module_info();
+
+    // 1.00 => 1401ACA10
+    // 1.01 => 1401ACBC0
+    // 1.02 => 1401ACAD0
+    toggle_text_box = (TypeToggleTextBox)Sig::find(divamegamix.lpBaseOfDll, divamegamix.SizeOfImage, pattern_text_box_toggle);
     // 1.00 => 1401DE890
     // 1.01 => 1401DEB00
     // 1.02 => 1401DE9F0
@@ -191,9 +199,8 @@ extern "C" __declspec(dllexport) void init() {
     address_ui = (void*)((size_t)address_ui + *offset + 6);
 
     // 1.00 Samyuu, 1.02 BroGamer <-- Scrubs. Jay now has ONE solution for all versions.
+    // Thanks for the signatures Jay, you are the best :)
     megamixplus::write_scalar<unsigned char>((void*)address_ui, 1);
-    megamixplus::write_scalar<unsigned char>((void*)address_pv_db_switch0, 0);
-    megamixplus::write_scalar<unsigned char>((void*)address_pv_db_switch1, 0);
 
     // Stop calls to ToggleTextBox
     unsigned char nops[] = { 0x90, 0x90, 0x90, 0x90, 0x90 };
