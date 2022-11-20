@@ -1,0 +1,8 @@
+enabled = true
+dll = ['PS4UI.dll', 'MinHook.x64.dll']
+
+name = "PS4 UI"
+description = "Changes the In game menu to the one found in the PS4 Game"
+version = "2.0.0"
+date = "19.11.2022"
+author = "Samyuu, BroGamer, Jay"
