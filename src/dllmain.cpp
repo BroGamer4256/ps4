@@ -5,25 +5,25 @@
 SIG_SCAN (sigPvDbSwitch0, 0x140CBE1F0, "PV_DB_SWITCH", "xxxxxxxxxxx");
 SIG_SCAN (sigPvDbSwitch1, 0x140CBE200, "pv_db_switch.txt", "xxxxxxxxxxxxxxx");
 
-const char *store_url = (char *)"https://divamodarchive.xyz";
-const char *credits_url = (char *)"https://divamodarchive.xyz";
+const char *store_url = "https://divamodarchive.com";
+const char *credits_url = "https://divamodarchive.com";
 
 // a1 here is a string *
 // From credits and manual
-HOOK (u8, __stdcall, printURL, 0x1401de9f0, void *a1) {
+HOOK (u8, __stdcall, printURL, 0x1401DE9F0, void *a1) {
 	SteamFriends ()->ActivateGameOverlayToWebPage (
 		credits_url, k_EActivateGameOverlayToWebPageMode_Modal);
 	return 0;
 }
 
 // From store button
-HOOK (u8, __stdcall, printOpenDialog, 0x1401dea20) {
+HOOK (u8, __stdcall, printOpenDialog, 0x1401DEA20) {
 	SteamFriends ()->ActivateGameOverlayToWebPage (
 		store_url, k_EActivateGameOverlayToWebPageMode_Modal);
 	return 0;
 }
 
-HOOK (void, __stdcall, ChangeSubGameState, 0x152c49dd0, i32 state,
+HOOK (void, __stdcall, ChangeSubGameState, 0x152C49DD0, i32 state,
 	  i32 subState) {
 	if (state == 9)	 // MAINMENU_SWITCH
 		state = 6;	 // CS_MENU
@@ -32,44 +32,53 @@ HOOK (void, __stdcall, ChangeSubGameState, 0x152c49dd0, i32 state,
 	return originalChangeSubGameState (state, subState);
 }
 
-FUNCTION_PTR (void, __fastcall, DrawTextBox, 0x1401acda0, u64 a1, i32 a2);
-FUNCTION_PTR (void, __fastcall, HideTextBox, 0x1401acad0, u64 a1, i32 a2);
-HOOK (u64, __fastcall, GalleryLoop, 0x1401AD590, u64 a1) {
-	static i32 previous = 4;
-	if (*(i32 *)(a1 + 104) == 3 && previous != *(i32 *)(a1 + 112)) {
-		HideTextBox (a1 + 1168, previous);
-		DrawTextBox (a1 + 1168, *(i32 *)(a1 + 112));
-		previous = *(i32 *)(a1 + 112);
-	} else if (*(i32 *)(a1 + 104) == 6) {
-		*(i32 *)(a1 + 108) = 1;
-		*(i32 *)(a1 + 17816) = 5;
-		*(i32 *)(a1 + 104) = 14;
-		previous = 4;
-	} else if (*(i32 *)(a1 + 104) == 4) {
-		previous = *(i32 *)(a1 + 112) + 1;
-		if (previous == 5)
-			previous = 3;
+// HideTextBox loads out anims but they arent played
+FUNCTION_PTR (void, __stdcall, DrawTextBox, 0x1401ACDA0, u64 a1, i32 index);
+FUNCTION_PTR (void, __stdcall, HideTextBox, 0x1401ACAD0, u64 a1, i32 index);
+HOOK (bool, __stdcall, CsGalleryTaskCtrl, 0x1401AD590, u64 data) {
+	static i32 previousButton = 4;
+	i32 state = *(i32 *)(data + 104);
+	i32 selectedButton = *(i32 *)(data + 112);
+	if (state == 3 && previousButton != selectedButton) {
+		HideTextBox (data + 1168, previousButton);
+		DrawTextBox (data + 1168, selectedButton);
+		previousButton = selectedButton;
+	} else if (state == 6) {
+		*(i32 *)(data + 108) = 1;
+		*(i32 *)(data + 17816) = 5;
+		*(i32 *)(data + 104) = 14;
+		previousButton = 4;
+	} else if (state == 4) {
+		previousButton = selectedButton + 1;
+		if (previousButton == 5)
+			previousButton = 3;
 	}
-	u64 value = originalGalleryLoop (a1);
 
-	return value;
+	return originalCsGalleryTaskCtrl (data);
+}
+
+FUNCTION_PTR (bool, __stdcall, CmnMenuTaskDest, 0x1401AAE50, u64 data);
+HOOK (bool, __stdcall, CustomizeSelTaskInit, 0x140687A50, u64 data) {
+	CmnMenuTaskDest (0x14114C370);
+	return originalCustomizeSelTaskInit (data);
 }
 
 extern "C" __declspec(dllexport) void Init () {
 	INSTALL_HOOK (printURL);
 	INSTALL_HOOK (printOpenDialog);
 	INSTALL_HOOK (ChangeSubGameState);
-	INSTALL_HOOK (GalleryLoop);
+	INSTALL_HOOK (CsGalleryTaskCtrl);
+	INSTALL_HOOK (CustomizeSelTaskInit);
 
 	// 1.00 Samyuu, 1.02 BroGamer
 	WRITE_MEMORY (0x1414AB9E3, u8, 0x01);
 
 	// Stop calls to DrawTextBox
-	WRITE_NOP (0x1401ad859, 5);
-	WRITE_NOP (0x1401ad713, 5);
+	WRITE_NOP (0x1401AD859, 5);
+	WRITE_NOP (0x1401AD713, 5);
 
 	// Stop call to HideTextBox
-	WRITE_NOP (0x1401ad64c, 5);
+	WRITE_NOP (0x1401AD64C, 5);
 }
 
 extern "C" __declspec(dllexport) void PreInit () {

@@ -20,11 +20,11 @@ dirs:
 	@mkdir -p ${TARGET}/minhook/src/hde
 
 ${TARGET}/%.o: %.cpp
-	@echo BUILD $@
+	@echo BUILD $<
 	@bear -- ${CXX} -c ${CXXFLAGS} $< -o $@
 
 ${TARGET}/%.o: %.c
-	@echo BUILD $@
+	@echo BUILD $<
 	@bear -- ${CXX} -c ${CXXFLAGS} $< -o $@
 
 .PHONY: ${OUT}
