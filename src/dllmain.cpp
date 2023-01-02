@@ -90,6 +90,7 @@ FUNCTION_PTR (i32, __stdcall, PlayAet, 0x1402CA1E0, void *data, u64 a2);
 FUNCTION_PTR (void *, __stdcall, GetPlaceholders, 0x1402CA630, void *placeholderData, i32 id);
 FUNCTION_PTR (void *, __stdcall, GetPlaceholder, 0x1402CA740, void *placeholderData, char *name);
 FUNCTION_PTR (void, __stdcall, ApplyPlaceholder, 0x14065fa00, void *data, Vec3 *placeholderLocation);
+FUNCTION_PTR (void, __stdcall, PlaySoundEffect, 0x1405AA500, char *name, float volume);
 HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 	static bool wantsToExit       = false;
 	static void *menuAetData      = calloc (1, 352);
@@ -121,6 +122,8 @@ HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 
 			PlayAet (yesButtonAetData, yesButtonAetId);
 			PlayAet (noButtonAetData, noButtonAetId);
+
+			PlaySoundEffect ((char *)"se_ft_sys_select_01", 1.0);
 		} else if (IsButtonTapped (DivaGetInputState (0), 4) && hoveredButton == 1) { // Down
 			hoveredButton = 0;
 			LoadAet (yesButtonAetData, 0x4F8, (char *)"cmn_menu_yes", 0x12, 1);
@@ -131,6 +134,7 @@ HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 
 			PlayAet (yesButtonAetData, yesButtonAetId);
 			PlayAet (noButtonAetData, noButtonAetId);
+			PlaySoundEffect ((char *)"se_ft_sys_select_01", 1.0);
 		}
 		return false;
 	LEAVE:
@@ -143,6 +147,8 @@ HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 
 		PlayAet (yesButtonAetData, yesButtonAetId);
 		PlayAet (noButtonAetData, noButtonAetId);
+
+		PlaySoundEffect ((char *)"se_ft_sys_cansel_01", 1.0);
 
 		wantsToExit = false;
 		return false;
@@ -172,6 +178,8 @@ HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 
 		yesButtonAetId = PlayAet (yesButtonAetData, 0);
 		noButtonAetId  = PlayAet (noButtonAetData, 0);
+
+		PlaySoundEffect ((char *)"se_ft_sys_enter_01", 1.0);
 	}
 	return originalCsMenuTaskCtrl (data);
 }
