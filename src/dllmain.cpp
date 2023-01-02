@@ -109,6 +109,7 @@ HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 			if (hoveredButton == 0) {
 				goto LEAVE;
 			} else {
+				ExitProcess (0);
 			}
 		} else if (IsButtonTapped (DivaGetInputState (0), 3) && hoveredButton == 0) { // UP
 			hoveredButton = 1;
@@ -135,6 +136,13 @@ HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 	LEAVE:
 		LoadAet (menuAetData, 0x4F8, (char *)"dialog_01", 0x12, 4);
 		PlayAet (menuAetData, menuAetId);
+
+		Vec3 offscreen = createVec3 (-1920, -1080, 0);
+		ApplyPlaceholder (yesButtonAetData, &offscreen);
+		ApplyPlaceholder (noButtonAetData, &offscreen);
+
+		PlayAet (yesButtonAetData, yesButtonAetId);
+		PlayAet (noButtonAetData, noButtonAetId);
 
 		wantsToExit = false;
 		return false;
