@@ -1,0 +1,9 @@
+enabled = true
+include = ["."]
+dll = ["ps4.dll"]
+
+# Options
+# 0: FTDX
+# 1: Future Sound
+# 2: Colourful tone
+theme = 0
