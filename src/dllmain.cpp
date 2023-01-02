@@ -9,7 +9,7 @@ SIG_SCAN (sigPvDbSwitch1, 0x140CBE200, "pv_db_switch.txt", "xxxxxxxxxxxxxxx");
 
 const char *store_url   = "https://divamodarchive.com";
 const char *credits_url = "https://divamodarchive.com";
-i32 value;
+i32 theme;
 
 // a1 here is a string *
 // From credits and manual
@@ -88,7 +88,7 @@ FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB250, u64 state, i32 offse
 FUNCTION_PTR (void, __stdcall, LoadAet, 0x14028D550, void *data, i32 aetSceneId, char *layerName, i32 layer, i32 action);
 FUNCTION_PTR (i32, __stdcall, PlayAet, 0x1402CA1E0, void *data, u64 a2);
 FUNCTION_PTR (void *, __stdcall, GetPlaceholders, 0x1402CA630, void *placeholderData, i32 id);
-FUNCTION_PTR (void *, __stdcall, GetPlaceholder, 0x1402CA740, void *placeholderData, char *name);
+FUNCTION_PTR (float *, __stdcall, GetPlaceholder, 0x1402CA740, void *placeholderData, char *name);
 FUNCTION_PTR (void, __stdcall, ApplyPlaceholder, 0x14065fa00, void *data, Vec3 *placeholderLocation);
 FUNCTION_PTR (void, __stdcall, PlaySoundEffect, 0x1405AA500, char *name, float volume);
 HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
@@ -165,10 +165,10 @@ HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 		*(void **)((u64)placeholderData + 16) = placeholderData;
 		*(u16 *)((u64)placeholderData + 24)   = 0x101;
 		GetPlaceholders (&placeholderData, menuAetId);
-		void *yesButtonPlaceholderData = GetPlaceholder (&placeholderData, (char *)"p_submenu_03_c");
-		yesButtonLoc = createVec3 (*(float *)((u64)yesButtonPlaceholderData + 0x40), *(float *)((u64)yesButtonPlaceholderData + 0x44), *(float *)((u64)yesButtonPlaceholderData + 0x48));
-		void *noButtonPlaceholderData = GetPlaceholder (&placeholderData, (char *)"p_submenu_04_c");
-		noButtonLoc                   = createVec3 (*(float *)((u64)noButtonPlaceholderData + 0x40), *(float *)((u64)noButtonPlaceholderData + 0x44), *(float *)((u64)noButtonPlaceholderData + 0x48));
+		float *yesButtonPlaceholderData = GetPlaceholder (&placeholderData, (char *)"p_submenu_03_c");
+		yesButtonLoc                    = createVec3 (yesButtonPlaceholderData[16], yesButtonPlaceholderData[17], yesButtonPlaceholderData[18]);
+		float *noButtonPlaceholderData  = GetPlaceholder (&placeholderData, (char *)"p_submenu_04_c");
+		noButtonLoc                     = createVec3 (noButtonPlaceholderData[16], noButtonPlaceholderData[17], noButtonPlaceholderData[18]);
 
 		LoadAet (yesButtonAetData, 0x4F8, (char *)"cmn_menu_yes", 0x13, 1);
 		LoadAet (noButtonAetData, 0x4F8, (char *)"cmn_menu_no", 0x13, 3);
@@ -189,7 +189,7 @@ HOOK (bool, __stdcall, CustomizeSelTaskInit, 0x140687A50, u64 data) {
 	return originalCustomizeSelTaskInit (data);
 }
 
-HOOK (i32 *, __stdcall, GetFtTheme, 0x1401D6530) { return &value; }
+HOOK (i32 *, __stdcall, GetFtTheme, 0x1401D6530) { return &theme; }
 
 extern "C" __declspec(dllexport) void Init () {
 	INSTALL_HOOK (printURL);
@@ -213,7 +213,7 @@ extern "C" __declspec(dllexport) void Init () {
 	// Fix SFX select layering
 	WRITE_MEMORY (0x140698D40, u8, 0x0A);
 	toml_table_t *config = openConfig ((char *)"config.toml");
-	value                = readConfigInt (config, (char *)"theme", 0);
+	theme                = readConfigInt (config, (char *)"theme", 0);
 }
 
 extern "C" __declspec(dllexport) void PreInit () {
