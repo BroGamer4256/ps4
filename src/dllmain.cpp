@@ -1,28 +1,12 @@
 #include "SigScan.h"
 #include "helpers.h"
-#include "isteamfriends.h"
 #include "state.h"
 #include "toml.h"
 
 SIG_SCAN (sigPvDbSwitch0, 0x140CBE1F0, "PV_DB_SWITCH", "xxxxxxxxxxx");
 SIG_SCAN (sigPvDbSwitch1, 0x140CBE200, "pv_db_switch.txt", "xxxxxxxxxxxxxxx");
 
-const char *store_url   = "https://divamodarchive.com";
-const char *credits_url = "https://divamodarchive.com";
 i32 theme;
-
-// a1 here is a string *
-// From credits and manual
-HOOK (u8, __stdcall, printURL, 0x1401DE9F0, void *a1) {
-	SteamFriends ()->ActivateGameOverlayToWebPage (credits_url, k_EActivateGameOverlayToWebPageMode_Modal);
-	return 0;
-}
-
-// From store button
-HOOK (u8, __stdcall, printOpenDialog, 0x1401DEA20) {
-	SteamFriends ()->ActivateGameOverlayToWebPage (store_url, k_EActivateGameOverlayToWebPageMode_Modal);
-	return 0;
-}
 
 FUNCTION_PTR (bool, __stdcall, CmnMenuTaskDest, 0x1401AAE50, u64 data);
 HOOK (void, __stdcall, ChangeSubGameState, 0x152C49DD0, State state, SubState subState) {
@@ -192,8 +176,6 @@ HOOK (bool, __stdcall, CustomizeSelTaskInit, 0x140687A50, u64 data) {
 HOOK (i32 *, __stdcall, GetFtTheme, 0x1401D6530) { return &theme; }
 
 extern "C" __declspec(dllexport) void Init () {
-	INSTALL_HOOK (printURL);
-	INSTALL_HOOK (printOpenDialog);
 	INSTALL_HOOK (ChangeSubGameState);
 	INSTALL_HOOK (CsGalleryTaskCtrl);
 	INSTALL_HOOK (CsMenuTaskCtrl);
