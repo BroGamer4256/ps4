@@ -67,19 +67,44 @@ createVec3 (float x, float y, float z) {
 	return Vec3{ x, y, z };
 }
 
-FUNCTION_PTR (u64, __stdcall, DivaGetInputState, 0x1402AC960, i32 a1);
-FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB250, u64 state, i32 offset);
-FUNCTION_PTR (void, __stdcall, LoadAet, 0x14028D550, void *data, i32 aetSceneId, char *layerName, i32 layer, i32 action);
+typedef struct string {
+	union {
+		char data[16];
+		char *ptr;
+	};
+	u64 length;
+	u64 capacity;
+} string;
+
+FUNCTION_PTR (void, __stdcall, divaAppendTheme, 0x1405d96e0, string *str);
+char *
+appendTheme (const char *name) {
+	char *themeStr = (char *)calloc (sizeof (char), strlen (name) + 4);
+	strcpy (themeStr, name);
+	switch (theme) {
+	case 1: strcat (themeStr, "_f"); break;
+	case 2: strcat (themeStr, "_t"); break;
+	default: strcat (themeStr, "_ft"); break;
+	}
+
+	return themeStr;
+}
+
+FUNCTION_PTR (void *, __stdcall, DivaGetInputState, 0x1402AC960, i32 a1);
+FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB250, void *state, i32 offset);
+FUNCTION_PTR (void, __stdcall, LoadAet, 0x14028D550, void *data, i32 aetSceneId, const char *layerName, i32 layer, i32 action);
 FUNCTION_PTR (i32, __stdcall, PlayAet, 0x1402CA1E0, void *data, u64 a2);
 FUNCTION_PTR (void *, __stdcall, GetPlaceholders, 0x1402CA630, void *placeholderData, i32 id);
-FUNCTION_PTR (float *, __stdcall, GetPlaceholder, 0x1402CA740, void *placeholderData, char *name);
+FUNCTION_PTR (float *, __stdcall, GetPlaceholder, 0x1402CA740, void *placeholderData, const char *name);
 FUNCTION_PTR (void, __stdcall, ApplyPlaceholder, 0x14065fa00, void *data, Vec3 *placeholderLocation);
-FUNCTION_PTR (void, __stdcall, PlaySoundEffect, 0x1405AA500, char *name, float volume);
+FUNCTION_PTR (void, __stdcall, PlaySoundEffect, 0x1405AA500, const char *name, float volume);
 HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 	static bool wantsToExit       = false;
-	static void *menuAetData      = calloc (1, 352);
-	static void *yesButtonAetData = calloc (1, 352);
-	static void *noButtonAetData  = calloc (1, 352);
+	static void *menuAetData      = calloc (0x1000, 1);
+	static void *yesButtonAetData = calloc (0x1000, 1);
+	static void *noButtonAetData  = calloc (0x1000, 1);
+	static char *yesButtonName    = appendTheme ("cmn_menu_yes");
+	static char *noButtonName     = appendTheme ("cmn_menu_no");
 	static i32 menuAetId          = 0;
 	static i32 yesButtonAetId     = 0;
 	static i32 noButtonAetId      = 0;
@@ -87,19 +112,21 @@ HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 	static Vec3 yesButtonLoc;
 	static Vec3 noButtonLoc;
 
+	void *inputState = DivaGetInputState (0);
+
 	if (wantsToExit) {
-		if (IsButtonTapped (DivaGetInputState (0), 9)) { // BACK
+		if (IsButtonTapped (inputState, 9)) { // BACK
 			goto LEAVE;
-		} else if (IsButtonTapped (DivaGetInputState (0), 10)) { // SELECT
+		} else if (IsButtonTapped (inputState, 10)) { // SELECT
 			if (hoveredButton == 0) {
 				goto LEAVE;
 			} else {
 				ExitProcess (0);
 			}
-		} else if (IsButtonTapped (DivaGetInputState (0), 3) && hoveredButton == 0) { // UP
+		} else if (IsButtonTapped (inputState, 3) && hoveredButton == 0) { // UP
 			hoveredButton = 1;
-			LoadAet (yesButtonAetData, 0x4F8, (char *)"cmn_menu_yes", 0x12, 3);
-			LoadAet (noButtonAetData, 0x4F8, (char *)"cmn_menu_no", 0x12, 1);
+			LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, 3);
+			LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, 1);
 
 			ApplyPlaceholder (yesButtonAetData, &yesButtonLoc);
 			ApplyPlaceholder (noButtonAetData, &noButtonLoc);
@@ -107,22 +134,22 @@ HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 			PlayAet (yesButtonAetData, yesButtonAetId);
 			PlayAet (noButtonAetData, noButtonAetId);
 
-			PlaySoundEffect ((char *)"se_ft_sys_select_01", 1.0);
-		} else if (IsButtonTapped (DivaGetInputState (0), 4) && hoveredButton == 1) { // Down
+			PlaySoundEffect ("se_ft_sys_select_01", 1.0);
+		} else if (IsButtonTapped (inputState, 4) && hoveredButton == 1) { // Down
 			hoveredButton = 0;
-			LoadAet (yesButtonAetData, 0x4F8, (char *)"cmn_menu_yes", 0x12, 1);
-			LoadAet (noButtonAetData, 0x4F8, (char *)"cmn_menu_no", 0x12, 3);
+			LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, 1);
+			LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, 3);
 
 			ApplyPlaceholder (yesButtonAetData, &yesButtonLoc);
 			ApplyPlaceholder (noButtonAetData, &noButtonLoc);
 
 			PlayAet (yesButtonAetData, yesButtonAetId);
 			PlayAet (noButtonAetData, noButtonAetId);
-			PlaySoundEffect ((char *)"se_ft_sys_select_01", 1.0);
+			PlaySoundEffect ("se_ft_sys_select_01", 1.0);
 		}
 		return false;
 	LEAVE:
-		LoadAet (menuAetData, 0x4F8, (char *)"dialog_01", 0x12, 4);
+		LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, 4);
 		PlayAet (menuAetData, menuAetId);
 
 		Vec3 offscreen = createVec3 (-1920, -1080, 0);
@@ -132,15 +159,16 @@ HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 		PlayAet (yesButtonAetData, yesButtonAetId);
 		PlayAet (noButtonAetData, noButtonAetId);
 
-		PlaySoundEffect ((char *)"se_ft_sys_cansel_01", 1.0);
+		PlaySoundEffect ("se_ft_sys_cansel_01", 1.0);
 
 		wantsToExit = false;
 		return false;
 	}
 
-	wantsToExit = IsButtonTapped (DivaGetInputState (0), 9);
-	if (wantsToExit) {
-		LoadAet (menuAetData, 0x4F8, (char *)"dialog_01", 0x12, 2);
+	if (IsButtonTapped (inputState, 9)) { // BACK
+		wantsToExit = true;
+
+		LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, 2);
 		menuAetId = PlayAet (menuAetData, 0);
 
 		void *placeholderData                 = malloc (0xB0);
@@ -149,13 +177,14 @@ HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 		*(void **)((u64)placeholderData + 16) = placeholderData;
 		*(u16 *)((u64)placeholderData + 24)   = 0x101;
 		GetPlaceholders (&placeholderData, menuAetId);
-		float *yesButtonPlaceholderData = GetPlaceholder (&placeholderData, (char *)"p_submenu_03_c");
+
+		float *yesButtonPlaceholderData = GetPlaceholder (&placeholderData, "p_submenu_03_c");
 		yesButtonLoc                    = createVec3 (yesButtonPlaceholderData[16], yesButtonPlaceholderData[17], yesButtonPlaceholderData[18]);
-		float *noButtonPlaceholderData  = GetPlaceholder (&placeholderData, (char *)"p_submenu_04_c");
+		float *noButtonPlaceholderData  = GetPlaceholder (&placeholderData, "p_submenu_04_c");
 		noButtonLoc                     = createVec3 (noButtonPlaceholderData[16], noButtonPlaceholderData[17], noButtonPlaceholderData[18]);
 
-		LoadAet (yesButtonAetData, 0x4F8, (char *)"cmn_menu_yes", 0x13, 1);
-		LoadAet (noButtonAetData, 0x4F8, (char *)"cmn_menu_no", 0x13, 3);
+		LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, 1);
+		LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, 3);
 
 		ApplyPlaceholder (yesButtonAetData, &yesButtonLoc);
 		ApplyPlaceholder (noButtonAetData, &noButtonLoc);
@@ -163,8 +192,10 @@ HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 		yesButtonAetId = PlayAet (yesButtonAetData, 0);
 		noButtonAetId  = PlayAet (noButtonAetData, 0);
 
-		PlaySoundEffect ((char *)"se_ft_sys_enter_01", 1.0);
+		PlaySoundEffect ("se_ft_sys_enter_01", 1.0);
+		return false;
 	}
+
 	return originalCsMenuTaskCtrl (data);
 }
 
@@ -194,8 +225,8 @@ extern "C" __declspec(dllexport) void Init () {
 
 	// Fix SFX select layering
 	WRITE_MEMORY (0x140698D40, u8, 0x0A);
-	toml_table_t *config = openConfig ((char *)"config.toml");
-	theme                = readConfigInt (config, (char *)"theme", 0);
+	toml_table_t *config = openConfig ("config.toml");
+	theme                = readConfigInt (config, "theme", 0);
 }
 
 extern "C" __declspec(dllexport) void PreInit () {

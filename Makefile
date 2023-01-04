@@ -4,8 +4,8 @@ CXX = clang++
 TARGET = x86_64-pc-windows-gnu
 SRC = src/dllmain.cpp src/SigScan.cpp src/helpers.c tomlc99/toml.c minhook/src/buffer.c minhook/src/hook.c minhook/src/trampoline.c minhook/src/hde/hde32.c minhook/src/hde/hde64.c
 OBJ = $(addprefix $(TARGET)/,$(subst .c,.o,$(SRC:.cpp=.o)))
-CFLAGS = -std=c99 -Iminhook/include -Itomlc99 -Wall -Ofast -target $(TARGET) -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=_WIN32_WINNT_WIN7
-CXXFLAGS = -std=c++20 -Iminhook/include -Itomlc99 -Wall -Ofast -target $(TARGET) -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=_WIN32_WINNT_WIN7
+CFLAGS = -g -std=c99 -Iminhook/include -Itomlc99 -Wall -Ofast -target $(TARGET) -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=_WIN32_WINNT_WIN7
+CXXFLAGS = -g -std=c++20 -Iminhook/include -Itomlc99 -Wall -Ofast -target $(TARGET) -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=_WIN32_WINNT_WIN7
 LDFLAGS = -shared -static -static-libgcc -s -pthread -lgdi32 -ldwmapi
 
 all: options $(OUT)
