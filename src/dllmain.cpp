@@ -8,7 +8,7 @@ SIG_SCAN (sigPvDbSwitch1, 0x140CBE200, "pv_db_switch.txt", "xxxxxxxxxxxxxxx");
 
 i32 theme;
 
-FUNCTION_PTR (bool, __stdcall, CmnMenuTaskDest, 0x1401AAE50, u64 data);
+FUNCTION_PTR (bool, __thiscall, CmnMenuTaskDest, 0x1401AAE50, u64 data);
 HOOK (void, __stdcall, ChangeSubGameState, 0x152C49DD0, State state, SubState subState) {
 	static bool wantsToSettings = false;
 	if (state == STATE_MENU_SWITCH) {
@@ -32,10 +32,9 @@ HOOK (void, __stdcall, ChangeSubGameState, 0x152C49DD0, State state, SubState su
 	return originalChangeSubGameState (state, subState);
 }
 
-// HideTextBox loads out anims but they arent played
 FUNCTION_PTR (void, __stdcall, DrawTextBox, 0x1401ACDA0, u64 a1, i32 index);
 FUNCTION_PTR (void, __stdcall, HideTextBox, 0x1401ACAD0, u64 a1, i32 index);
-HOOK (bool, __stdcall, CsGalleryTaskCtrl, 0x1401AD590, u64 data) {
+HOOK (bool, __thiscall, CsGalleryTaskCtrl, 0x1401AD590, u64 data) {
 	static i32 previousButton = 4;
 	i32 state                 = *(i32 *)(data + 104);
 	i32 selectedButton        = *(i32 *)(data + 112);
@@ -79,7 +78,7 @@ typedef struct string {
 FUNCTION_PTR (void, __stdcall, divaAppendTheme, 0x1405d96e0, string *str);
 char *
 appendTheme (const char *name) {
-	char *themeStr = (char *)calloc (sizeof (char), strlen (name) + 4);
+	char *themeStr = (char *)calloc (strlen (name) + 4, sizeof (char));
 	strcpy (themeStr, name);
 	switch (theme) {
 	case 1: strcat (themeStr, "_f"); break;
@@ -98,11 +97,12 @@ FUNCTION_PTR (void *, __stdcall, GetPlaceholders, 0x1402CA630, void *placeholder
 FUNCTION_PTR (float *, __stdcall, GetPlaceholder, 0x1402CA740, void *placeholderData, const char *name);
 FUNCTION_PTR (void, __stdcall, ApplyPlaceholder, 0x14065fa00, void *data, Vec3 *placeholderLocation);
 FUNCTION_PTR (void, __stdcall, PlaySoundEffect, 0x1405AA500, const char *name, float volume);
-HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
-	static bool wantsToExit       = false;
-	static void *menuAetData      = calloc (0x1000, 1);
-	static void *yesButtonAetData = calloc (0x1000, 1);
-	static void *noButtonAetData  = calloc (0x1000, 1);
+HOOK (bool, __thiscall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
+	static bool wantsToExit = false;
+	// Overkill but dont want to fuck with memory bugs
+	static void *menuAetData      = calloc (1, 0x1000);
+	static void *yesButtonAetData = calloc (1, 0x1000);
+	static void *noButtonAetData  = calloc (1, 0x1000);
 	static char *yesButtonName    = appendTheme ("cmn_menu_yes");
 	static char *noButtonName     = appendTheme ("cmn_menu_no");
 	static i32 menuAetId          = 0;
@@ -161,7 +161,8 @@ HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 
 		PlaySoundEffect ("se_ft_sys_cansel_01", 1.0);
 
-		wantsToExit = false;
+		wantsToExit   = false;
+		hoveredButton = 0;
 		return false;
 	}
 
@@ -171,7 +172,7 @@ HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 		LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, 2);
 		menuAetId = PlayAet (menuAetData, 0);
 
-		void *placeholderData                 = malloc (0xB0);
+		void *placeholderData                 = calloc (1, 0xB0);
 		*(void **)placeholderData             = placeholderData;
 		*(void **)((u64)placeholderData + 8)  = placeholderData;
 		*(void **)((u64)placeholderData + 16) = placeholderData;
@@ -199,12 +200,18 @@ HOOK (bool, __stdcall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 	return originalCsMenuTaskCtrl (data);
 }
 
-HOOK (bool, __stdcall, CustomizeSelTaskInit, 0x140687A50, u64 data) {
+HOOK (bool, __thiscall, CustomizeSelTaskInit, 0x140687A50, u64 data) {
 	CmnMenuTaskDest (0x14114C370);
 	return originalCustomizeSelTaskInit (data);
 }
 
 HOOK (i32 *, __stdcall, GetFtTheme, 0x1401D6530) { return &theme; }
+
+HOOK (void, __stdcall, LoadAndPlayAet, 0x1401AF0E0, u64 data, i32 action) {
+	if (strcmp (*(char **)(data + 0x08), "menu_bg")) action = 6;
+	LoadAet ((void *)data, 0x4FE, *(char **)(data + 0x08), *(i32 *)(data + 0x84), action);
+	PlayAet ((void *)data, *(i32 *)(data + 0x15C));
+}
 
 extern "C" __declspec(dllexport) void Init () {
 	INSTALL_HOOK (ChangeSubGameState);
@@ -212,6 +219,7 @@ extern "C" __declspec(dllexport) void Init () {
 	INSTALL_HOOK (CsMenuTaskCtrl);
 	INSTALL_HOOK (CustomizeSelTaskInit);
 	INSTALL_HOOK (GetFtTheme);
+	INSTALL_HOOK (LoadAndPlayAet);
 
 	// 1.00 Samyuu, 1.02 BroGamer
 	WRITE_MEMORY (0x1414AB9E3, u8, 0x01);
@@ -223,8 +231,12 @@ extern "C" __declspec(dllexport) void Init () {
 	// Stop call to HideTextBox
 	WRITE_NOP (0x1401AD64C, 5);
 
+	// Stop returning to ADV from main menu
+	WRITE_NOP (0x1401B2ADA, 36);
+
 	// Fix SFX select layering
 	WRITE_MEMORY (0x140698D40, u8, 0x0A);
+
 	toml_table_t *config = openConfig ("config.toml");
 	theme                = readConfigInt (config, "theme", 0);
 }
