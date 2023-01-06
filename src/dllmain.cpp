@@ -1,7 +1,6 @@
 #include "SigScan.h"
 #include "helpers.h"
 #include "state.h"
-#include "toml.h"
 
 SIG_SCAN (sigPvDbSwitch0, 0x140CBE1F0, "PV_DB_SWITCH", "xxxxxxxxxxx");
 SIG_SCAN (sigPvDbSwitch1, 0x140CBE200, "pv_db_switch.txt", "xxxxxxxxxxxxxxx");
@@ -75,18 +74,53 @@ typedef struct string {
 	u64 capacity;
 } string;
 
-FUNCTION_PTR (void, __stdcall, divaAppendTheme, 0x1405d96e0, string *str);
+// ENSURE THERE IS AT LEAST 4 EXTRA FREE BYTES BEFORE USING THIS
+void
+appendThemeInPlace (char *name) {
+	switch (theme) {
+	case 1: strcat (name, "_f"); break;
+	case 2: strcat (name, "_t"); break;
+	default: strcat (name, "_ft"); break;
+	}
+}
+
 char *
 appendTheme (const char *name) {
 	char *themeStr = (char *)calloc (strlen (name) + 4, sizeof (char));
 	strcpy (themeStr, name);
-	switch (theme) {
-	case 1: strcat (themeStr, "_f"); break;
-	case 2: strcat (themeStr, "_t"); break;
-	default: strcat (themeStr, "_ft"); break;
-	}
+	appendThemeInPlace (themeStr);
 
 	return themeStr;
+}
+
+void
+appendStringInPlace (string *str, const char *append) {
+	i32 lengthNeeded = str->length + strlen (append) + 1;
+	if (lengthNeeded > str->capacity) {
+		char *temp = (char *)calloc (lengthNeeded, sizeof (char));
+		if (str->capacity > 15) {
+			strcpy (temp, str->ptr);
+			free (str->ptr);
+		} else {
+			strcpy (temp, str->data);
+		}
+		strcat (temp, append);
+		str->ptr      = temp;
+		str->capacity = lengthNeeded;
+		str->length   = lengthNeeded;
+	} else {
+		strcat (str->data, append);
+		str->length = lengthNeeded;
+	}
+}
+
+void
+appendThemeInPlaceString (string *name) {
+	switch (theme) {
+	case 1: appendStringInPlace (name, "_f"); break;
+	case 2: appendStringInPlace (name, "_t"); break;
+	default: appendStringInPlace (name, "_ft"); break;
+	}
 }
 
 FUNCTION_PTR (void *, __stdcall, DivaGetInputState, 0x1402AC960, i32 a1);
@@ -237,8 +271,13 @@ extern "C" __declspec(dllexport) void Init () {
 	// Fix SFX select layering
 	WRITE_MEMORY (0x140698D40, u8, 0x0A);
 
+	// Fix song select ordering
+	WRITE_MEMORY (0x140BE9520, u64, 0x140C85CA0, 0x140C85CD8);
+
 	toml_table_t *config = openConfig ("config.toml");
 	theme                = readConfigInt (config, "theme", 0);
+
+	appendThemeInPlaceString ((string *)0x140DCB300);
 }
 
 extern "C" __declspec(dllexport) void PreInit () {

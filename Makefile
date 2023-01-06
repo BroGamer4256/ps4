@@ -33,7 +33,7 @@ $(TARGET)/%.o: %.c
 .PHONY: $(OUT)
 $(OUT): dirs $(OBJ)
 	@echo LINK $@
-	@$(CXX) $(CXXFLAGS) -o $(TARGET)/$@.dll $(OBJ) $(LDFLAGS) $(LIBS)
+	@$(CXX) $(CXXFLAGS) -o $(TARGET)/$@.dll $(OBJ) $(LDFLAGS)
 
 .PHONY: fmt
 fmt:
