@@ -242,9 +242,19 @@ HOOK (bool, __thiscall, CustomizeSelTaskInit, 0x140687A50, u64 data) {
 HOOK (i32 *, __stdcall, GetFtTheme, 0x1401D6530) { return &theme; }
 
 HOOK (void, __stdcall, LoadAndPlayAet, 0x1401AF0E0, u64 data, i32 action) {
-	if (strcmp (*(char **)(data + 0x08), "menu_bg")) action = 6;
 	LoadAet ((void *)data, 0x4FE, *(char **)(data + 0x08), *(i32 *)(data + 0x84), action);
 	PlayAet ((void *)data, *(i32 *)(data + 0x15C));
+}
+
+HOOK (bool, __stdcall, CustomizeSelIsLoaded, 0x140687A10) {
+	if (*(i32 *)0x14CC6F118 != 2) {
+		if (implOfCustomizeSelTaskInit (0x14CC6F100)) {
+			*(i32 *)0x14CC6F118 = 2;
+			*(i32 *)0x14CC6F124 = 2;
+		}
+	}
+
+	return originalCustomizeSelIsLoaded ();
 }
 
 extern "C" __declspec(dllexport) void Init () {
@@ -254,6 +264,7 @@ extern "C" __declspec(dllexport) void Init () {
 	INSTALL_HOOK (CustomizeSelTaskInit);
 	INSTALL_HOOK (GetFtTheme);
 	INSTALL_HOOK (LoadAndPlayAet);
+	INSTALL_HOOK (CustomizeSelIsLoaded);
 
 	// 1.00 Samyuu, 1.02 BroGamer
 	WRITE_MEMORY (0x1414AB9E3, u8, 0x01);
