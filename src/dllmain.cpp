@@ -31,6 +31,7 @@ HOOK (void, __stdcall, ChangeSubGameState, 0x152C49DD0, State state, SubState su
 	return originalChangeSubGameState (state, subState);
 }
 
+// Fixes gallery not properly exiting
 FUNCTION_PTR (void, __stdcall, DrawTextBox, 0x1401ACDA0, u64 a1, i32 index);
 FUNCTION_PTR (void, __stdcall, HideTextBox, 0x1401ACAD0, u64 a1, i32 index);
 HOOK (bool, __thiscall, CsGalleryTaskCtrl, 0x1401AD590, u64 data) {
@@ -123,6 +124,7 @@ appendThemeInPlaceString (string *name) {
 	}
 }
 
+// Custom exit menu
 FUNCTION_PTR (void *, __stdcall, DivaGetInputState, 0x1402AC960, i32 a1);
 FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB250, void *state, i32 offset);
 FUNCTION_PTR (void, __stdcall, LoadAet, 0x14028D550, void *data, i32 aetSceneId, const char *layerName, i32 layer, i32 action);
@@ -234,6 +236,7 @@ HOOK (bool, __thiscall, CsMenuTaskCtrl, 0x1401B29D0, u64 data) {
 	return originalCsMenuTaskCtrl (data);
 }
 
+// Fixes the header/footer being present on customize
 HOOK (bool, __thiscall, CustomizeSelTaskInit, 0x140687A50, u64 data) {
 	CmnMenuTaskDest (0x14114C370);
 	return originalCustomizeSelTaskInit (data);
@@ -241,11 +244,13 @@ HOOK (bool, __thiscall, CustomizeSelTaskInit, 0x140687A50, u64 data) {
 
 HOOK (i32 *, __stdcall, GetFtTheme, 0x1401D6530) { return &theme; }
 
+// Fixes gallery photos
 HOOK (void, __stdcall, LoadAndPlayAet, 0x1401AF0E0, u64 data, i32 action) {
 	LoadAet ((void *)data, 0x4FE, *(char **)(data + 0x08), *(i32 *)(data + 0x84), action);
 	PlayAet ((void *)data, *(i32 *)(data + 0x15C));
 }
 
+// Fixes switching to customize from playlists
 HOOK (bool, __stdcall, CustomizeSelIsLoaded, 0x140687A10) {
 	if (*(i32 *)0x14CC6F118 != 2) {
 		if (implOfCustomizeSelTaskInit (0x14CC6F100)) {
@@ -257,7 +262,12 @@ HOOK (bool, __stdcall, CustomizeSelIsLoaded, 0x140687A10) {
 	return originalCustomizeSelIsLoaded ();
 }
 
-extern "C" __declspec(dllexport) void Init () {
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void
+Init () {
 	INSTALL_HOOK (ChangeSubGameState);
 	INSTALL_HOOK (CsGalleryTaskCtrl);
 	INSTALL_HOOK (CsMenuTaskCtrl);
@@ -291,7 +301,12 @@ extern "C" __declspec(dllexport) void Init () {
 	appendThemeInPlaceString ((string *)0x140DCB300);
 }
 
-extern "C" __declspec(dllexport) void PreInit () {
+void
+PreInit () {
 	WRITE_NULL (sigPvDbSwitch0 (), 1);
 	WRITE_NULL (sigPvDbSwitch1 (), 1);
 }
+
+#ifdef __cplusplus
+}
+#endif
