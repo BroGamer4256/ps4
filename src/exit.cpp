@@ -160,6 +160,6 @@ HOOK (bool, __thiscall, CsMenuTaskCtrl, 0x1401B29D0, void *This) {
 }
 
 void
-exitInit () {
+customExitMenuInit () {
 	INSTALL_HOOK (CsMenuTaskCtrl);
 }

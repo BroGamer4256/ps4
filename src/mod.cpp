@@ -167,7 +167,7 @@ init () {
 
 	appendThemeInPlaceString ((string *)0x140DCB300);
 
-	exitInit ();
+	customExitMenuInit ();
 }
 
 void

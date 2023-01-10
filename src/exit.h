@@ -1,1 +1,1 @@
-void exitInit ();
+void customExitMenuInit ();
