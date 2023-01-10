@@ -1,6 +1,6 @@
 #include "SigScan.h"
 #include "divaFuncs.h"
-#include "exit.h"
+#include "exitMenu.h"
 #include "helpers.h"
 #include "state.h"
 
