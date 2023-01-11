@@ -1,2 +1,6 @@
-void exitMenuHook ();
-void shaderSelHook ();
+namespace exitMenu {
+void init ();
+}
+namespace shaderSel {
+void init ();
+}

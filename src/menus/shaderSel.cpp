@@ -1,6 +1,7 @@
 #include "diva.h"
 #include "helpers.h"
 
+namespace shaderSel {
 // Allow swapping of visual style on song select
 HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
 	// Disable on playlists
@@ -24,6 +25,8 @@ HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
 }
 
 void
-shaderSelHook () {
+init () {
 	INSTALL_HOOK (PVSelCtrl);
+	INSTALL_HOOK (PvSelDestroy);
 }
+} // namespace shaderSel

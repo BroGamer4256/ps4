@@ -71,7 +71,7 @@ HOOK (void, __stdcall, LoadAndPlayAet, 0x1401AF0E0, u64 data, i32 action) {
 
 // Fixes switching to customize from playlists
 HOOK (bool, __stdcall, CustomizeSelIsLoaded, 0x140687A10) {
-	if (*(i32 *)0x14CC6F118 != 2) {
+	if (*(i32 *)0x14CC6F118 == 1) {
 		if (implOfCustomizeSelTaskInit (0x14CC6F100)) {
 			*(i32 *)0x14CC6F118 = 2;
 			*(i32 *)0x14CC6F124 = 2;
@@ -118,8 +118,8 @@ init () {
 
 	appendThemeInPlaceString ((string *)0x140DCB300);
 
-	exitMenuHook ();
-	shaderSelHook ();
+	exitMenu::init ();
+	shaderSel::init ();
 }
 
 void

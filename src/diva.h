@@ -94,6 +94,7 @@ typedef enum InputType : i32 {
 	INPUTTYPE_SWITCH      = 2,
 	INPUTTYPE_STEAM       = 3,
 	INPUTTYPE_KEYBOARD    = 4,
+	INPUTTYPE_MAX         = 5,
 } InputType;
 
 extern pvdbList *pvs;
