@@ -118,7 +118,7 @@ init () {
 
 	appendThemeInPlaceString ((string *)0x140DCB300);
 
-	customMenusInit ();
+	customMenusHook ();
 }
 
 void

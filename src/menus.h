@@ -1,1 +1,1 @@
-void customMenusInit ();
+void customMenusHook ();
