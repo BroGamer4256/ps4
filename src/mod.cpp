@@ -2,7 +2,6 @@
 #include "diva.h"
 #include "helpers.h"
 #include "menus.h"
-#include "state.h"
 
 SIG_SCAN (sigPvDbSwitch, 0x140CBE200, "pv_db_switch.txt", "xxxxxxxxxxxxxxx");
 
