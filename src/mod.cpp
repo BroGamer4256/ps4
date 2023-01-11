@@ -1,7 +1,7 @@
 #include "SigScan.h"
-#include "divaFuncs.h"
-#include "exitMenu.h"
+#include "diva.h"
 #include "helpers.h"
+#include "menus.h"
 #include "state.h"
 
 SIG_SCAN (sigPvDbSwitch, 0x140CBE200, "pv_db_switch.txt", "xxxxxxxxxxxxxxx");
@@ -95,6 +95,7 @@ typedef struct pvdbList {
 
 pvdbList *pvs = (pvdbList *)0x141753808;
 
+// Will return false for any songs without an ex chart
 bool
 isMovieOnly (u64 entry) {
 	if (entry == 0 || *(u64 *)(entry + 0xF8) == 0) return false;
@@ -110,14 +111,19 @@ getPvDbEntry (i32 id) {
 	return 0;
 }
 
+// Allow swapping of visual style on song select
 HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
+	// Disable on playlists
 	if (*(i32 *)(This + 0x36A08) != 0) return originalPVSelCtrl (This);
 
 	bool isMovie     = isMovieOnly (getPvDbEntry (*(i32 *)(This + 0x36A30)));
 	void *inputState = DivaGetInputState (0);
 	u64 data         = GetPvLoadData ();
 
-	if (*(i32 *)(data + 0x1D08) == -1) *(i32 *)(data + 0x1D08) = GetCurrentStyle ();
+	if (*(i32 *)(data + 0x1D08) == -1) {
+		printf ("Reset\n");
+		*(i32 *)(data + 0x1D08) = GetCurrentStyle ();
+	}
 
 	if (IsButtonTapped (inputState, 15)) { // F3
 		PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
@@ -167,7 +173,7 @@ init () {
 
 	appendThemeInPlaceString ((string *)0x140DCB300);
 
-	customExitMenuInit ();
+	customMenusInit ();
 }
 
 void

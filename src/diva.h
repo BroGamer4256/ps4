@@ -1,6 +1,19 @@
 #pragma once
 #include "helpers.h"
-#include "types.h"
+
+typedef struct string {
+	union {
+		char data[16];
+		char *ptr;
+	};
+	u64 length;
+	u64 capacity;
+} string;
+
+void appendThemeInPlace (char *name);
+char *appendTheme (const char *name);
+void appendStringInPlace (string *str, const char *append);
+void appendThemeInPlaceString (string *name);
 
 FUNCTION_PTR_H (bool, __thiscall, CmnMenuTaskDest, u64 This);
 FUNCTION_PTR_H (void, __stdcall, DrawTextBox, u64 a1, i32 index);

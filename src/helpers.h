@@ -86,6 +86,24 @@ typedef uint64_t u64;
 
 #define COUNTOFARR(arr) sizeof (arr) / sizeof (arr[0])
 
+typedef struct Vec2 {
+	float x;
+	float y;
+} Vec2;
+
+typedef struct Vec3 {
+	float x;
+	float y;
+	float z;
+} Vec3;
+
+typedef struct Vec4 {
+	float x;
+	float y;
+	float z;
+	float w;
+} Vec4;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -94,6 +112,10 @@ toml_table_t *openConfigSection (toml_table_t *config, const char *sectionName);
 bool readConfigBool (toml_table_t *table, const char *key, bool notFoundValue);
 int64_t readConfigInt (toml_table_t *table, const char *key, int64_t notFoundValue);
 char *readConfigString (toml_table_t *table, const char *key, char *notFoundValue);
+Vec2 createVec2 (float x, float y);
+Vec3 createVec3 (float x, float y, float z);
+Vec4 getPlaceholderRect (float *placeholderData);
+bool vec4ContainsVec2 (Vec4 box, Vec2 location);
 #ifdef __cplusplus
 }
 #endif

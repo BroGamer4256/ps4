@@ -1,7 +1,6 @@
-#include "exitMenu.h"
-#include "divaFuncs.h"
+#include "menus.h"
+#include "diva.h"
 #include "helpers.h"
-#include "types.h"
 
 bool wantsToExit       = false;
 bool hasClicked        = false;
@@ -20,7 +19,7 @@ Vec4 yesButtonRect;
 Vec4 noButtonRect;
 
 void
-moveDown () {
+exitMoveDown () {
 	hoveredButton = 0;
 	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, 1);
 	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, 3);
@@ -34,7 +33,7 @@ moveDown () {
 }
 
 void
-moveUp () {
+exitMoveUp () {
 	hoveredButton = 1;
 	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, 3);
 	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, 1);
@@ -49,7 +48,7 @@ moveUp () {
 }
 
 void
-leaveMenu () {
+exitLeaveMenu () {
 	LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, 4);
 	PlayAet (menuAetData, menuAetId);
 
@@ -67,7 +66,7 @@ leaveMenu () {
 }
 
 void
-initMenu () {
+exitInitMenu () {
 	wantsToExit = true;
 
 	LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, 2);
@@ -101,7 +100,7 @@ initMenu () {
 }
 
 void
-handleClick (i32 clickedX, i32 clickedY) {
+exitHandleClick (i32 clickedX, i32 clickedY) {
 	RECT rect;
 	GetClientRect (FindWindow ("DIVAMIXP", 0), &rect);
 	float x  = clickedX / (float)rect.right * 1920;
@@ -109,15 +108,15 @@ handleClick (i32 clickedX, i32 clickedY) {
 	Vec2 vec = createVec2 (x, y);
 	if (vec4ContainsVec2 (yesButtonRect, vec)) {
 		if (hoveredButton == 0) {
-			moveUp ();
+			exitMoveUp ();
 		} else {
 			ExitProcess (0);
 		}
 	} else if (vec4ContainsVec2 (noButtonRect, vec)) {
 		if (hoveredButton == 1) {
-			moveDown ();
+			exitMoveDown ();
 		} else {
-			leaveMenu ();
+			exitLeaveMenu ();
 		}
 	}
 	hasClicked = true;
@@ -130,29 +129,29 @@ HOOK (bool, __thiscall, CsMenuTaskCtrl, 0x1401B29D0, void *This) {
 		i32 clickedX = *(i32 *)((u64)inputState + 0x158);
 		i32 clickedY = *(i32 *)((u64)inputState + 0x15C);
 		if (clickedX > 0 && !hasClicked) {
-			handleClick (clickedX, clickedY);
+			exitHandleClick (clickedX, clickedY);
 		} else if (clickedX == 0) {
 			hasClicked = false;
 		}
 
 		if (IsButtonTapped (inputState, 9)) { // Back
-			leaveMenu ();
+			exitLeaveMenu ();
 		} else if (IsButtonTapped (inputState, 10)) { // Select
 			if (hoveredButton == 0) {
-				leaveMenu ();
+				exitLeaveMenu ();
 			} else {
 				ExitProcess (0);
 			}
 		} else if (IsButtonTapped (inputState, 3) && hoveredButton == 0) { // Up
-			moveUp ();
+			exitMoveUp ();
 		} else if (IsButtonTapped (inputState, 4) && hoveredButton == 1) { // Down
-			moveDown ();
+			exitMoveDown ();
 		}
 		return false;
 	}
 
 	if (IsButtonTapped (inputState, 9)) { // Back
-		initMenu ();
+		exitInitMenu ();
 		return false;
 	}
 
@@ -160,6 +159,6 @@ HOOK (bool, __thiscall, CsMenuTaskCtrl, 0x1401B29D0, void *This) {
 }
 
 void
-customExitMenuInit () {
+customMenusInit () {
 	INSTALL_HOOK (CsMenuTaskCtrl);
 }
