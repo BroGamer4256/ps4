@@ -1,7 +1,7 @@
 #include "SigScan.h"
 #include "diva.h"
 #include "helpers.h"
-#include "menus.h"
+#include "menus/menus.h"
 
 SIG_SCAN (sigPvDbSwitch, 0x140CBE200, "pv_db_switch.txt", "xxxxxxxxxxxxxxx");
 
@@ -118,7 +118,8 @@ init () {
 
 	appendThemeInPlaceString ((string *)0x140DCB300);
 
-	customMenusHook ();
+	exitMenuHook ();
+	shaderSelHook ();
 }
 
 void

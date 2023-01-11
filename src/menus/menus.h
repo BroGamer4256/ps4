@@ -1,1 +1,2 @@
+void exitMenuHook ();
 void shaderSelHook ();

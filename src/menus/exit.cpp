@@ -1,4 +1,3 @@
-#include "exit.h"
 #include "diva.h"
 #include "helpers.h"
 

@@ -1,5 +1,4 @@
 #include "diva.h"
-#include "exit.h"
 #include "helpers.h"
 
 // Allow swapping of visual style on song select
