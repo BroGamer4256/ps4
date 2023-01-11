@@ -10,10 +10,18 @@ typedef struct string {
 	u64 capacity;
 } string;
 
-void appendThemeInPlace (char *name);
-char *appendTheme (const char *name);
-void appendStringInPlace (string *str, const char *append);
-void appendThemeInPlaceString (string *name);
+typedef struct pvdbListElement {
+	struct pvdbListElement *next;
+	struct pvdbListElement *previous;
+	i32 id;
+} pvdbListElement;
+
+typedef struct pvdbList {
+	pvdbListElement *empty_element;
+	u64 length;
+} pvdbList;
+
+extern pvdbList *pvs;
 
 FUNCTION_PTR_H (bool, __thiscall, CmnMenuTaskDest, u64 This);
 FUNCTION_PTR_H (void, __stdcall, DrawTextBox, u64 a1, i32 index);
@@ -28,6 +36,15 @@ FUNCTION_PTR_H (void, __stdcall, ApplyPlaceholder, void *data, Vec3 *placeholder
 FUNCTION_PTR_H (void, __stdcall, PlaySoundEffect, const char *name, float volume);
 FUNCTION_PTR_H (u64, __stdcall, GetPvLoadData);
 FUNCTION_PTR_H (i32, __stdcall, GetCurrentStyle);
+FUNCTION_PTR_H (i32, __stdcall, NormalizeInputType, i32 inputType);
+
+void appendThemeInPlace (char *name);
+char *appendTheme (const char *name);
+void appendStringInPlace (string *str, const char *append);
+void appendThemeInPlaceString (string *name);
+i32 getInputType ();
+bool isMovieOnly (u64 entry);
+u64 getPvDbEntry (i32 id);
 
 typedef enum State : i32 {
 	STATE_STARTUP     = 0,

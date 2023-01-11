@@ -81,59 +81,6 @@ HOOK (bool, __stdcall, CustomizeSelIsLoaded, 0x140687A10) {
 	return originalCustomizeSelIsLoaded ();
 }
 
-typedef struct pvdbListElement {
-	struct pvdbListElement *next;
-	struct pvdbListElement *previous;
-	i32 id;
-} pvdbListElement;
-
-typedef struct pvdbList {
-	pvdbListElement *empty_element;
-	u64 length;
-} pvdbList;
-
-pvdbList *pvs = (pvdbList *)0x141753808;
-
-// Will return false for any songs without an ex chart
-bool
-isMovieOnly (u64 entry) {
-	if (entry == 0 || *(u64 *)(entry + 0xF8) == 0) return false;
-	return *(bool *)(*(u64 *)(entry + 0xF8) + 0x4AC);
-}
-
-u64
-getPvDbEntry (i32 id) {
-	for (pvdbListElement *currentElement = pvs->empty_element->next; currentElement->id != 0; currentElement = currentElement->next) {
-		if (currentElement->id != id) continue;
-		return (u64)&currentElement->id;
-	}
-	return 0;
-}
-
-// Allow swapping of visual style on song select
-HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
-	// Disable on playlists
-	if (*(i32 *)(This + 0x36A08) != 0) return originalPVSelCtrl (This);
-
-	bool isMovie     = isMovieOnly (getPvDbEntry (*(i32 *)(This + 0x36A30)));
-	void *inputState = DivaGetInputState (0);
-	u64 data         = GetPvLoadData ();
-
-	if (*(i32 *)(data + 0x1D08) == -1) {
-		printf ("Reset\n");
-		*(i32 *)(data + 0x1D08) = GetCurrentStyle ();
-	}
-
-	if (IsButtonTapped (inputState, 15)) { // F3
-		PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
-		*(i32 *)(data + 0x1D08) = !*(i32 *)(data + 0x1D08);
-	} else if (IsButtonTapped (inputState, 3) || IsButtonTapped (inputState, 4)) { // Up, Down
-		*(i32 *)(data + 0x1D08) = GetCurrentStyle ();
-	}
-
-	return originalPVSelCtrl (This);
-}
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -146,7 +93,6 @@ init () {
 	INSTALL_HOOK (GetFtTheme);
 	INSTALL_HOOK (LoadAndPlayAet);
 	INSTALL_HOOK (CustomizeSelIsLoaded);
-	INSTALL_HOOK (PVSelCtrl);
 
 	// 1.00 Samyuu, 1.02 BroGamer
 	WRITE_MEMORY (0x1414AB9E3, u8, 0x01);
