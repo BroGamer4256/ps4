@@ -168,7 +168,6 @@ HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
 	u64 data         = GetPvLoadData ();
 
 	if (*(i32 *)(data + 0x1D08) == -1) *(i32 *)(data + 0x1D08) = GetCurrentStyle ();
-	printf ("%d\n", getInputType ());
 
 	if (IsButtonTapped (inputState, 15)) { // F3
 		PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);

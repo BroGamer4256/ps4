@@ -14,7 +14,7 @@ FUNCTION_PTR (void, __stdcall, ApplyPlaceholder, 0x14065fa00, void *data, Vec3 *
 FUNCTION_PTR (void, __stdcall, PlaySoundEffect, 0x1405AA500, const char *name, float volume);
 FUNCTION_PTR (u64, __stdcall, GetPvLoadData, 0x14040B260);
 FUNCTION_PTR (i32, __stdcall, GetCurrentStyle, 0x1401D64E0);
-FUNCTION_PTR (i32, __stdcall, NormalizeInputType, 0x1402ACA90, i32 inputType);
+FUNCTION_PTR (InputType, __stdcall, NormalizeInputType, 0x1402ACA90, i32 inputType);
 
 extern i32 theme;
 void
@@ -65,7 +65,7 @@ appendThemeInPlaceString (string *name) {
 	}
 }
 
-i32
+InputType
 getInputType () {
 	return NormalizeInputType (*(i32 *)((u64)DivaGetInputState (0) + 0x2E8));
 }
