@@ -70,7 +70,7 @@ getInputType () {
 	return NormalizeInputType (*(i32 *)((u64)DivaGetInputState (0) + 0x2E8));
 }
 
-List<ListElement<i32> > *pvs = (List<ListElement<i32> > *)0x141753808;
+List<ListElement<i32>> *pvs = (List<ListElement<i32>> *)0x141753808;
 
 // Will return false for any songs without an ex chart
 bool

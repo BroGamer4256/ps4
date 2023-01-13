@@ -107,17 +107,11 @@ handleClick (i32 clickedX, i32 clickedY) {
 	float y  = clickedY / (float)rect.bottom * 1080;
 	Vec2 vec = createVec2 (x, y);
 	if (vec4ContainsVec2 (yesButtonRect, vec)) {
-		if (hoveredButton == 0) {
-			moveUp ();
-		} else {
-			ExitProcess (0);
-		}
+		if (hoveredButton == 0) moveUp ();
+		else ExitProcess (0);
 	} else if (vec4ContainsVec2 (noButtonRect, vec)) {
-		if (hoveredButton == 1) {
-			moveDown ();
-		} else {
-			leaveMenu ();
-		}
+		if (hoveredButton == 1) moveDown ();
+		else leaveMenu ();
 	}
 }
 
@@ -134,19 +128,15 @@ HOOK (bool, __thiscall, CsMenuTaskCtrl, 0x1401B29D0, void *This) {
 			hasClicked = false;
 		}
 
-		if (IsButtonTapped (inputState, 9)) { // Back
+		if (IsButtonTapped (inputState, 9)) // Back
 			leaveMenu ();
-		} else if (IsButtonTapped (inputState, 10)) { // Select
-			if (hoveredButton == 0) {
-				leaveMenu ();
-			} else {
-				ExitProcess (0);
-			}
-		} else if (IsButtonTapped (inputState, 3) && hoveredButton == 0) { // Up
+		else if (IsButtonTapped (inputState, 10)) // Select
+			if (hoveredButton == 0) leaveMenu ();
+			else ExitProcess (0);
+		else if (IsButtonTapped (inputState, 3) && hoveredButton == 0) // Up
 			moveUp ();
-		} else if (IsButtonTapped (inputState, 4) && hoveredButton == 1) { // Down
+		else if (IsButtonTapped (inputState, 4) && hoveredButton == 1) // Down
 			moveDown ();
-		}
 		return false;
 	}
 

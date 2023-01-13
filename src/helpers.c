@@ -4,12 +4,12 @@
 toml_table_t *
 openConfig (const char *configFilePath) {
 	FILE *file = fopen (configFilePath, "r");
-	if (!file) { return 0; }
+	if (!file) return 0;
 	char errorbuf[200];
 	toml_table_t *config = toml_parse_file (file, errorbuf, 200);
 	fclose (file);
 
-	if (!config) { return 0; }
+	if (!config) return 0;
 
 	return config;
 }
@@ -17,7 +17,7 @@ openConfig (const char *configFilePath) {
 toml_table_t *
 openConfigSection (toml_table_t *config, const char *sectionName) {
 	toml_table_t *section = toml_table_in (config, sectionName);
-	if (!section) { return 0; }
+	if (!section) return 0;
 
 	return section;
 }

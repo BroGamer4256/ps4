@@ -106,10 +106,10 @@ typedef enum AetAction : i32 {
 	AETACTION_OUT          = 4, // Start at st_out, end at ed_out
 	AETACTION_SPECIAL_ONCE = 5, // Start at st_sp, end to ed_lp
 	AETACTION_SPECIAL_LOOP = 6, // Start at st_sp, play to ed_sp, then jump to st_lp and loop through ed_lp
-	AETACTION_UNK          = 7, // Start at st_in, end at ed_in
+	AETACTION_UNK          = 7, // Start at st_in, end at ed_in, probably loops?
 } AetAction;
 
-extern List<ListElement<i32> > *pvs;
+extern List<ListElement<i32>> *pvs;
 
 FUNCTION_PTR_H (bool, __thiscall, CmnMenuTaskDest, u64 This);
 FUNCTION_PTR_H (void, __stdcall, DrawTextBox, u64 a1, i32 index);

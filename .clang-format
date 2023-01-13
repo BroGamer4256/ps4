@@ -1,4 +1,4 @@
-BasedOnStyle: GNU
+BasedOnStyle: LLVM
 IndentWidth: 4
 TabWidth: 4
 UseTab: ForIndentation
@@ -14,3 +14,6 @@ AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 AlwaysBreakTemplateDeclarations: Yes
 SpaceAfterTemplateKeyword: True
 SpacesInAngles: Never
+SpaceBeforeParens: Always
+AlwaysBreakAfterReturnType: TopLevelDefinitions
+RemoveBracesLLVM: True

@@ -51,7 +51,7 @@ typedef uint64_t u64;
 
 #define WRITE_MEMORY(location, type, ...)                                                                                                                                                              \
 	{                                                                                                                                                                                                  \
-		const type data[] = { __VA_ARGS__ };                                                                                                                                                           \
+		const type data[] = {__VA_ARGS__};                                                                                                                                                             \
 		DWORD oldProtect;                                                                                                                                                                              \
 		VirtualProtect ((void *)(location), sizeof (data), PAGE_EXECUTE_READWRITE, &oldProtect);                                                                                                       \
 		memcpy ((void *)(location), data, sizeof (data));                                                                                                                                              \
