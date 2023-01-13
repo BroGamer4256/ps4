@@ -11,3 +11,6 @@ AllowShortBlocksOnASingleLine: Always
 AllowShortCaseLabelsOnASingleLine: True
 AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AlwaysBreakTemplateDeclarations: Yes
+SpaceAfterTemplateKeyword: True
+SpacesInAngles: Never

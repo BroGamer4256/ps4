@@ -6,10 +6,10 @@ FUNCTION_PTR (void, __stdcall, DrawTextBox, 0x1401ACDA0, u64 a1, i32 index);
 FUNCTION_PTR (void, __stdcall, HideTextBox, 0x1401ACAD0, u64 a1, i32 index);
 FUNCTION_PTR (void *, __stdcall, DivaGetInputState, 0x1402AC960, i32 a1);
 FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB250, void *state, i32 offset);
-FUNCTION_PTR (void, __stdcall, LoadAet, 0x14028D550, void *data, i32 aetSceneId, const char *layerName, i32 layer, i32 action);
-FUNCTION_PTR (i32, __stdcall, PlayAet, 0x1402CA1E0, void *data, u64 a2);
-FUNCTION_PTR (void *, __stdcall, GetPlaceholders, 0x1402CA630, void *placeholderData, i32 id);
-FUNCTION_PTR (float *, __stdcall, GetPlaceholder, 0x1402CA740, void *placeholderData, const char *name);
+FUNCTION_PTR (void, __stdcall, LoadAet, 0x14028D550, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
+FUNCTION_PTR (i32, __stdcall, PlayAet, 0x1402CA1E0, void *data, i32 id);
+FUNCTION_PTR (void *, __stdcall, GetPlaceholders, 0x1402CA630, List<void> *placeholderData, i32 id);
+FUNCTION_PTR (float *, __stdcall, GetPlaceholder, 0x1402CA740, List<void> *placeholderData, const char *name);
 FUNCTION_PTR (void, __stdcall, ApplyPlaceholder, 0x14065FA00, void *data, Vec3 *placeholderLocation);
 FUNCTION_PTR (void, __stdcall, PlaySoundEffect, 0x1405AA500, const char *name, float volume);
 FUNCTION_PTR (u64, __stdcall, GetPvLoadData, 0x14040B260);
@@ -36,7 +36,7 @@ appendTheme (const char *name) {
 }
 
 void
-appendStringInPlace (string *str, const char *append) {
+appendStringInPlace (String *str, const char *append) {
 	i32 lengthNeeded = str->length + strlen (append) + 1;
 	if (lengthNeeded > str->capacity) {
 		char *temp = (char *)calloc (lengthNeeded, sizeof (char));
@@ -57,7 +57,7 @@ appendStringInPlace (string *str, const char *append) {
 }
 
 void
-appendThemeInPlaceString (string *name) {
+appendThemeInPlaceString (String *name) {
 	switch (theme) {
 	case 1: appendStringInPlace (name, "_f"); break;
 	case 2: appendStringInPlace (name, "_t"); break;
@@ -70,7 +70,7 @@ getInputType () {
 	return NormalizeInputType (*(i32 *)((u64)DivaGetInputState (0) + 0x2E8));
 }
 
-pvdbList *pvs = (pvdbList *)0x141753808;
+List<ListElement<i32> > *pvs = (List<ListElement<i32> > *)0x141753808;
 
 // Will return false for any songs without an ex chart
 bool
@@ -81,9 +81,9 @@ isMovieOnly (u64 entry) {
 
 u64
 getPvDbEntry (i32 id) {
-	for (pvdbListElement *currentElement = pvs->empty_element->next; currentElement->id != 0; currentElement = currentElement->next) {
-		if (currentElement->id != id) continue;
-		return (u64)&currentElement->id;
+	for (ListElement<i32> *currentElement = pvs->empty_element->next; currentElement->current != 0; currentElement = currentElement->next) {
+		if (currentElement->current != id) continue;
+		return (u64)&currentElement->current;
 	}
 	return 0;
 }

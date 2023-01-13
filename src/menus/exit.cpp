@@ -4,15 +4,16 @@
 namespace exitMenu {
 bool wantsToExit       = false;
 bool hasClicked        = false;
-void *menuAetData      = calloc (1, 0x1000);
-void *yesButtonAetData = calloc (1, 0x1000);
-void *noButtonAetData  = calloc (1, 0x1000);
+void *menuAetData      = calloc (1, 1024);
+void *yesButtonAetData = calloc (1, 1024);
+void *noButtonAetData  = calloc (1, 1024);
 char *yesButtonName    = appendTheme ("cmn_menu_yes");
 char *noButtonName     = appendTheme ("cmn_menu_no");
 i32 menuAetId          = 0;
 i32 yesButtonAetId     = 0;
 i32 noButtonAetId      = 0;
 i32 hoveredButton      = 0;
+List<void> placeholderData;
 Vec3 yesButtonLoc;
 Vec3 noButtonLoc;
 Vec4 yesButtonRect;
@@ -21,8 +22,8 @@ Vec4 noButtonRect;
 void
 moveDown () {
 	hoveredButton = 0;
-	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, 1);
-	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, 3);
+	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_IN);
+	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_LOOP);
 
 	ApplyPlaceholder (yesButtonAetData, &yesButtonLoc);
 	ApplyPlaceholder (noButtonAetData, &noButtonLoc);
@@ -35,8 +36,8 @@ moveDown () {
 void
 moveUp () {
 	hoveredButton = 1;
-	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, 3);
-	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, 1);
+	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_LOOP);
+	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_IN);
 
 	ApplyPlaceholder (yesButtonAetData, &yesButtonLoc);
 	ApplyPlaceholder (noButtonAetData, &noButtonLoc);
@@ -49,12 +50,11 @@ moveUp () {
 
 void
 leaveMenu () {
-	LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, 4);
+	LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_OUT);
 	PlayAet (menuAetData, menuAetId);
 
-	Vec3 offscreen = createVec3 (-1920, -1080, 0);
-	ApplyPlaceholder (yesButtonAetData, &offscreen);
-	ApplyPlaceholder (noButtonAetData, &offscreen);
+	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x12, AETACTION_OUT);
+	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x12, AETACTION_OUT);
 
 	PlayAet (yesButtonAetData, yesButtonAetId);
 	PlayAet (noButtonAetData, noButtonAetId);
@@ -69,14 +69,14 @@ void
 initMenu () {
 	wantsToExit = true;
 
-	LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, 2);
+	LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_IN_LOOP);
 	menuAetId = PlayAet (menuAetData, 0);
 
-	void *placeholderData                 = calloc (1, 0xB0);
-	*(void **)placeholderData             = placeholderData;
-	*(void **)((u64)placeholderData + 8)  = placeholderData;
-	*(void **)((u64)placeholderData + 16) = placeholderData;
-	*(u16 *)((u64)placeholderData + 24)   = 0x101;
+	*(void **)placeholderData.empty_element             = placeholderData.empty_element;
+	*(void **)((u64)placeholderData.empty_element + 8)  = placeholderData.empty_element;
+	*(void **)((u64)placeholderData.empty_element + 16) = placeholderData.empty_element;
+	*(u16 *)((u64)placeholderData.empty_element + 24)   = 0x101;
+	placeholderData.length                              = 0;
 	GetPlaceholders (&placeholderData, menuAetId);
 
 	float *yesButtonPlaceholderData = GetPlaceholder (&placeholderData, "p_submenu_03_c");
@@ -84,8 +84,8 @@ initMenu () {
 	float *noButtonPlaceholderData  = GetPlaceholder (&placeholderData, "p_submenu_04_c");
 	noButtonLoc                     = createVec3 (noButtonPlaceholderData[16], noButtonPlaceholderData[17], noButtonPlaceholderData[18]);
 
-	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, 1);
-	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, 3);
+	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_IN);
+	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_LOOP);
 
 	ApplyPlaceholder (yesButtonAetData, &yesButtonLoc);
 	ApplyPlaceholder (noButtonAetData, &noButtonLoc);
@@ -160,6 +160,8 @@ HOOK (bool, __thiscall, CsMenuTaskCtrl, 0x1401B29D0, void *This) {
 
 void
 init () {
+	placeholderData.empty_element = calloc (1, 0xB0);
+	placeholderData.length        = 0;
 	INSTALL_HOOK (CsMenuTaskCtrl);
 }
 } // namespace exitMenu

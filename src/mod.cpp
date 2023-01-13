@@ -7,9 +7,8 @@ SIG_SCAN (sigPvDbSwitch, 0x140CBE200, "pv_db_switch.txt", "xxxxxxxxxxxxxxx");
 
 i32 theme;
 
+bool wantsToSettings = false;
 HOOK (void, __stdcall, ChangeSubGameState, 0x152C49DD0, State state, SubState subState) {
-	static bool wantsToSettings = false;
-
 	if (state == STATE_MENU_SWITCH) {
 		state = STATE_CS_MENU;
 	} else if (state == STATE_GAME_SWITCH) {
@@ -33,9 +32,8 @@ HOOK (void, __stdcall, ChangeSubGameState, 0x152C49DD0, State state, SubState su
 }
 
 // Fixes gallery not properly exiting
+i32 previousButton = 4;
 HOOK (bool, __thiscall, CsGalleryTaskCtrl, 0x1401AD590, u64 This) {
-	static i32 previousButton = 4;
-
 	i32 state          = *(i32 *)(This + 104);
 	i32 selectedButton = *(i32 *)(This + 112);
 	if (state == 3 && previousButton != selectedButton) {
@@ -64,7 +62,7 @@ HOOK (bool, __thiscall, CustomizeSelTaskInit, 0x140687A50, u64 This) {
 HOOK (i32 *, __stdcall, GetFtTheme, 0x1401D6530) { return &theme; }
 
 // Fixes gallery photos
-HOOK (void, __stdcall, LoadAndPlayAet, 0x1401AF0E0, u64 data, i32 action) {
+HOOK (void, __stdcall, LoadAndPlayAet, 0x1401AF0E0, u64 data, AetAction action) {
 	LoadAet ((void *)data, 0x4FE, *(char **)(data + 0x08), *(i32 *)(data + 0x84), action);
 	PlayAet ((void *)data, *(i32 *)(data + 0x15C));
 }
@@ -116,7 +114,7 @@ init () {
 	toml_table_t *config = openConfig ("config.toml");
 	theme                = readConfigInt (config, "theme", 0);
 
-	appendThemeInPlaceString ((string *)0x140DCB300);
+	appendThemeInPlaceString ((String *)0x140DCB300);
 
 	exitMenu::init ();
 	shaderSel::init ();
