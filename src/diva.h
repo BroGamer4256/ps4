@@ -102,7 +102,7 @@ typedef enum AetAction : i32 {
 	AETACTION_NONE         = 0, // Ignore all markers, just play through it all
 	AETACTION_IN           = 1, // Start at st_in end at ed_in
 	AETACTION_IN_LOOP      = 2, // Start at st_in, play to ed_lp then jump to st_lp and keep looping
-	AETACTION_LOOP         = 3, // Start at st_lp, end at ed_lp
+	AETACTION_LOOP         = 3, // Start at st_lp, end at ed_lp, loops
 	AETACTION_OUT          = 4, // Start at st_out, end at ed_out
 	AETACTION_SPECIAL_ONCE = 5, // Start at st_sp, end to ed_lp
 	AETACTION_SPECIAL_LOOP = 6, // Start at st_sp, play to ed_sp, then jump to st_lp and loop through ed_lp
@@ -118,9 +118,9 @@ FUNCTION_PTR_H (void *, __stdcall, DivaGetInputState, i32 a1);
 FUNCTION_PTR_H (bool, __stdcall, IsButtonTapped, void *state, i32 offset);
 FUNCTION_PTR_H (void, __stdcall, LoadAet, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
 FUNCTION_PTR_H (i32, __stdcall, PlayAet, void *data, i32 id);
-FUNCTION_PTR_H (void *, __stdcall, GetPlaceholders, List<void> *placeholderData, i32 id);
-FUNCTION_PTR_H (float *, __stdcall, GetPlaceholder, List<void> *placeholderData, const char *name);
-FUNCTION_PTR_H (void, __stdcall, ApplyPlaceholder, void *data, Vec3 *placeholderLocation);
+FUNCTION_PTR_H (void *, __stdcall, GetSubLayers, List<void> *sublayerData, i32 id);
+FUNCTION_PTR_H (float *, __stdcall, GetSubLayer, List<void> *sublayerData, const char *name);
+FUNCTION_PTR_H (void, __stdcall, ApplyLocation, void *data, Vec3 *locationData);
 FUNCTION_PTR_H (void, __stdcall, PlaySoundEffect, const char *name, float volume);
 FUNCTION_PTR_H (u64, __stdcall, GetPvLoadData);
 FUNCTION_PTR_H (i32, __stdcall, GetCurrentStyle);

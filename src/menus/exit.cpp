@@ -7,13 +7,14 @@ bool hasClicked        = false;
 void *menuAetData      = calloc (1, 1024);
 void *yesButtonAetData = calloc (1, 1024);
 void *noButtonAetData  = calloc (1, 1024);
+void *testAetData      = calloc (1, 1024);
 char *yesButtonName    = appendTheme ("cmn_menu_yes");
 char *noButtonName     = appendTheme ("cmn_menu_no");
 i32 menuAetId          = 0;
 i32 yesButtonAetId     = 0;
 i32 noButtonAetId      = 0;
 i32 hoveredButton      = 0;
-List<void> placeholderData;
+List<void> sublayerData;
 Vec3 yesButtonLoc;
 Vec3 noButtonLoc;
 Vec4 yesButtonRect;
@@ -25,8 +26,8 @@ moveDown () {
 	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_IN);
 	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_LOOP);
 
-	ApplyPlaceholder (yesButtonAetData, &yesButtonLoc);
-	ApplyPlaceholder (noButtonAetData, &noButtonLoc);
+	ApplyLocation (yesButtonAetData, &yesButtonLoc);
+	ApplyLocation (noButtonAetData, &noButtonLoc);
 
 	PlayAet (yesButtonAetData, yesButtonAetId);
 	PlayAet (noButtonAetData, noButtonAetId);
@@ -39,8 +40,8 @@ moveUp () {
 	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_LOOP);
 	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_IN);
 
-	ApplyPlaceholder (yesButtonAetData, &yesButtonLoc);
-	ApplyPlaceholder (noButtonAetData, &noButtonLoc);
+	ApplyLocation (yesButtonAetData, &yesButtonLoc);
+	ApplyLocation (noButtonAetData, &noButtonLoc);
 
 	PlayAet (yesButtonAetData, yesButtonAetId);
 	PlayAet (noButtonAetData, noButtonAetId);
@@ -51,11 +52,9 @@ moveUp () {
 void
 leaveMenu () {
 	LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_OUT);
-	PlayAet (menuAetData, menuAetId);
-
 	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x12, AETACTION_OUT);
 	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x12, AETACTION_OUT);
-
+	PlayAet (menuAetData, menuAetId);
 	PlayAet (yesButtonAetData, yesButtonAetId);
 	PlayAet (noButtonAetData, noButtonAetId);
 
@@ -72,23 +71,23 @@ initMenu () {
 	LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_IN_LOOP);
 	menuAetId = PlayAet (menuAetData, 0);
 
-	*(void **)placeholderData.empty_element             = placeholderData.empty_element;
-	*(void **)((u64)placeholderData.empty_element + 8)  = placeholderData.empty_element;
-	*(void **)((u64)placeholderData.empty_element + 16) = placeholderData.empty_element;
-	*(u16 *)((u64)placeholderData.empty_element + 24)   = 0x101;
-	placeholderData.length                              = 0;
-	GetPlaceholders (&placeholderData, menuAetId);
+	*(void **)sublayerData.empty_element             = sublayerData.empty_element;
+	*(void **)((u64)sublayerData.empty_element + 8)  = sublayerData.empty_element;
+	*(void **)((u64)sublayerData.empty_element + 16) = sublayerData.empty_element;
+	*(u16 *)((u64)sublayerData.empty_element + 24)   = 0x101;
+	sublayerData.length                              = 0;
+	GetSubLayers (&sublayerData, menuAetId);
 
-	float *yesButtonPlaceholderData = GetPlaceholder (&placeholderData, "p_submenu_03_c");
+	float *yesButtonPlaceholderData = GetSubLayer (&sublayerData, "p_submenu_03_c");
 	yesButtonLoc                    = createVec3 (yesButtonPlaceholderData[16], yesButtonPlaceholderData[17], yesButtonPlaceholderData[18]);
-	float *noButtonPlaceholderData  = GetPlaceholder (&placeholderData, "p_submenu_04_c");
+	float *noButtonPlaceholderData  = GetSubLayer (&sublayerData, "p_submenu_04_c");
 	noButtonLoc                     = createVec3 (noButtonPlaceholderData[16], noButtonPlaceholderData[17], noButtonPlaceholderData[18]);
 
 	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_IN);
 	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_LOOP);
 
-	ApplyPlaceholder (yesButtonAetData, &yesButtonLoc);
-	ApplyPlaceholder (noButtonAetData, &noButtonLoc);
+	ApplyLocation (yesButtonAetData, &yesButtonLoc);
+	ApplyLocation (noButtonAetData, &noButtonLoc);
 
 	yesButtonRect = getPlaceholderRect (yesButtonPlaceholderData);
 	noButtonRect  = getPlaceholderRect (noButtonPlaceholderData);
@@ -128,30 +127,23 @@ HOOK (bool, __thiscall, CsMenuTaskCtrl, 0x1401B29D0, void *This) {
 			hasClicked = false;
 		}
 
-		if (IsButtonTapped (inputState, 9)) // Back
-			leaveMenu ();
-		else if (IsButtonTapped (inputState, 10)) // Select
-			if (hoveredButton == 0) leaveMenu ();
-			else ExitProcess (0);
-		else if (IsButtonTapped (inputState, 3) && hoveredButton == 0) // Up
-			moveUp ();
-		else if (IsButtonTapped (inputState, 4) && hoveredButton == 1) // Down
-			moveDown ();
+		if (IsButtonTapped (inputState, 9)) leaveMenu ();
+		else if (IsButtonTapped (inputState, 10) && hoveredButton == 0) leaveMenu ();
+		else if (IsButtonTapped (inputState, 10) && hoveredButton == 1) ExitProcess (0);
+		else if (IsButtonTapped (inputState, 3) && hoveredButton == 0) moveUp ();
+		else if (IsButtonTapped (inputState, 4) && hoveredButton == 1) moveDown ();
 		return false;
 	}
 
-	if (IsButtonTapped (inputState, 9)) { // Back
-		initMenu ();
-		return false;
-	}
+	if (IsButtonTapped (inputState, 9)) initMenu ();
 
 	return originalCsMenuTaskCtrl (This);
 }
 
 void
 init () {
-	placeholderData.empty_element = calloc (1, 0xB0);
-	placeholderData.length        = 0;
+	sublayerData.empty_element = calloc (1, 0xB0);
+	sublayerData.length        = 0;
 	INSTALL_HOOK (CsMenuTaskCtrl);
 }
 } // namespace exitMenu
