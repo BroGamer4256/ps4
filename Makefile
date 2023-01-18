@@ -6,7 +6,7 @@ SRC = src/mod.cpp src/SigScan.cpp src/helpers.c src/diva.cpp src/menus/exit.cpp 
 OBJ = $(addprefix $(TARGET)/,$(subst .c,.o,$(SRC:.cpp=.o)))
 CFLAGS = -g -std=c99 -Iminhook/include -Itomlc99 -Isrc -Wall -Ofast -target $(TARGET) -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=_WIN32_WINNT_WIN7
 CXXFLAGS = -g -std=c++20 -Iminhook/include -Itomlc99 -Isrc -Wall -Ofast -target $(TARGET) -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=_WIN32_WINNT_WIN7
-LDFLAGS = -shared -static -static-libgcc -s -pthread -lgdi32 -ldwmapi
+LDFLAGS = -shared -static -static-libgcc -pthread -lgdi32 -ldwmapi
 
 all: options $(OUT)
 

@@ -63,22 +63,6 @@ createVec3 (float x, float y, float z) {
 	return vec;
 }
 
-Vec4
-getPlaceholderRect (float *placeholderData) {
-	float xDiff   = placeholderData[19] / 2;
-	float yDiff   = placeholderData[20] / 2;
-	float xCenter = placeholderData[16];
-	float yCenter = placeholderData[17];
-
-	Vec4 vec;
-	vec.x = xCenter - xDiff;
-	vec.y = xCenter + xDiff;
-	vec.z = yCenter - yDiff;
-	vec.w = yCenter + yDiff;
-
-	return vec;
-}
-
 bool
 vec4ContainsVec2 (Vec4 box, Vec2 location) {
 	return location.x > box.x && location.x < box.y && location.y > box.z && location.y < box.w;

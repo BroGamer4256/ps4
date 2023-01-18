@@ -15,6 +15,7 @@ FUNCTION_PTR (void, __stdcall, PlaySoundEffect, 0x1405AA500, const char *name, f
 FUNCTION_PTR (u64, __stdcall, GetPvLoadData, 0x14040B260);
 FUNCTION_PTR (i32, __stdcall, GetCurrentStyle, 0x1401D64E0);
 FUNCTION_PTR (InputType, __stdcall, NormalizeInputType, 0x1402ACA90, i32 inputType);
+FUNCTION_PTR (String *, __stdcall, StringInit, 0x14014BA50, String *to, const char *from, u64 len);
 
 extern i32 theme;
 void
@@ -86,4 +87,20 @@ getPvDbEntry (i32 id) {
 		return (u64)&currentElement->current;
 	}
 	return 0;
+}
+
+Vec4
+getPlaceholderRect (float *placeholderData) {
+	float xDiff   = placeholderData[19] / 2;
+	float yDiff   = placeholderData[20] / 2;
+	float xCenter = placeholderData[16];
+	float yCenter = placeholderData[17];
+
+	Vec4 vec;
+	vec.x = xCenter - xDiff;
+	vec.y = xCenter + xDiff;
+	vec.z = yCenter - yDiff;
+	vec.w = yCenter + yDiff;
+
+	return vec;
 }

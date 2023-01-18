@@ -125,6 +125,7 @@ FUNCTION_PTR_H (void, __stdcall, PlaySoundEffect, const char *name, float volume
 FUNCTION_PTR_H (u64, __stdcall, GetPvLoadData);
 FUNCTION_PTR_H (i32, __stdcall, GetCurrentStyle);
 FUNCTION_PTR_H (InputType, __stdcall, NormalizeInputType, i32 inputType);
+FUNCTION_PTR_H (String *, __stdcall, StringInit, String *to, const char *from, u64 len);
 
 void appendThemeInPlace (char *name);
 char *appendTheme (const char *name);
@@ -133,3 +134,4 @@ void appendThemeInPlaceString (String *name);
 InputType getInputType ();
 bool isMovieOnly (u64 entry);
 u64 getPvDbEntry (i32 id);
+Vec4 getPlaceholderRect (float *placeholderData);
