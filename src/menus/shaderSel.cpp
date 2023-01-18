@@ -36,7 +36,7 @@ updateStyleAets (Style newStyle) {
 	}
 	strcat (selectorImgName, c);
 	strcat (selectorImgName, ".pic");
-	LoadAet (selectorImgData, 0x4F8, selectorImgName, 0x20, AETACTION_NONE);
+	LoadAet (selectorImgData, 0x4F8, selectorImgName, 0x12, AETACTION_IN);
 	ApplyLocation (selectorImgData, &txtLoc);
 	selectorImgId = PlayAet (selectorImgData, selectorImgId);
 }
@@ -47,14 +47,14 @@ updateButtonPrompt (InputType input) {
 	strcpy (buttonName, "visual_key_0");
 	char c = (u8)input | 48;
 	strncat (buttonName, &c, 1);
-	LoadAet (keyHelpData, 0x4F8, buttonName, 0x21, AETACTION_NONE);
+	LoadAet (keyHelpData, 0x4F8, buttonName, 0x13, AETACTION_NONE);
 	ApplyLocation (keyHelpData, &keyHelpLoc);
 	keyHelpId = PlayAet (keyHelpData, keyHelpId);
 }
 
 void
 initStyle (Style style, InputType input) {
-	LoadAet (selectorData, 0x4F8, "visual_settings", 0x20, AETACTION_NONE);
+	LoadAet (selectorData, 0x4F8, "visual_settings", 0x12, AETACTION_NONE);
 	selectorId = PlayAet (selectorData, selectorId);
 
 	*(void **)sublayerData.empty_element             = sublayerData.empty_element;
