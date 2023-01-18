@@ -141,7 +141,7 @@ HOOK (bool, __thiscall, PvSelDestroy, 0x140204D90, u64 This) {
 	Vec3 offscreen = createVec3 (-1920, -1080, 0);
 	ApplyLocation (selectorImgData, &offscreen);
 	ApplyLocation (keyHelpData, &offscreen);
-	PlayAet (selectorImgData, selectorId);
+	PlayAet (selectorImgData, selectorImgId);
 	PlayAet (keyHelpData, keyHelpId);
 
 	return originalPvSelDestroy (This);

@@ -52,8 +52,11 @@ moveUp () {
 void
 leaveMenu () {
 	LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_OUT);
-	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x12, AETACTION_OUT);
-	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x12, AETACTION_OUT);
+
+	Vec3 offscreen = createVec3 (-1920, -1080, 0);
+	ApplyLocation (yesButtonAetData, &offscreen);
+	ApplyLocation (noButtonAetData, &offscreen);
+
 	PlayAet (menuAetData, menuAetId);
 	PlayAet (yesButtonAetData, yesButtonAetId);
 	PlayAet (noButtonAetData, noButtonAetId);
