@@ -57,11 +57,7 @@ initStyle (Style style, InputType input) {
 	LoadAet (selectorData, 0x4F8, "visual_settings", 0x12, AETACTION_IN_LOOP);
 	selectorId = PlayAet (selectorData, selectorId);
 
-	*(void **)sublayerData.empty_element             = sublayerData.empty_element;
-	*(void **)((u64)sublayerData.empty_element + 8)  = sublayerData.empty_element;
-	*(void **)((u64)sublayerData.empty_element + 16) = sublayerData.empty_element;
-	*(u16 *)((u64)sublayerData.empty_element + 24)   = 0x101;
-	sublayerData.length                              = 0;
+	initSublayerData (&sublayerData);
 	GetSubLayers (&sublayerData, selectorId);
 
 	float *buttonPlaceholderData = GetSubLayer (&sublayerData, "key_help_lv_tab_01");
@@ -77,11 +73,7 @@ initStyle (Style style, InputType input) {
 
 void
 updateLocs () {
-	*(void **)sublayerData.empty_element             = sublayerData.empty_element;
-	*(void **)((u64)sublayerData.empty_element + 8)  = sublayerData.empty_element;
-	*(void **)((u64)sublayerData.empty_element + 16) = sublayerData.empty_element;
-	*(u16 *)((u64)sublayerData.empty_element + 24)   = 0x101;
-	sublayerData.length                              = 0;
+	initSublayerData (&sublayerData);
 	GetSubLayers (&sublayerData, selectorId);
 
 	float *buttonPlaceholderData = GetSubLayer (&sublayerData, "key_help_lv_tab_01");
@@ -174,8 +166,6 @@ HOOK (bool, __thiscall, PvSelDestroy, 0x140204D90, u64 This) {
 
 void
 init () {
-	sublayerData.empty_element = calloc (1, 0xB0);
-	sublayerData.length        = 0;
 	INSTALL_HOOK (PVSelCtrl);
 	INSTALL_HOOK (PvSelDestroy);
 }

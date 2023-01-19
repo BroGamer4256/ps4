@@ -16,6 +16,9 @@ FUNCTION_PTR (u64, __stdcall, GetPvLoadData, 0x14040B260);
 FUNCTION_PTR (i32, __stdcall, GetCurrentStyle, 0x1401D64E0);
 FUNCTION_PTR (InputType, __stdcall, NormalizeInputType, 0x1402ACA90, i32 inputType);
 FUNCTION_PTR (String *, __stdcall, StringInit, 0x14014BA50, String *to, const char *from, u64 len);
+FUNCTION_PTR (void, __stdcall, FreeSubLayers, 0x1401AC240, List<void> *sublayerData, List<void> *sublayerData2, void *first_element);
+FUNCTION_PTR (void, __stdcall, FreeString, 0x14014BCD0, String *str);
+FUNCTION_PTR (void, __stdcall, FreeBase, 0x1409880A8, void *data, u64 size);
 
 extern i32 theme;
 void
@@ -90,6 +93,7 @@ getPvDbEntry (i32 id) {
 	return 0;
 }
 
+// Uses anchor X/Y + position X/Y to create a rect, primarily useful for touch interactions
 Vec4
 getPlaceholderRect (float *placeholderData) {
 	float xDiff   = placeholderData[19] / 2;
@@ -104,4 +108,20 @@ getPlaceholderRect (float *placeholderData) {
 	vec.w = yCenter + yDiff;
 
 	return vec;
+}
+
+void
+initSublayerData (List<void> *out) {
+	if (out->length > 0) {
+		for (u64 cur_element = *(u64 *)((u64)out->empty_element + 8); *(u8 *)(cur_element + 0x19) == 0; cur_element = *(u64 *)(cur_element + 0x10))
+			FreeSubLayers (out, out, (void *)cur_element);
+		free (out->empty_element);
+	}
+
+	out->empty_element                       = calloc (1, 0xB0);
+	*(void **)out->empty_element             = out->empty_element;
+	*(void **)((u64)out->empty_element + 8)  = out->empty_element;
+	*(void **)((u64)out->empty_element + 16) = out->empty_element;
+	*(u16 *)((u64)out->empty_element + 24)   = 0x101;
+	out->length                              = 0;
 }

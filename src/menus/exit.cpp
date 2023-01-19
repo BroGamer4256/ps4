@@ -74,11 +74,7 @@ initMenu () {
 	LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_IN_LOOP);
 	menuAetId = PlayAet (menuAetData, 0);
 
-	*(void **)sublayerData.empty_element             = sublayerData.empty_element;
-	*(void **)((u64)sublayerData.empty_element + 8)  = sublayerData.empty_element;
-	*(void **)((u64)sublayerData.empty_element + 16) = sublayerData.empty_element;
-	*(u16 *)((u64)sublayerData.empty_element + 24)   = 0x101;
-	sublayerData.length                              = 0;
+	initSublayerData (&sublayerData);
 	GetSubLayers (&sublayerData, menuAetId);
 
 	float *yesButtonPlaceholderData = GetSubLayer (&sublayerData, "p_submenu_03_c");
@@ -145,8 +141,6 @@ HOOK (bool, __thiscall, CsMenuTaskCtrl, 0x1401B29D0, void *This) {
 
 void
 init () {
-	sublayerData.empty_element = calloc (1, 0xB0);
-	sublayerData.length        = 0;
 	INSTALL_HOOK (CsMenuTaskCtrl);
 }
 } // namespace exitMenu

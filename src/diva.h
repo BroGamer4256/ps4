@@ -135,3 +135,4 @@ InputType getInputType ();
 bool isMovieOnly (u64 entry);
 u64 getPvDbEntry (i32 id);
 Vec4 getPlaceholderRect (float *placeholderData);
+void initSublayerData (List<void> *out);
