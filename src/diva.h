@@ -100,7 +100,7 @@ typedef enum InputType : i32 {
 
 typedef enum AetAction : i32 {
 	AETACTION_NONE         = 0, // Ignore all markers, just play through it all
-	AETACTION_IN           = 1, // Start at st_in end at ed_in
+	AETACTION_IN           = 1, // Start at st_in, end at ed_in
 	AETACTION_IN_LOOP      = 2, // Start at st_in, play to ed_lp then jump to st_lp and keep looping
 	AETACTION_LOOP         = 3, // Start at st_lp, end at ed_lp, loops
 	AETACTION_OUT          = 4, // Start at st_out, end at ed_out

@@ -36,7 +36,7 @@ updateStyleAets (Style newStyle) {
 	}
 	strcat (selectorImgName, c);
 	strcat (selectorImgName, ".pic");
-	LoadAet (selectorImgData, 0x4F8, selectorImgName, 0x12, AETACTION_IN);
+	LoadAet (selectorImgData, 0x4F8, selectorImgName, 0x12, AETACTION_NONE);
 	ApplyLocation (selectorImgData, &txtLoc);
 	selectorImgId = PlayAet (selectorImgData, selectorImgId);
 }
@@ -54,7 +54,7 @@ updateButtonPrompt (InputType input) {
 
 void
 initStyle (Style style, InputType input) {
-	LoadAet (selectorData, 0x4F8, "visual_settings", 0x12, AETACTION_NONE);
+	LoadAet (selectorData, 0x4F8, "visual_settings", 0x12, AETACTION_IN_LOOP);
 	selectorId = PlayAet (selectorData, selectorId);
 
 	*(void **)sublayerData.empty_element             = sublayerData.empty_element;
@@ -68,10 +68,34 @@ initStyle (Style style, InputType input) {
 	keyHelpLoc                   = createVec3 (buttonPlaceholderData[16], buttonPlaceholderData[17], buttonPlaceholderData[18]);
 	float *textPlaceholderData   = GetSubLayer (&sublayerData, "visual_settings_txt");
 	txtLoc                       = createVec3 (textPlaceholderData[16], textPlaceholderData[17], textPlaceholderData[18]);
-	touchArea                    = getPlaceholderRect (textPlaceholderData);
+	float *buttonTouchAreaData   = GetSubLayer (&sublayerData, "p_visual_settings_touch");
+	touchArea                    = getPlaceholderRect (buttonTouchAreaData);
 
 	updateStyleAets (style);
 	updateButtonPrompt (input);
+}
+
+void
+updateLocs () {
+	*(void **)sublayerData.empty_element             = sublayerData.empty_element;
+	*(void **)((u64)sublayerData.empty_element + 8)  = sublayerData.empty_element;
+	*(void **)((u64)sublayerData.empty_element + 16) = sublayerData.empty_element;
+	*(u16 *)((u64)sublayerData.empty_element + 24)   = 0x101;
+	sublayerData.length                              = 0;
+	GetSubLayers (&sublayerData, selectorId);
+
+	float *buttonPlaceholderData = GetSubLayer (&sublayerData, "key_help_lv_tab_01");
+	keyHelpLoc                   = createVec3 (buttonPlaceholderData[16], buttonPlaceholderData[17], buttonPlaceholderData[18]);
+	float *textPlaceholderData   = GetSubLayer (&sublayerData, "visual_settings_txt");
+	txtLoc                       = createVec3 (textPlaceholderData[16], textPlaceholderData[17], textPlaceholderData[18]);
+	float *buttonTouchAreaData   = GetSubLayer (&sublayerData, "p_visual_settings_touch");
+	touchArea                    = getPlaceholderRect (buttonTouchAreaData);
+
+	ApplyLocation (keyHelpData, &keyHelpLoc);
+	ApplyLocation (selectorImgData, &txtLoc);
+
+	keyHelpId     = PlayAet (keyHelpData, keyHelpId);
+	selectorImgId = PlayAet (selectorImgData, selectorImgId);
 }
 
 Style
@@ -130,6 +154,7 @@ HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
 		hasClicked = false;
 	}
 
+	updateLocs ();
 	*(i32 *)(data + 0x1D08) = style;
 
 	return originalPVSelCtrl (This);

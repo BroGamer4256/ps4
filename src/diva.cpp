@@ -82,7 +82,8 @@ isMovieOnly (u64 entry) {
 
 u64
 getPvDbEntry (i32 id) {
-	for (ListElement<i32> *currentElement = pvs->empty_element->next; currentElement->current != 0; currentElement = currentElement->next) {
+	if (id < 0) return 0;
+	for (ListElement<i32> *currentElement = pvs->empty_element->next; currentElement->current > 0; currentElement = currentElement->next) {
 		if (currentElement->current != id) continue;
 		return (u64)&currentElement->current;
 	}
