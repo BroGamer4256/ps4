@@ -45,9 +45,9 @@ typedef enum SubState : i32 {
 	SUBSTATE_LOGO                      = 2,
 	SUBSTATE_TITLE                     = 3,
 	SUBSTATE_CONCEAL                   = 4,
-	SUBSTATE_GAME                      = 5,
-	SUBSTATE_PLAYLIST                  = 6,
-	SUBSTATE_CAPTURE                   = 7,
+	SUBSTATE_PV_SEL                    = 5,
+	SUBSTATE_PLAYLIST_SEL              = 6,
+	SUBSTATE_GAME                      = 7,
 	SUBSTATE_DATA_TEST_MAIN            = 8,
 	SUBSTATE_DATA_TEST_MISC            = 9,
 	SUBSTATE_DATA_TEST_OBJ             = 10,
@@ -109,13 +109,30 @@ typedef enum AetAction : i32 {
 	AETACTION_UNK          = 7, // Start at st_in, end at ed_in, probably loops?
 } AetAction;
 
+typedef enum Button : i32 {
+	BUTTON_UP       = 3,
+	BUTTON_DOWN     = 4,
+	BUTTON_LEFT     = 5,
+	BUTTON_RIGHT    = 6,
+	BUTTON_TRIANGLE = 7,
+	BUTTON_SQUARE   = 8,
+	BUTTON_BACK     = 9,
+	BUTTON_ACCEPT   = 10,
+	BUTTON_L        = 11,
+	BUTTON_R        = 12,
+	BUTTON_L2       = 13,
+	BUTTON_R2       = 14,
+	BUTTON_L3       = 15,
+	BUTTON_R3       = 16,
+} Button;
+
 extern List<ListElement<i32>> *pvs;
 
 FUNCTION_PTR_H (bool, __thiscall, CmnMenuTaskDest, u64 This);
 FUNCTION_PTR_H (void, __stdcall, DrawTextBox, u64 a1, i32 index);
 FUNCTION_PTR_H (void, __stdcall, HideTextBox, u64 a1, i32 index);
 FUNCTION_PTR_H (void *, __stdcall, DivaGetInputState, i32 a1);
-FUNCTION_PTR_H (bool, __stdcall, IsButtonTapped, void *state, i32 offset);
+FUNCTION_PTR_H (bool, __stdcall, IsButtonTapped, void *state, Button button);
 FUNCTION_PTR_H (void, __stdcall, LoadAet, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
 FUNCTION_PTR_H (i32, __stdcall, PlayAet, void *data, i32 id);
 FUNCTION_PTR_H (void *, __stdcall, GetSubLayers, List<void> *sublayerData, i32 id);
@@ -126,6 +143,7 @@ FUNCTION_PTR_H (u64, __stdcall, GetPvLoadData);
 FUNCTION_PTR_H (i32, __stdcall, GetCurrentStyle);
 FUNCTION_PTR_H (InputType, __stdcall, NormalizeInputType, i32 inputType);
 FUNCTION_PTR_H (String *, __stdcall, StringInit, String *to, const char *from, u64 len);
+FUNCTION_PTR_H (void, __stdcall, FreeString, String *str);
 
 void appendThemeInPlace (char *name);
 char *appendTheme (const char *name);
@@ -135,4 +153,6 @@ InputType getInputType ();
 bool isMovieOnly (u64 entry);
 u64 getPvDbEntry (i32 id);
 Vec4 getPlaceholderRect (float *placeholderData);
-void initSublayerData (List<void> *out);
+// This will automatically call freeSublayerData if there is any data present in out already
+void initSubLayerData (List<void> *out);
+void freeSubLayerData (List<void> *out);

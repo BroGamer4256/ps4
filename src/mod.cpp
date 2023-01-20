@@ -11,8 +11,6 @@ bool wantsToSettings = false;
 HOOK (void, __stdcall, ChangeSubGameState, 0x152C49DD0, State state, SubState subState) {
 	if (state == STATE_MENU_SWITCH) {
 		state = STATE_CS_MENU;
-	} else if (state == STATE_GAME_SWITCH) {
-		state = STATE_GAME;
 	} else if (subState == SUBSTATE_CS_OPTION_MENU) {
 		state           = STATE_MENU_SWITCH;
 		subState        = SUBSTATE_OPTION_MENU_SWITCH;

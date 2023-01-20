@@ -28,13 +28,13 @@ void
 updateStyleAets (Style newStyle) {
 	selectorImgName[0] = 0;
 	strcpy (selectorImgName, "nswgam_songselector_visual_settings_0");
-	const char *c;
+	char c;
 	switch (newStyle) {
-	case STYLE_FT: c = "2"; break;
-	case STYLE_MM: c = "1"; break;
-	case STYLE_NONE: c = "3"; break;
+	case STYLE_FT: c = '2'; break;
+	case STYLE_MM: c = '1'; break;
+	case STYLE_NONE: c = '3'; break;
 	}
-	strcat (selectorImgName, c);
+	strncat (selectorImgName, &c, 1);
 	strcat (selectorImgName, ".pic");
 	LoadAet (selectorImgData, 0x4F8, selectorImgName, 0x12, AETACTION_NONE);
 	ApplyLocation (selectorImgData, &txtLoc);
@@ -45,7 +45,7 @@ void
 updateButtonPrompt (InputType input) {
 	buttonName[0] = 0;
 	strcpy (buttonName, "visual_key_0");
-	char c = (u8)input | 48;
+	const char c = (u8)input | 48;
 	strncat (buttonName, &c, 1);
 	LoadAet (keyHelpData, 0x4F8, buttonName, 0x13, AETACTION_NONE);
 	ApplyLocation (keyHelpData, &keyHelpLoc);
@@ -57,7 +57,7 @@ initStyle (Style style, InputType input) {
 	LoadAet (selectorData, 0x4F8, "visual_settings", 0x12, AETACTION_IN_LOOP);
 	selectorId = PlayAet (selectorData, selectorId);
 
-	initSublayerData (&sublayerData);
+	initSubLayerData (&sublayerData);
 	GetSubLayers (&sublayerData, selectorId);
 
 	float *buttonPlaceholderData = GetSubLayer (&sublayerData, "key_help_lv_tab_01");
@@ -73,7 +73,7 @@ initStyle (Style style, InputType input) {
 
 void
 updateLocs () {
-	initSublayerData (&sublayerData);
+	initSubLayerData (&sublayerData);
 	GetSubLayers (&sublayerData, selectorId);
 
 	float *buttonPlaceholderData = GetSubLayer (&sublayerData, "key_help_lv_tab_01");
@@ -118,7 +118,7 @@ HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
 		updateButtonPrompt (input);
 	}
 
-	if (IsButtonTapped (inputState, 15)) { // F3
+	if (IsButtonTapped (inputState, BUTTON_L3)) {
 		PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 		style = !style;
 		updateStyleAets (getStyle (style, isMovie));

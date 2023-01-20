@@ -74,7 +74,7 @@ initMenu () {
 	LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_IN_LOOP);
 	menuAetId = PlayAet (menuAetData, 0);
 
-	initSublayerData (&sublayerData);
+	initSubLayerData (&sublayerData);
 	GetSubLayers (&sublayerData, menuAetId);
 
 	float *yesButtonPlaceholderData = GetSubLayer (&sublayerData, "p_submenu_03_c");
@@ -126,15 +126,15 @@ HOOK (bool, __thiscall, CsMenuTaskCtrl, 0x1401B29D0, void *This) {
 			hasClicked = false;
 		}
 
-		if (IsButtonTapped (inputState, 9)) leaveMenu ();
-		else if (IsButtonTapped (inputState, 10) && hoveredButton == 0) leaveMenu ();
-		else if (IsButtonTapped (inputState, 10) && hoveredButton == 1) ExitProcess (0);
-		else if (IsButtonTapped (inputState, 3) && hoveredButton == 0) moveUp ();
-		else if (IsButtonTapped (inputState, 4) && hoveredButton == 1) moveDown ();
+		if (IsButtonTapped (inputState, BUTTON_BACK)) leaveMenu ();
+		else if (IsButtonTapped (inputState, BUTTON_ACCEPT) && hoveredButton == 0) leaveMenu ();
+		else if (IsButtonTapped (inputState, BUTTON_ACCEPT) && hoveredButton == 1) ExitProcess (0);
+		else if (IsButtonTapped (inputState, BUTTON_UP) && hoveredButton == 0) moveUp ();
+		else if (IsButtonTapped (inputState, BUTTON_DOWN) && hoveredButton == 1) moveDown ();
 		return false;
 	}
 
-	if (IsButtonTapped (inputState, 9)) initMenu ();
+	if (IsButtonTapped (inputState, BUTTON_BACK)) initMenu ();
 
 	return originalCsMenuTaskCtrl (This);
 }

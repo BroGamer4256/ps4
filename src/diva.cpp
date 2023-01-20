@@ -5,7 +5,7 @@ FUNCTION_PTR (bool, __thiscall, CmnMenuTaskDest, 0x1401AAE50, u64 This);
 FUNCTION_PTR (void, __stdcall, DrawTextBox, 0x1401ACDA0, u64 a1, i32 index);
 FUNCTION_PTR (void, __stdcall, HideTextBox, 0x1401ACAD0, u64 a1, i32 index);
 FUNCTION_PTR (void *, __stdcall, DivaGetInputState, 0x1402AC960, i32 a1);
-FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB250, void *state, i32 offset);
+FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB250, void *state, Button button);
 FUNCTION_PTR (void, __stdcall, LoadAet, 0x14028D550, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
 FUNCTION_PTR (i32, __stdcall, PlayAet, 0x1402CA1E0, void *data, i32 id);
 FUNCTION_PTR (void *, __stdcall, GetSubLayers, 0x1402CA630, List<void> *sublayerData, i32 id);
@@ -111,12 +111,18 @@ getPlaceholderRect (float *placeholderData) {
 }
 
 void
-initSublayerData (List<void> *out) {
+freeSubLayerData (List<void> *out) {
 	if (out->length > 0) {
 		for (u64 cur_element = *(u64 *)((u64)out->empty_element + 8); *(u8 *)(cur_element + 0x19) == 0; cur_element = *(u64 *)(cur_element + 0x10))
 			FreeSubLayers (out, out, (void *)cur_element);
 		free (out->empty_element);
 	}
+}
+
+// This can create a memory leak if we dont load any sublayers in
+void
+initSubLayerData (List<void> *out) {
+	freeSubLayerData (out);
 
 	out->empty_element                       = calloc (1, 0xB0);
 	*(void **)out->empty_element             = out->empty_element;
