@@ -98,16 +98,11 @@ initMenu () {
 }
 
 void
-handleClick (i32 clickedX, i32 clickedY) {
-	RECT rect;
-	GetClientRect (FindWindow ("DIVAMIXP", 0), &rect);
-	float x  = clickedX / (float)rect.right * 1920;
-	float y  = clickedY / (float)rect.bottom * 1080;
-	Vec2 vec = createVec2 (x, y);
-	if (vec4ContainsVec2 (yesButtonRect, vec)) {
+handleClick (Vec2 clickedPos) {
+	if (vec4ContainsVec2 (yesButtonRect, clickedPos)) {
 		if (hoveredButton == 0) moveUp ();
 		else ExitProcess (0);
-	} else if (vec4ContainsVec2 (noButtonRect, vec)) {
+	} else if (vec4ContainsVec2 (noButtonRect, clickedPos)) {
 		if (hoveredButton == 1) moveDown ();
 		else leaveMenu ();
 	}
@@ -117,12 +112,11 @@ handleClick (i32 clickedX, i32 clickedY) {
 HOOK (bool, __thiscall, CsMenuTaskCtrl, 0x1401B29D0, void *This) {
 	void *inputState = DivaGetInputState (0);
 	if (wantsToExit) {
-		i32 clickedX = *(i32 *)((u64)inputState + 0x158);
-		i32 clickedY = *(i32 *)((u64)inputState + 0x15C);
-		if (clickedX > 0 && !hasClicked) {
-			handleClick (clickedX, clickedY);
+		Vec2 clickedPos = getClickedPos (inputState);
+		if (clickedPos.x > 0 && !hasClicked) {
+			handleClick (clickedPos);
 			hasClicked = true;
-		} else if (clickedX == 0) {
+		} else if (clickedPos.x == 0) {
 			hasClicked = false;
 		}
 

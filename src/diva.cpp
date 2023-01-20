@@ -131,3 +131,14 @@ initSubLayerData (List<void> *out) {
 	*(u16 *)((u64)out->empty_element + 24)   = 0x101;
 	out->length                              = 0;
 }
+
+Vec2
+getClickedPos (void *inputState) {
+	Vec2 initialVec = createVec2 (*(i32 *)((u64)inputState + 0x158), *(i32 *)((u64)inputState + 0x15C));
+	RECT rect;
+	GetClientRect (FindWindow ("DIVAMIXP", 0), &rect);
+	float x            = initialVec.x / (float)rect.right * 1920;
+	float y            = initialVec.y / (float)rect.bottom * 1080;
+	Vec2 normalizedVec = createVec2 (x, y);
+	return normalizedVec;
+}

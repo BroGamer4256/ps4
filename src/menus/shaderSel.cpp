@@ -118,7 +118,7 @@ HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
 		updateButtonPrompt (input);
 	}
 
-	if (IsButtonTapped (inputState, BUTTON_L3)) {
+	if (IsButtonTapped (inputState, BUTTON_L3) && !isMovie) {
 		PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 		style = !style;
 		updateStyleAets (getStyle (style, isMovie));
@@ -128,21 +128,15 @@ HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
 		pvId = *(i32 *)(This + 0x36A30);
 	}
 
-	i32 clickedX = *(i32 *)((u64)inputState + 0x158);
-	i32 clickedY = *(i32 *)((u64)inputState + 0x15C);
-	if (clickedX > 0 && !hasClicked) {
+	Vec2 clickedPos = getClickedPos (inputState);
+	if (clickedPos.x > 0 && !hasClicked) {
 		hasClicked = true;
-		RECT rect;
-		GetClientRect (FindWindow ("DIVAMIXP", 0), &rect);
-		float x  = clickedX / (float)rect.right * 1920;
-		float y  = clickedY / (float)rect.bottom * 1080;
-		Vec2 vec = createVec2 (x, y);
-		if (vec4ContainsVec2 (touchArea, vec)) {
+		if (vec4ContainsVec2 (touchArea, clickedPos) && !isMovie) {
 			style = !style;
 			PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 			updateStyleAets (getStyle (style, isMovie));
 		}
-	} else if (clickedX == 0) {
+	} else if (clickedPos.x == 0) {
 		hasClicked = false;
 	}
 
