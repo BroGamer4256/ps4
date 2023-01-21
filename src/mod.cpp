@@ -3,7 +3,13 @@
 #include "helpers.h"
 #include "menus/menus.h"
 
-SIG_SCAN (sigPvDbSwitch, 0x140CBE200, "pv_db_switch.txt", "xxxxxxxxxxxxxxx");
+SIG_SCAN (sigPvDbSwitch, "pv_db_switch.txt");
+SIG_SCAN (sigMenuTxt1, "menu_txt_01");
+SIG_SCAN (sigMenuTxt2, "menu_txt_02");
+SIG_SCAN (sigMenuTxt3, "menu_txt_03");
+SIG_SCAN (sigMenuTxt4, "menu_txt_04");
+SIG_SCAN (sigMenuTxt5, "menu_txt_05");
+SIG_SCAN (sigMenuTxtBase, "menu_txt_base");
 
 i32 theme;
 
@@ -29,23 +35,64 @@ HOOK (void, __stdcall, ChangeSubGameState, 0x152C49DD0, State state, SubState su
 	return originalChangeSubGameState (state, subState);
 }
 
+void *menuTxt1Data    = calloc (1, 1024);
+void *menuTxt2Data    = calloc (1, 1024);
+void *menuTxt3Data    = calloc (1, 1024);
+void *menuTxt4Data    = calloc (1, 1024);
+void *menuTxt5Data    = calloc (1, 1024);
+void *menuTxtBaseData = calloc (1, 1024);
+i32 menuTxt1Id        = 0;
+i32 menuTxt2Id        = 0;
+i32 menuTxt3Id        = 0;
+i32 menuTxt4Id        = 0;
+i32 menuTxt5Id        = 0;
+i32 menuTxtBaseId     = 0;
+void
+playGalleryTxt (i32 button, AetAction action) {
+	switch (button) {
+	case 0:
+		LoadAet (menuTxt1Data, 0x4FE, "menu_txt_01", 0x12, action);
+		menuTxt1Id = PlayAet (menuTxt1Data, menuTxt1Id);
+		break;
+	case 1:
+		LoadAet (menuTxt2Data, 0x4FE, "menu_txt_02", 0x12, action);
+		menuTxt2Id = PlayAet (menuTxt2Data, menuTxt2Id);
+		break;
+	case 2:
+		LoadAet (menuTxt3Data, 0x4FE, "menu_txt_03", 0x12, action);
+		menuTxt3Id = PlayAet (menuTxt3Data, menuTxt3Id);
+		break;
+	case 3:
+		LoadAet (menuTxt4Data, 0x4FE, "menu_txt_04", 0x12, action);
+		menuTxt4Id = PlayAet (menuTxt4Data, menuTxt4Id);
+		break;
+	case 4:
+		LoadAet (menuTxt5Data, 0x4FE, "menu_txt_05", 0x12, action);
+		menuTxt5Id = PlayAet (menuTxt5Data, menuTxt5Id);
+		break;
+	}
+	LoadAet (menuTxtBaseData, 0x4FE, "menu_txt_base", 0x12, action);
+	menuTxtBaseId = PlayAet (menuTxtBaseData, menuTxtBaseId);
+}
+
 // Fixes gallery not properly exiting
-i32 previousButton = 4;
+i32 previousButton = 5;
 HOOK (bool, __thiscall, CsGalleryTaskCtrl, 0x1401AD590, u64 This) {
-	i32 state          = *(i32 *)(This + 104);
-	i32 selectedButton = *(i32 *)(This + 112);
+	i32 state          = *(i32 *)(This + 0x68);
+	i32 selectedButton = *(i32 *)(This + 0x70);
 	if (state == 3 && previousButton != selectedButton) {
-		HideTextBox (This + 1168, previousButton);
-		DrawTextBox (This + 1168, selectedButton);
+		playGalleryTxt (selectedButton, AETACTION_IN_LOOP);
+		if (previousButton != 5) playGalleryTxt (previousButton, AETACTION_OUT);
 		previousButton = selectedButton;
 	} else if (state == 6) {
-		*(i32 *)(This + 108)   = 1;
-		*(i32 *)(This + 17816) = 5;
-		*(i32 *)(This + 104)   = 14;
-		previousButton         = 4;
+		*(i32 *)(This + 0x6C)   = 1;
+		*(i32 *)(This + 0x4598) = 5;
+		*(i32 *)(This + 0x68)   = 14;
+		previousButton          = 5;
+		playGalleryTxt (selectedButton, AETACTION_OUT);
 	} else if (state == 4) {
-		previousButton = selectedButton + 1;
-		if (previousButton == 5) previousButton = 3;
+		previousButton = 5;
+		playGalleryTxt (selectedButton, AETACTION_OUT);
 	}
 
 	return originalCsGalleryTaskCtrl (This);
@@ -93,13 +140,6 @@ init () {
 	// 1.00 Samyuu, 1.02 BroGamer
 	WRITE_MEMORY (0x1414AB9E3, u8, 0x01);
 
-	// Stop calls to DrawTextBox
-	WRITE_NOP (0x1401AD859, 5);
-	WRITE_NOP (0x1401AD713, 5);
-
-	// Stop call to HideTextBox
-	WRITE_NOP (0x1401AD64C, 5);
-
 	// Stop returning to ADV from main menu
 	WRITE_NOP (0x1401B2ADA, 36);
 
@@ -121,6 +161,12 @@ init () {
 void
 preInit () {
 	WRITE_NULL (sigPvDbSwitch (), 1);
+	WRITE_NULL (sigMenuTxt1 (), 1);
+	WRITE_NULL (sigMenuTxt2 (), 1);
+	WRITE_NULL (sigMenuTxt3 (), 1);
+	WRITE_NULL (sigMenuTxt4 (), 1);
+	WRITE_NULL (sigMenuTxt5 (), 1);
+	WRITE_NULL (sigMenuTxtBase (), 1);
 }
 
 #ifdef __cplusplus

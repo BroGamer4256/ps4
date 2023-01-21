@@ -130,8 +130,6 @@ typedef enum Button : i32 {
 extern List<ListElement<i32>> *pvs;
 
 FUNCTION_PTR_H (bool, __thiscall, CmnMenuTaskDest, u64 This);
-FUNCTION_PTR_H (void, __stdcall, DrawTextBox, u64 a1, i32 index);
-FUNCTION_PTR_H (void, __stdcall, HideTextBox, u64 a1, i32 index);
 FUNCTION_PTR_H (void *, __stdcall, DivaGetInputState, i32 a1);
 FUNCTION_PTR_H (bool, __stdcall, IsButtonTapped, void *state, Button button);
 FUNCTION_PTR_H (void, __stdcall, LoadAet, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
