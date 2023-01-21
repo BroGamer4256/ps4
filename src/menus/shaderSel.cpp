@@ -107,6 +107,8 @@ HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
 	u64 data         = GetPvLoadData ();
 	i32 style        = *(i32 *)(data + 0x1D08);
 
+	if (input == INPUTTYPE_UNKNOWN) input = INPUTTYPE_PLAYSTATION;
+
 	if (style == -1) {
 		style = GetCurrentStyle ();
 		initStyle (getStyle (style, isMovie), input);
