@@ -10,9 +10,9 @@ typedef enum Style : i32 {
 
 bool hasClicked       = false;
 i32 pvId              = 0;
-void *selectorData    = calloc (1, 1024);
-void *selectorImgData = calloc (1, 1024);
-void *keyHelpData     = calloc (1, 1024);
+void *selectorData    = calloc (1, 0x1024);
+void *selectorImgData = calloc (1, 0x1024);
+void *keyHelpData     = calloc (1, 0x1024);
 char *buttonName      = (char *)calloc (16, sizeof (char));
 char *selectorImgName = (char *)calloc (64, sizeof (char));
 i32 selectorId        = 0;
@@ -61,11 +61,11 @@ initStyle (Style style, InputType input) {
 	GetSubLayers (&sublayerData, selectorId);
 
 	float *buttonPlaceholderData = GetSubLayer (&sublayerData, "key_help_lv_tab_01");
-	keyHelpLoc                   = createVec3 (buttonPlaceholderData[16], buttonPlaceholderData[17], buttonPlaceholderData[18]);
-	float *textPlaceholderData   = GetSubLayer (&sublayerData, "visual_settings_txt");
-	txtLoc                       = createVec3 (textPlaceholderData[16], textPlaceholderData[17], textPlaceholderData[18]);
-	float *buttonTouchAreaData   = GetSubLayer (&sublayerData, "p_visual_settings_touch");
-	touchArea                    = getPlaceholderRect (buttonTouchAreaData);
+	if (buttonPlaceholderData) keyHelpLoc = createVec3 (buttonPlaceholderData[16], buttonPlaceholderData[17], buttonPlaceholderData[18]);
+	float *textPlaceholderData = GetSubLayer (&sublayerData, "visual_settings_txt");
+	if (textPlaceholderData) txtLoc = createVec3 (textPlaceholderData[16], textPlaceholderData[17], textPlaceholderData[18]);
+	float *buttonTouchAreaData = GetSubLayer (&sublayerData, "p_visual_settings_touch");
+	if (buttonTouchAreaData) touchArea = getPlaceholderRect (buttonTouchAreaData);
 
 	updateStyleAets (style);
 	updateButtonPrompt (input);
@@ -104,8 +104,8 @@ HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
 	bool isMovie     = isMovieOnly (getPvDbEntry (*(i32 *)(This + 0x36A30)));
 	InputType input  = getInputType ();
 	void *inputState = DivaGetInputState (0);
-	u64 data         = GetPvLoadData ();
-	i32 style        = *(i32 *)(data + 0x1D08);
+	u64 pvLoadData   = GetPvLoadData ();
+	i32 style        = *(i32 *)(pvLoadData + 0x1D08);
 
 	if (input == INPUTTYPE_UNKNOWN) input = INPUTTYPE_PLAYSTATION;
 
@@ -143,7 +143,7 @@ HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
 	}
 
 	updateLocs ();
-	*(i32 *)(data + 0x1D08) = style;
+	*(i32 *)(pvLoadData + 0x1D08) = style;
 
 	return originalPVSelCtrl (This);
 }

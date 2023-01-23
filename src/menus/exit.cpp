@@ -4,10 +4,10 @@
 namespace exitMenu {
 bool wantsToExit       = false;
 bool hasClicked        = false;
-void *menuAetData      = calloc (1, 1024);
-void *yesButtonAetData = calloc (1, 1024);
-void *noButtonAetData  = calloc (1, 1024);
-void *testAetData      = calloc (1, 1024);
+void *menuAetData      = calloc (1, 0x1024);
+void *yesButtonAetData = calloc (1, 0x1024);
+void *noButtonAetData  = calloc (1, 0x1024);
+void *testAetData      = calloc (1, 0x1024);
 char *yesButtonName    = appendTheme ("cmn_menu_yes");
 char *noButtonName     = appendTheme ("cmn_menu_no");
 i32 menuAetId          = 0;

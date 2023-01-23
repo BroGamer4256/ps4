@@ -35,12 +35,12 @@ HOOK (void, __stdcall, ChangeSubGameState, 0x152C49DD0, State state, SubState su
 	return originalChangeSubGameState (state, subState);
 }
 
-void *menuTxt1Data    = calloc (1, 1024);
-void *menuTxt2Data    = calloc (1, 1024);
-void *menuTxt3Data    = calloc (1, 1024);
-void *menuTxt4Data    = calloc (1, 1024);
-void *menuTxt5Data    = calloc (1, 1024);
-void *menuTxtBaseData = calloc (1, 1024);
+void *menuTxt1Data    = calloc (1, 0x1024);
+void *menuTxt2Data    = calloc (1, 0x1024);
+void *menuTxt3Data    = calloc (1, 0x1024);
+void *menuTxt4Data    = calloc (1, 0x1024);
+void *menuTxt5Data    = calloc (1, 0x1024);
+void *menuTxtBaseData = calloc (1, 0x1024);
 i32 menuTxt1Id        = 0;
 i32 menuTxt2Id        = 0;
 i32 menuTxt3Id        = 0;
