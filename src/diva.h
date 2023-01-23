@@ -152,7 +152,5 @@ InputType getInputType ();
 bool isMovieOnly (u64 entry);
 u64 getPvDbEntry (i32 id);
 Vec4 getPlaceholderRect (float *placeholderData);
-// This will automatically call freeSublayerData if there is any data present in out already
 void initSubLayerData (List<void> *out);
-void freeSubLayerData (List<void> *out);
 Vec2 getClickedPos (void *inputState);

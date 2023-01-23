@@ -85,9 +85,9 @@ HOOK (bool, __thiscall, CsGalleryTaskCtrl, 0x1401AD590, u64 This) {
 		if (previousButton != 5) playGalleryTxt (previousButton, AETACTION_OUT);
 		previousButton = selectedButton;
 	} else if (state == 6) {
+		*(i32 *)(This + 0x68)   = 14;
 		*(i32 *)(This + 0x6C)   = 1;
 		*(i32 *)(This + 0x4598) = 5;
-		*(i32 *)(This + 0x68)   = 14;
 		previousButton          = 5;
 		playGalleryTxt (selectedButton, AETACTION_OUT);
 	} else if (state == 4) {

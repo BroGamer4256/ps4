@@ -78,18 +78,21 @@ initMenu () {
 	GetSubLayers (&sublayerData, menuAetId);
 
 	float *yesButtonPlaceholderData = GetSubLayer (&sublayerData, "p_submenu_03_c");
-	if (yesButtonPlaceholderData) yesButtonLoc = createVec3 (yesButtonPlaceholderData[16], yesButtonPlaceholderData[17], yesButtonPlaceholderData[18]);
+	if (yesButtonPlaceholderData) {
+		yesButtonLoc  = createVec3 (yesButtonPlaceholderData[16], yesButtonPlaceholderData[17], yesButtonPlaceholderData[18]);
+		yesButtonRect = getPlaceholderRect (yesButtonPlaceholderData);
+	}
 	float *noButtonPlaceholderData = GetSubLayer (&sublayerData, "p_submenu_04_c");
-	if (noButtonPlaceholderData) noButtonLoc = createVec3 (noButtonPlaceholderData[16], noButtonPlaceholderData[17], noButtonPlaceholderData[18]);
+	if (noButtonPlaceholderData) {
+		noButtonLoc  = createVec3 (noButtonPlaceholderData[16], noButtonPlaceholderData[17], noButtonPlaceholderData[18]);
+		noButtonRect = getPlaceholderRect (noButtonPlaceholderData);
+	}
 
 	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_IN);
 	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_LOOP);
 
 	ApplyLocation (yesButtonAetData, &yesButtonLoc);
 	ApplyLocation (noButtonAetData, &noButtonLoc);
-
-	yesButtonRect = getPlaceholderRect (yesButtonPlaceholderData);
-	noButtonRect  = getPlaceholderRect (noButtonPlaceholderData);
 
 	yesButtonAetId = PlayAet (yesButtonAetData, 0);
 	noButtonAetId  = PlayAet (noButtonAetData, 0);
