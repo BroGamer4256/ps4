@@ -101,7 +101,7 @@ getStyle (i32 currentStyle, bool isMovie) {
 // Allow swapping of visual style on song select
 HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
 	// Disable on playlists
-	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(This + 0x36A5D)) return originalPVSelCtrl (This);
+	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(0x14CC10480)) return originalPVSelCtrl (This);
 
 	loaded           = true;
 	bool isMovie     = isMovieOnly (getPvDbEntry (*(i32 *)(This + 0x36A30)));
