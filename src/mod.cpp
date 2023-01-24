@@ -101,6 +101,7 @@ HOOK (bool, __thiscall, CsGalleryTaskCtrl, 0x1401AD590, u64 This) {
 // Fixes the header/footer being present on customize
 HOOK (bool, __thiscall, CustomizeSelTaskInit, 0x140687A50, u64 This) {
 	CmnMenuTaskDest (0x14114C370);
+	shaderSel::hide ();
 	return originalCustomizeSelTaskInit (This);
 }
 
@@ -148,6 +149,9 @@ init () {
 
 	// Fix song select ordering
 	WRITE_MEMORY (0x140BE9520, u64, 0x140C85CA0, 0x140C85CD8);
+
+	// Play load screen in
+	WRITE_MEMORY (0x140654245, u8, 0x02);
 
 	toml_table_t *config = openConfig ("config.toml");
 	theme                = readConfigInt (config, "theme", 0);

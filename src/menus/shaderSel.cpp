@@ -1,5 +1,6 @@
 #include "diva.h"
 #include "helpers.h"
+#include "menus.h"
 
 namespace shaderSel {
 typedef enum Style : i32 {
@@ -8,6 +9,7 @@ typedef enum Style : i32 {
 	STYLE_NONE = 2,
 } Style;
 
+bool loaded           = false;
 bool hasClicked       = false;
 i32 pvId              = 0;
 void *selectorData    = calloc (1, 0x1024);
@@ -99,8 +101,9 @@ getStyle (i32 currentStyle, bool isMovie) {
 // Allow swapping of visual style on song select
 HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
 	// Disable on playlists
-	if (*(i32 *)(This + 0x36A08) != 0) return originalPVSelCtrl (This);
+	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(This + 0x36A5D)) return originalPVSelCtrl (This);
 
+	loaded           = true;
 	bool isMovie     = isMovieOnly (getPvDbEntry (*(i32 *)(This + 0x36A30)));
 	InputType input  = getInputType ();
 	void *inputState = DivaGetInputState (0);
@@ -149,13 +152,10 @@ HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
 }
 
 HOOK (bool, __thiscall, PvSelDestroy, 0x140204D90, u64 This) {
-	if (*(i32 *)(This + 0x36A08) != 0) return originalPvSelDestroy (This);
+	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(This + 0x36A5D)) return originalPvSelDestroy (This);
 
-	Vec3 offscreen = createVec3 (-1920, -1080, 0);
-	ApplyLocation (selectorImgData, &offscreen);
-	ApplyLocation (keyHelpData, &offscreen);
-	PlayAet (selectorImgData, selectorImgId);
-	PlayAet (keyHelpData, keyHelpId);
+	hide ();
+	loaded = false;
 
 	return originalPvSelDestroy (This);
 }
@@ -164,5 +164,15 @@ void
 init () {
 	INSTALL_HOOK (PVSelCtrl);
 	INSTALL_HOOK (PvSelDestroy);
+}
+
+void
+hide () {
+	if (!loaded) return;
+	Vec3 offscreen = createVec3 (-1920, -1080, 0);
+	ApplyLocation (selectorImgData, &offscreen);
+	ApplyLocation (keyHelpData, &offscreen);
+	PlayAet (selectorImgData, selectorImgId);
+	PlayAet (keyHelpData, keyHelpId);
 }
 } // namespace shaderSel
