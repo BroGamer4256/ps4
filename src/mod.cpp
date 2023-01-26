@@ -153,6 +153,15 @@ init () {
 	// Play load screen in
 	WRITE_MEMORY (0x140654245, u8, 0x02);
 
+	// Reduce number of loading screens to 3
+	WRITE_MEMORY (0x140653FF4, u8, 0x02);
+
+	// Properly load rights_bg02
+	WRITE_MEMORY (0x15E65CFED, u8, 0x04);
+
+	// Use AETACTION_IN_LOOP for cmn_win_help_y_inout
+	WRITE_MEMORY (0x14066425D, u8, 0x02);
+
 	toml_table_t *config = openConfig ("config.toml");
 	theme                = readConfigInt (config, "theme", 0);
 
