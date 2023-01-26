@@ -112,7 +112,9 @@ handleClick (Vec2 clickedPos) {
 }
 
 // Custom exit menu
-HOOK (bool, __thiscall, CsMenuTaskCtrl, 0x1401B29D0, void *This) {
+HOOK (bool, __thiscall, CsMenuTaskCtrl, 0x1401B29D0, u64 This) {
+	if (*(i32 *)(This + 0x68) != 2) return originalCsMenuTaskCtrl (This);
+
 	void *inputState = DivaGetInputState (0);
 	if (wantsToExit) {
 		Vec2 clickedPos = getClickedPos (inputState);

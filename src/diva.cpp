@@ -14,6 +14,7 @@ FUNCTION_PTR (u64, __stdcall, GetPvLoadData, 0x14040B260);
 FUNCTION_PTR (i32, __stdcall, GetCurrentStyle, 0x1401D64E0);
 FUNCTION_PTR (InputType, __stdcall, NormalizeInputType, 0x1402ACA90, i32 inputType);
 FUNCTION_PTR (String *, __stdcall, StringInit, 0x14014BA50, String *to, const char *from, u64 len);
+FUNCTION_PTR (void, __stdcall, FreeSubLayers, 0x1401AC240, List<void> *sublayerData, List<void> *sublayerData2, void *first_element);
 FUNCTION_PTR (void, __stdcall, FreeString, 0x14014BCD0, String *str);
 FUNCTION_PTR (void, __stdcall, FreeBase, 0x1409880A8, void *data, u64 size);
 
@@ -107,9 +108,10 @@ getPlaceholderRect (float *placeholderData) {
 	return vec;
 }
 
-// This can create a memory leak if we dont load any sublayers in
 void
 initSubLayerData (List<void> *out) {
+	if (out->empty_element) FreeSubLayers (out, out, (void *)*(u64 *)((u64)out->empty_element + 8));
+
 	out->empty_element                       = calloc (1, 0xB0);
 	*(void **)out->empty_element             = out->empty_element;
 	*(void **)((u64)out->empty_element + 8)  = out->empty_element;

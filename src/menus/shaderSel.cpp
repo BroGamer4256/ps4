@@ -23,8 +23,8 @@ i32 keyHelpId         = 0;
 List<void> sublayerData;
 InputType lastInputType;
 Vec4 touchArea;
-Vec3 keyHelpLoc;
-Vec3 txtLoc;
+Vec3 keyHelpLoc = createVec3 (0, 0, 0);
+Vec3 txtLoc     = createVec3 (0, 0, 0);
 
 void
 updateStyleAets (Style newStyle) {
@@ -79,11 +79,11 @@ updateLocs () {
 	GetSubLayers (&sublayerData, selectorId);
 
 	float *buttonPlaceholderData = GetSubLayer (&sublayerData, "key_help_lv_tab_01");
-	keyHelpLoc                   = createVec3 (buttonPlaceholderData[16], buttonPlaceholderData[17], buttonPlaceholderData[18]);
-	float *textPlaceholderData   = GetSubLayer (&sublayerData, "visual_settings_txt");
-	txtLoc                       = createVec3 (textPlaceholderData[16], textPlaceholderData[17], textPlaceholderData[18]);
-	float *buttonTouchAreaData   = GetSubLayer (&sublayerData, "p_visual_settings_touch");
-	touchArea                    = getPlaceholderRect (buttonTouchAreaData);
+	if (buttonPlaceholderData) keyHelpLoc = createVec3 (buttonPlaceholderData[16], buttonPlaceholderData[17], buttonPlaceholderData[18]);
+	float *textPlaceholderData = GetSubLayer (&sublayerData, "visual_settings_txt");
+	if (textPlaceholderData) txtLoc = createVec3 (textPlaceholderData[16], textPlaceholderData[17], textPlaceholderData[18]);
+	float *buttonTouchAreaData = GetSubLayer (&sublayerData, "p_visual_settings_touch");
+	if (buttonTouchAreaData) touchArea = getPlaceholderRect (buttonTouchAreaData);
 
 	ApplyLocation (keyHelpData, &keyHelpLoc);
 	ApplyLocation (selectorImgData, &txtLoc);
