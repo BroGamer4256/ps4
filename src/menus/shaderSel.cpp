@@ -20,7 +20,7 @@ char *selectorImgName = (char *)calloc (64, sizeof (char));
 i32 selectorId        = 0;
 i32 selectorImgId     = 0;
 i32 keyHelpId         = 0;
-List<void> sublayerData;
+List<void> compositionData;
 InputType lastInputType;
 Vec4 touchArea;
 Vec3 keyHelpLoc = createVec3 (0, 0, 0);
@@ -59,14 +59,14 @@ initStyle (Style style, InputType input) {
 	LoadAet (selectorData, 0x4F8, "visual_settings", 0x12, AETACTION_IN_LOOP);
 	selectorId = PlayAet (selectorData, selectorId);
 
-	initSubLayerData (&sublayerData);
-	GetSubLayers (&sublayerData, selectorId);
+	initCompositionData (&compositionData);
+	GetComposition (&compositionData, selectorId);
 
-	float *buttonPlaceholderData = GetSubLayer (&sublayerData, "key_help_lv_tab_01");
+	float *buttonPlaceholderData = GetCompositionLayer (&compositionData, "key_help_lv_tab_01");
 	if (buttonPlaceholderData) keyHelpLoc = createVec3 (buttonPlaceholderData[16], buttonPlaceholderData[17], buttonPlaceholderData[18]);
-	float *textPlaceholderData = GetSubLayer (&sublayerData, "visual_settings_txt");
+	float *textPlaceholderData = GetCompositionLayer (&compositionData, "visual_settings_txt");
 	if (textPlaceholderData) txtLoc = createVec3 (textPlaceholderData[16], textPlaceholderData[17], textPlaceholderData[18]);
-	float *buttonTouchAreaData = GetSubLayer (&sublayerData, "p_visual_settings_touch");
+	float *buttonTouchAreaData = GetCompositionLayer (&compositionData, "p_visual_settings_touch");
 	if (buttonTouchAreaData) touchArea = getPlaceholderRect (buttonTouchAreaData);
 
 	updateStyleAets (style);
@@ -75,14 +75,14 @@ initStyle (Style style, InputType input) {
 
 void
 updateLocs () {
-	initSubLayerData (&sublayerData);
-	GetSubLayers (&sublayerData, selectorId);
+	initCompositionData (&compositionData);
+	GetComposition (&compositionData, selectorId);
 
-	float *buttonPlaceholderData = GetSubLayer (&sublayerData, "key_help_lv_tab_01");
+	float *buttonPlaceholderData = GetCompositionLayer (&compositionData, "key_help_lv_tab_01");
 	if (buttonPlaceholderData) keyHelpLoc = createVec3 (buttonPlaceholderData[16], buttonPlaceholderData[17], buttonPlaceholderData[18]);
-	float *textPlaceholderData = GetSubLayer (&sublayerData, "visual_settings_txt");
+	float *textPlaceholderData = GetCompositionLayer (&compositionData, "visual_settings_txt");
 	if (textPlaceholderData) txtLoc = createVec3 (textPlaceholderData[16], textPlaceholderData[17], textPlaceholderData[18]);
-	float *buttonTouchAreaData = GetSubLayer (&sublayerData, "p_visual_settings_touch");
+	float *buttonTouchAreaData = GetCompositionLayer (&compositionData, "p_visual_settings_touch");
 	if (buttonTouchAreaData) touchArea = getPlaceholderRect (buttonTouchAreaData);
 
 	ApplyLocation (keyHelpData, &keyHelpLoc);

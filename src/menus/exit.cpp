@@ -14,7 +14,7 @@ i32 menuAetId          = 0;
 i32 yesButtonAetId     = 0;
 i32 noButtonAetId      = 0;
 i32 hoveredButton      = 0;
-List<void> sublayerData;
+List<void> compositionData;
 Vec3 yesButtonLoc;
 Vec3 noButtonLoc;
 Vec4 yesButtonRect;
@@ -74,15 +74,15 @@ initMenu () {
 	LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_IN_LOOP);
 	menuAetId = PlayAet (menuAetData, 0);
 
-	initSubLayerData (&sublayerData);
-	GetSubLayers (&sublayerData, menuAetId);
+	initCompositionData (&compositionData);
+	GetComposition (&compositionData, menuAetId);
 
-	float *yesButtonPlaceholderData = GetSubLayer (&sublayerData, "p_submenu_03_c");
+	float *yesButtonPlaceholderData = GetCompositionLayer (&compositionData, "p_submenu_03_c");
 	if (yesButtonPlaceholderData) {
 		yesButtonLoc  = createVec3 (yesButtonPlaceholderData[16], yesButtonPlaceholderData[17], yesButtonPlaceholderData[18]);
 		yesButtonRect = getPlaceholderRect (yesButtonPlaceholderData);
 	}
-	float *noButtonPlaceholderData = GetSubLayer (&sublayerData, "p_submenu_04_c");
+	float *noButtonPlaceholderData = GetCompositionLayer (&compositionData, "p_submenu_04_c");
 	if (noButtonPlaceholderData) {
 		noButtonLoc  = createVec3 (noButtonPlaceholderData[16], noButtonPlaceholderData[17], noButtonPlaceholderData[18]);
 		noButtonRect = getPlaceholderRect (noButtonPlaceholderData);

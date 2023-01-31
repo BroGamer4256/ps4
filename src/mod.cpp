@@ -160,7 +160,7 @@ init () {
 	WRITE_MEMORY (0x15E65CFED, u8, 0x04);
 
 	// Use AETACTION_IN_LOOP for cmn_win_help_y_inout
-	WRITE_MEMORY (0x14066425D, u8, 0x02);
+	WRITE_MEMORY (0x14066425D, AetAction, AETACTION_IN_LOOP);
 
 	toml_table_t *config = openConfig ("config.toml");
 	theme                = readConfigInt (config, "theme", 0);

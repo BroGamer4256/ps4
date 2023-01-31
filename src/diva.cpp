@@ -6,8 +6,8 @@ FUNCTION_PTR (void *, __stdcall, DivaGetInputState, 0x1402AC960, i32 a1);
 FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB250, void *state, Button button);
 FUNCTION_PTR (void, __stdcall, LoadAet, 0x14028D550, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
 FUNCTION_PTR (i32, __stdcall, PlayAet, 0x1402CA1E0, void *data, i32 id);
-FUNCTION_PTR (void *, __stdcall, GetSubLayers, 0x1402CA630, List<void> *sublayerData, i32 id);
-FUNCTION_PTR (float *, __stdcall, GetSubLayer, 0x1402CA740, List<void> *sublayerData, const char *name);
+FUNCTION_PTR (void *, __stdcall, GetComposition, 0x1402CA630, List<void> *composition, i32 id);
+FUNCTION_PTR (float *, __stdcall, GetCompositionLayer, 0x1402CA740, List<void> *composition, const char *layerName);
 FUNCTION_PTR (void, __stdcall, ApplyLocation, 0x14065FA00, void *data, Vec3 *locationData);
 FUNCTION_PTR (void, __stdcall, PlaySoundEffect, 0x1405AA500, const char *name, float volume);
 FUNCTION_PTR (u64, __stdcall, GetPvLoadData, 0x14040B260);
@@ -109,7 +109,7 @@ getPlaceholderRect (float *placeholderData) {
 }
 
 void
-initSubLayerData (List<void> *out) {
+initCompositionData (List<void> *out) {
 	if (out->empty_element) FreeSubLayers (out, out, (void *)*(u64 *)((u64)out->empty_element + 8));
 
 	out->empty_element                       = calloc (1, 0xB0);
