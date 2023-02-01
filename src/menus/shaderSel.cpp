@@ -99,9 +99,9 @@ getStyle (i32 currentStyle, bool isMovie) {
 }
 
 // Allow swapping of visual style on song select
-HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
+HOOK (bool, __thiscall, PVSelLoop, 0x1402033C0, u64 This) {
 	// Disable on playlists
-	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(0x14CC10480)) return originalPVSelCtrl (This);
+	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(0x14CC10480)) return originalPVSelLoop (This);
 
 	loaded           = true;
 	bool isMovie     = isMovieOnly (getPvDbEntry (*(i32 *)(This + 0x36A30)));
@@ -148,11 +148,11 @@ HOOK (bool, __thiscall, PVSelCtrl, 0x1402033B0, u64 This) {
 	updateLocs ();
 	*(i32 *)(pvLoadData + 0x1D08) = style;
 
-	return originalPVSelCtrl (This);
+	return originalPVSelLoop (This);
 }
 
-HOOK (bool, __thiscall, PvSelDestroy, 0x140204D90, u64 This) {
-	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(This + 0x36A5D)) return originalPvSelDestroy (This);
+HOOK (bool, __thiscall, PvSelDestroy, 0x140204DA0, u64 This) {
+	if (*(i32 *)(This + 0x36A08) != 0) return originalPvSelDestroy (This);
 
 	hide ();
 	loaded = false;
@@ -162,7 +162,7 @@ HOOK (bool, __thiscall, PvSelDestroy, 0x140204D90, u64 This) {
 
 void
 init () {
-	INSTALL_HOOK (PVSelCtrl);
+	INSTALL_HOOK (PVSelLoop);
 	INSTALL_HOOK (PvSelDestroy);
 }
 

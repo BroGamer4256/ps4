@@ -129,12 +129,12 @@ typedef enum Button : i32 {
 
 extern List<ListElement<i32>> *pvs;
 
-FUNCTION_PTR_H (bool, __thiscall, CmnMenuTaskDest, u64 This);
+FUNCTION_PTR_H (bool, __thiscall, CmnMenuDestroy, u64 This);
 FUNCTION_PTR_H (void *, __stdcall, DivaGetInputState, i32 a1);
 FUNCTION_PTR_H (bool, __stdcall, IsButtonTapped, void *state, Button button);
 FUNCTION_PTR_H (void, __stdcall, LoadAet, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
 FUNCTION_PTR_H (i32, __stdcall, PlayAet, void *data, i32 id);
-FUNCTION_PTR_H (void *, __stdcall, GetComposition, List<void> *composition, i32 id);
+FUNCTION_PTR_H (void, __stdcall, GetComposition, List<void> *composition, i32 id);
 FUNCTION_PTR_H (float *, __stdcall, GetCompositionLayer, List<void> *composition, const char *layerName);
 FUNCTION_PTR_H (void, __stdcall, ApplyLocation, void *data, Vec3 *locationData);
 FUNCTION_PTR_H (void, __stdcall, PlaySoundEffect, const char *name, float volume);
@@ -142,7 +142,6 @@ FUNCTION_PTR_H (u64, __stdcall, GetPvLoadData);
 FUNCTION_PTR_H (i32, __stdcall, GetCurrentStyle);
 FUNCTION_PTR_H (InputType, __stdcall, NormalizeInputType, i32 inputType);
 FUNCTION_PTR_H (String *, __stdcall, StringInit, String *to, const char *from, u64 len);
-FUNCTION_PTR_H (void, __stdcall, FreeString, String *str);
 
 void appendThemeInPlace (char *name);
 char *appendTheme (const char *name);

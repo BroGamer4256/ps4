@@ -112,8 +112,8 @@ handleClick (Vec2 clickedPos) {
 }
 
 // Custom exit menu
-HOOK (bool, __thiscall, CsMenuTaskCtrl, 0x1401B29D0, u64 This) {
-	if (*(i32 *)(This + 0x68) != 2) return originalCsMenuTaskCtrl (This);
+HOOK (bool, __thiscall, CsMenuLoop, 0x1401B29D0, u64 This) {
+	if (*(i32 *)(This + 0x68) != 2) return originalCsMenuLoop (This);
 
 	void *inputState = DivaGetInputState (0);
 	if (wantsToExit) {
@@ -135,11 +135,11 @@ HOOK (bool, __thiscall, CsMenuTaskCtrl, 0x1401B29D0, u64 This) {
 
 	if (IsButtonTapped (inputState, BUTTON_BACK)) initMenu ();
 
-	return originalCsMenuTaskCtrl (This);
+	return originalCsMenuLoop (This);
 }
 
 void
 init () {
-	INSTALL_HOOK (CsMenuTaskCtrl);
+	INSTALL_HOOK (CsMenuLoop);
 }
 } // namespace exitMenu

@@ -14,14 +14,14 @@ SIG_SCAN (sigMenuTxtBase, "menu_txt_base");
 i32 theme;
 
 bool wantsToSettings = false;
-HOOK (void, __stdcall, ChangeSubGameState, 0x152C49DD0, State state, SubState subState) {
+HOOK (void, __stdcall, ChangeSubGameState, 0x1527E49E0, State state, SubState subState) {
 	if (state == STATE_MENU_SWITCH) {
 		state = STATE_CS_MENU;
 	} else if (subState == SUBSTATE_CS_OPTION_MENU) {
 		state           = STATE_MENU_SWITCH;
 		subState        = SUBSTATE_OPTION_MENU_SWITCH;
 		wantsToSettings = true;
-		CmnMenuTaskDest (0x14114C370);
+		CmnMenuDestroy (0x14114C370);
 	} else if (subState == SUBSTATE_MENU_SWITCH) {
 		if (wantsToSettings) {
 			subState        = SUBSTATE_OPTION_MENU_SWITCH;
@@ -77,7 +77,7 @@ playGalleryTxt (i32 button, AetAction action) {
 
 // Fixes gallery not properly exiting
 i32 previousButton = 5;
-HOOK (bool, __thiscall, CsGalleryTaskCtrl, 0x1401AD590, u64 This) {
+HOOK (bool, __thiscall, CsGalleryLoop, 0x1401AD590, u64 This) {
 	i32 state          = *(i32 *)(This + 0x68);
 	i32 selectedButton = *(i32 *)(This + 0x70);
 	if (state == 3 && previousButton != selectedButton) {
@@ -95,17 +95,17 @@ HOOK (bool, __thiscall, CsGalleryTaskCtrl, 0x1401AD590, u64 This) {
 		playGalleryTxt (selectedButton, AETACTION_OUT);
 	}
 
-	return originalCsGalleryTaskCtrl (This);
+	return originalCsGalleryLoop (This);
 }
 
 // Fixes the header/footer being present on customize
-HOOK (bool, __thiscall, CustomizeSelTaskInit, 0x140687A50, u64 This) {
-	CmnMenuTaskDest (0x14114C370);
+HOOK (bool, __thiscall, CustomizeSelInit, 0x140687D10, u64 This) {
+	CmnMenuDestroy (0x14114C370);
 	shaderSel::hide ();
-	return originalCustomizeSelTaskInit (This);
+	return originalCustomizeSelInit (This);
 }
 
-HOOK (i32 *, __stdcall, GetFtTheme, 0x1401D6530) { return &theme; }
+HOOK (i32 *, __stdcall, GetFtTheme, 0x1401D6540) { return &theme; }
 
 // Fixes gallery photos
 HOOK (void, __stdcall, LoadAndPlayAet, 0x1401AF0E0, u64 data, AetAction action) {
@@ -114,9 +114,9 @@ HOOK (void, __stdcall, LoadAndPlayAet, 0x1401AF0E0, u64 data, AetAction action) 
 }
 
 // Fixes switching to customize from playlists
-HOOK (bool, __stdcall, CustomizeSelIsLoaded, 0x140687A10) {
+HOOK (bool, __stdcall, CustomizeSelIsLoaded, 0x140687CD0) {
 	if (*(i32 *)0x14CC6F118 == 1) {
-		if (implOfCustomizeSelTaskInit (0x14CC6F100)) {
+		if (implOfCustomizeSelInit (0x14CC6F100)) {
 			*(i32 *)0x14CC6F118 = 2;
 			*(i32 *)0x14CC6F124 = 2;
 		}
@@ -132,35 +132,35 @@ extern "C" {
 void
 init () {
 	INSTALL_HOOK (ChangeSubGameState);
-	INSTALL_HOOK (CsGalleryTaskCtrl);
-	INSTALL_HOOK (CustomizeSelTaskInit);
+	INSTALL_HOOK (CsGalleryLoop);
+	INSTALL_HOOK (CustomizeSelInit);
 	INSTALL_HOOK (GetFtTheme);
 	INSTALL_HOOK (LoadAndPlayAet);
 	INSTALL_HOOK (CustomizeSelIsLoaded);
 
-	// 1.00 Samyuu, 1.02 BroGamer
+	// 1.00 Samyuu, 1.03 BroGamer
 	WRITE_MEMORY (0x1414AB9E3, u8, 0x01);
 
 	// Stop returning to ADV from main menu
 	WRITE_NOP (0x1401B2ADA, 36);
 
 	// Fix SFX select layering
-	WRITE_MEMORY (0x140698D40, u8, 0x0A);
+	WRITE_MEMORY (0x140699000, u8, 0x0A);
 
 	// Fix song select ordering
-	WRITE_MEMORY (0x140BE9520, u64, 0x140C85CA0, 0x140C85CD8);
+	WRITE_MEMORY (0x140BE9520, u64, 0x140C85CB0, 0x140C85CE8);
 
 	// Play load screen in
-	WRITE_MEMORY (0x140654245, u8, 0x02);
+	WRITE_MEMORY (0x140654505, AetAction, AETACTION_IN_LOOP);
 
 	// Reduce number of loading screens to 3
-	WRITE_MEMORY (0x140653FF4, u8, 0x02);
+	WRITE_MEMORY (0x1406542B4, u8, 0x02);
 
 	// Properly load rights_bg02
-	WRITE_MEMORY (0x15E65CFED, u8, 0x04);
+	WRITE_MEMORY (0x15E99F118, u8, 0x04);
 
 	// Use AETACTION_IN_LOOP for cmn_win_help_y_inout
-	WRITE_MEMORY (0x14066425D, AetAction, AETACTION_IN_LOOP);
+	WRITE_MEMORY (0x14066451D, AetAction, AETACTION_IN_LOOP);
 
 	toml_table_t *config = openConfig ("config.toml");
 	theme                = readConfigInt (config, "theme", 0);
