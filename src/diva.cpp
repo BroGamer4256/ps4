@@ -4,7 +4,7 @@
 FUNCTION_PTR (bool, __thiscall, CmnMenuDestroy, 0x1401AAE50, u64 This);
 FUNCTION_PTR (void *, __stdcall, DivaGetInputState, 0x1402AC970, i32 a1);
 FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB260, void *state, Button button);
-FUNCTION_PTR (void, __stdcall, LoadAet, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
+FUNCTION_PTR (void *, __stdcall, LoadAet, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
 FUNCTION_PTR (i32, __stdcall, PlayAet, 0x1402CA220, void *data, i32 id);
 FUNCTION_PTR (void, __stdcall, GetComposition, 0x1402CA670, List<void> *composition, i32 id);
 FUNCTION_PTR (float *, __stdcall, GetCompositionLayer, 0x1402CA780, List<void> *composition, const char *layerName);
@@ -15,6 +15,7 @@ FUNCTION_PTR (i32, __stdcall, GetCurrentStyle, 0x1401D64F0);
 FUNCTION_PTR (InputType, __stdcall, NormalizeInputType, 0x1402ACAA0, i32 inputType);
 FUNCTION_PTR (String *, __stdcall, StringInit, 0x14014BA50, String *to, const char *from, u64 len);
 FUNCTION_PTR (void, __stdcall, FreeSubLayers, 0x1401AC240, List<void> *sublayerData, List<void> *sublayerData2, void *first_element);
+FUNCTION_PTR (void, __stdcall, StopAet, 0x1402ca330, i32 *id);
 
 extern i32 theme;
 void
