@@ -20,7 +20,7 @@ char *selectorImgName = (char *)calloc (64, sizeof (char));
 i32 selectorId        = 0;
 i32 selectorImgId     = 0;
 i32 keyHelpId         = 0;
-List<void> compositionData;
+Map<String, void *> compositionData;
 InputType lastInputType;
 Vec4 touchArea;
 Vec3 keyHelpLoc = createVec3 (0, 0, 0);
@@ -38,9 +38,9 @@ updateStyleAets (Style newStyle) {
 	}
 	strncat (selectorImgName, &c, 1);
 	strcat (selectorImgName, ".pic");
-	LoadAet (selectorImgData, 0x4F8, selectorImgName, 0x12, AETACTION_NONE);
+	LoadAetLayer (selectorImgData, 0x4F8, selectorImgName, 0x12, AETACTION_NONE);
 	ApplyLocation (selectorImgData, &txtLoc);
-	selectorImgId = PlayAet (selectorImgData, selectorImgId);
+	selectorImgId = PlayAetLayer (selectorImgData, selectorImgId);
 }
 
 void
@@ -49,15 +49,15 @@ updateButtonPrompt (InputType input) {
 	strcpy (buttonName, "visual_key_0");
 	const char c = (u8)input | 48;
 	strncat (buttonName, &c, 1);
-	LoadAet (keyHelpData, 0x4F8, buttonName, 0x13, AETACTION_NONE);
+	LoadAetLayer (keyHelpData, 0x4F8, buttonName, 0x13, AETACTION_NONE);
 	ApplyLocation (keyHelpData, &keyHelpLoc);
-	keyHelpId = PlayAet (keyHelpData, keyHelpId);
+	keyHelpId = PlayAetLayer (keyHelpData, keyHelpId);
 }
 
 void
 initStyle (Style style, InputType input) {
-	LoadAet (selectorData, 0x4F8, "visual_settings", 0x12, AETACTION_IN_LOOP);
-	selectorId = PlayAet (selectorData, selectorId);
+	LoadAetLayer (selectorData, 0x4F8, "visual_settings", 0x12, AETACTION_IN_LOOP);
+	selectorId = PlayAetLayer (selectorData, selectorId);
 
 	initCompositionData (&compositionData);
 	GetComposition (&compositionData, selectorId);
@@ -88,8 +88,8 @@ updateLocs () {
 	ApplyLocation (keyHelpData, &keyHelpLoc);
 	ApplyLocation (selectorImgData, &txtLoc);
 
-	keyHelpId     = PlayAet (keyHelpData, keyHelpId);
-	selectorImgId = PlayAet (selectorImgData, selectorImgId);
+	keyHelpId     = PlayAetLayer (keyHelpData, keyHelpId);
+	selectorImgId = PlayAetLayer (selectorImgData, selectorImgId);
 }
 
 Style
@@ -172,7 +172,7 @@ hide () {
 	Vec3 offscreen = createVec3 (-1920, -1080, 0);
 	ApplyLocation (selectorImgData, &offscreen);
 	ApplyLocation (keyHelpData, &offscreen);
-	PlayAet (selectorImgData, selectorImgId);
-	PlayAet (keyHelpData, keyHelpId);
+	PlayAetLayer (selectorImgData, selectorImgId);
+	PlayAetLayer (keyHelpData, keyHelpId);
 }
 } // namespace shaderSel

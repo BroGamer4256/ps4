@@ -19,8 +19,53 @@ struct ListElement {
 
 template <typename T>
 struct List {
-	T *empty_element;
+	ListElement<T> *empty_element;
 	u64 length;
+};
+
+template <typename K, typename V>
+struct MapElement {
+	MapElement<K, V> *left;
+	MapElement<K, V> *parent;
+	MapElement<K, V> *right;
+	i8 colour;
+	bool isNull;
+	u8 padding[6];
+	K key;
+	V value;
+
+	MapElement<K, V> *next () {
+		auto ptr = this;
+		if (ptr->right->isNull) {
+			MapElement<K, V> *node;
+			while (!(node = ptr->parent)->isNull && ptr == node->right)
+				ptr = node;
+			return ptr;
+		} else {
+			ptr = ptr->right;
+			while (!ptr->left->isNull)
+				ptr = ptr->left;
+			return ptr;
+		}
+	}
+};
+
+template <typename K, typename V>
+struct Map {
+	MapElement<K, V> *root;
+	u64 length;
+
+	MapElement<K, V> *begin () { return this->length ? this->root->left : this->root; }
+	MapElement<K, V> *end () { return this->root; }
+	MapElement<K, V> *find (K key) {
+		auto ptr = this->root->parent;
+		while (!ptr->isNull) {
+			if (key == ptr->key) return ptr;
+			if (key > ptr->key) ptr = ptr->right;
+			if (key < ptr->key) ptr = ptr->left;
+		}
+		return this->end ();
+	}
 };
 
 typedef enum State : i32 {
@@ -127,15 +172,38 @@ typedef enum Button : i32 {
 	BUTTON_R3       = 16,
 } Button;
 
-extern List<ListElement<i32>> *pvs;
+typedef struct PvSpriteIds {
+	i32 padding;
+	void *data;
+	i32 setId;
+	i32 bgId;
+	i32 bgIdDuplicate;
+	i32 bgIdEx;
+	i32 bgIdExDuplicate;
+	i32 jkId;
+	i32 jkIdDuplicate;
+	i32 jkIdEx;
+	i32 jkIdExDuplicate;
+	i32 logoId;
+	i32 logoIdDuplicate;
+	i32 logoIdEx;
+	i32 logoIdExDuplicate;
+	i32 thumbnailId;
+	i32 thumbnailIdDuplicate;
+	i32 thumbnailIdEx;
+	i32 thumbnailIdExDuplicate;
+} PvSpriteIds;
+
+extern List<i32> *pvs;
+extern Map<i32, PvSpriteIds> *pvSprites;
 
 FUNCTION_PTR_H (bool, __thiscall, CmnMenuDestroy, u64 This);
 FUNCTION_PTR_H (void *, __stdcall, DivaGetInputState, i32 a1);
 FUNCTION_PTR_H (bool, __stdcall, IsButtonTapped, void *state, Button button);
-FUNCTION_PTR_H (void *, __stdcall, LoadAet, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
-FUNCTION_PTR_H (i32, __stdcall, PlayAet, void *data, i32 id);
-FUNCTION_PTR_H (void, __stdcall, GetComposition, List<void> *composition, i32 id);
-FUNCTION_PTR_H (float *, __stdcall, GetCompositionLayer, List<void> *composition, const char *layerName);
+FUNCTION_PTR_H (void *, __stdcall, LoadAetLayer, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
+FUNCTION_PTR_H (i32, __stdcall, PlayAetLayer, void *data, i32 id);
+FUNCTION_PTR_H (void, __stdcall, GetComposition, Map<String, void *> *composition, i32 id);
+FUNCTION_PTR_H (float *, __stdcall, GetCompositionLayer, Map<String, void *> *composition, const char *layerName);
 FUNCTION_PTR_H (void, __stdcall, ApplyLocation, void *data, Vec3 *locationData);
 FUNCTION_PTR_H (void, __stdcall, PlaySoundEffect, const char *name, float volume);
 FUNCTION_PTR_H (u64, __stdcall, GetPvLoadData);
@@ -152,5 +220,5 @@ InputType getInputType ();
 bool isMovieOnly (u64 entry);
 u64 getPvDbEntry (i32 id);
 Vec4 getPlaceholderRect (float *placeholderData);
-void initCompositionData (List<void> *out);
+void initCompositionData (Map<String, void *> *out);
 Vec2 getClickedPos (void *inputState);

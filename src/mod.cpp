@@ -52,28 +52,28 @@ void
 playGalleryTxt (i32 button, AetAction action) {
 	switch (button) {
 	case 0:
-		LoadAet (menuTxt1Data, 0x4FE, "menu_txt_01", 0x12, action);
-		menuTxt1Id = PlayAet (menuTxt1Data, menuTxt1Id);
+		LoadAetLayer (menuTxt1Data, 0x4FE, "menu_txt_01", 0x12, action);
+		menuTxt1Id = PlayAetLayer (menuTxt1Data, menuTxt1Id);
 		break;
 	case 1:
-		LoadAet (menuTxt2Data, 0x4FE, "menu_txt_02", 0x12, action);
-		menuTxt2Id = PlayAet (menuTxt2Data, menuTxt2Id);
+		LoadAetLayer (menuTxt2Data, 0x4FE, "menu_txt_02", 0x12, action);
+		menuTxt2Id = PlayAetLayer (menuTxt2Data, menuTxt2Id);
 		break;
 	case 2:
-		LoadAet (menuTxt3Data, 0x4FE, "menu_txt_03", 0x12, action);
-		menuTxt3Id = PlayAet (menuTxt3Data, menuTxt3Id);
+		LoadAetLayer (menuTxt3Data, 0x4FE, "menu_txt_03", 0x12, action);
+		menuTxt3Id = PlayAetLayer (menuTxt3Data, menuTxt3Id);
 		break;
 	case 3:
-		LoadAet (menuTxt4Data, 0x4FE, "menu_txt_04", 0x12, action);
-		menuTxt4Id = PlayAet (menuTxt4Data, menuTxt4Id);
+		LoadAetLayer (menuTxt4Data, 0x4FE, "menu_txt_04", 0x12, action);
+		menuTxt4Id = PlayAetLayer (menuTxt4Data, menuTxt4Id);
 		break;
 	case 4:
-		LoadAet (menuTxt5Data, 0x4FE, "menu_txt_05", 0x12, action);
-		menuTxt5Id = PlayAet (menuTxt5Data, menuTxt5Id);
+		LoadAetLayer (menuTxt5Data, 0x4FE, "menu_txt_05", 0x12, action);
+		menuTxt5Id = PlayAetLayer (menuTxt5Data, menuTxt5Id);
 		break;
 	}
-	LoadAet (menuTxtBaseData, 0x4FE, "menu_txt_base", 0x12, action);
-	menuTxtBaseId = PlayAet (menuTxtBaseData, menuTxtBaseId);
+	LoadAetLayer (menuTxtBaseData, 0x4FE, "menu_txt_base", 0x12, action);
+	menuTxtBaseId = PlayAetLayer (menuTxtBaseData, menuTxtBaseId);
 }
 
 // Fixes gallery not properly exiting
@@ -110,8 +110,8 @@ HOOK (i32 *, __stdcall, GetFtTheme, 0x1401D6540) { return &theme; }
 
 // Fixes gallery photos
 HOOK (void, __stdcall, LoadAndPlayAet, 0x1401AF0E0, u64 data, AetAction action) {
-	LoadAet ((void *)data, 0x4FE, *(char **)(data + 0x08), *(i32 *)(data + 0x84), action);
-	PlayAet ((void *)data, *(i32 *)(data + 0x15C));
+	LoadAetLayer ((void *)data, 0x4FE, *(char **)(data + 0x08), *(i32 *)(data + 0x84), action);
+	PlayAetLayer ((void *)data, *(i32 *)(data + 0x15C));
 }
 
 // Fixes switching to customize from playlists
@@ -129,8 +129,8 @@ HOOK (bool, __stdcall, CustomizeSelIsLoaded, 0x140687CD0) {
 void *optionMenuTopData = calloc (1, 0x1024);
 i32 optionMenuTopId     = 0;
 HOOK (bool, __stdcall, OptionMenuSwitchInit, 0x1406C3CB0, void *a1) {
-	LoadAet (optionMenuTopData, 0x525, "option_top_menu loop", 7, AETACTION_NONE);
-	optionMenuTopId = PlayAet (optionMenuTopData, optionMenuTopId);
+	LoadAetLayer (optionMenuTopData, 0x525, "option_top_menu loop", 7, AETACTION_NONE);
+	optionMenuTopId = PlayAetLayer (optionMenuTopData, optionMenuTopId);
 	return originalOptionMenuSwitchInit (a1);
 }
 
@@ -152,14 +152,14 @@ bool playedOut            = 0;
 HOOK (void, __stdcall, LoadPauseBackground, 0x1406570E0, u64 a1, bool playOut) {
 	if (playOut && !playedOut) {
 		playedOut = true;
-		LoadAet (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AETACTION_OUT);
+		LoadAetLayer (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AETACTION_OUT);
 		*(u64 *)((u64)pauseMenuBackground + 0x148) = a1 + 0xB0;
-		pauseMenuBackgroundId                      = PlayAet (pauseMenuBackground, pauseMenuBackgroundId);
+		pauseMenuBackgroundId                      = PlayAetLayer (pauseMenuBackground, pauseMenuBackgroundId);
 	} else {
 		playedOut = false;
-		LoadAet (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AETACTION_IN_LOOP);
+		LoadAetLayer (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AETACTION_IN_LOOP);
 		*(u64 *)((u64)pauseMenuBackground + 0x148) = a1 + 0xB0;
-		pauseMenuBackgroundId                      = PlayAet (pauseMenuBackground, pauseMenuBackgroundId);
+		pauseMenuBackgroundId                      = PlayAetLayer (pauseMenuBackground, pauseMenuBackgroundId);
 	}
 	originalLoadPauseBackground (a1, playOut);
 }
@@ -167,9 +167,9 @@ HOOK (void, __stdcall, LoadPauseBackground, 0x1406570E0, u64 a1, bool playOut) {
 HOOK (void, __stdcall, PauseExit, 0x14065B810, u64 a1) {
 	if (!playedOut) {
 		playedOut = true;
-		LoadAet (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AETACTION_OUT);
+		LoadAetLayer (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AETACTION_OUT);
 		*(u64 *)((u64)pauseMenuBackground + 0x148) = a1 + 0xB0;
-		pauseMenuBackgroundId                      = PlayAet (pauseMenuBackground, pauseMenuBackgroundId);
+		pauseMenuBackgroundId                      = PlayAetLayer (pauseMenuBackground, pauseMenuBackgroundId);
 	}
 	originalPauseExit (a1);
 }

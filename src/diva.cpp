@@ -4,18 +4,21 @@
 FUNCTION_PTR (bool, __thiscall, CmnMenuDestroy, 0x1401AAE50, u64 This);
 FUNCTION_PTR (void *, __stdcall, DivaGetInputState, 0x1402AC970, i32 a1);
 FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB260, void *state, Button button);
-FUNCTION_PTR (void *, __stdcall, LoadAet, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
-FUNCTION_PTR (i32, __stdcall, PlayAet, 0x1402CA220, void *data, i32 id);
-FUNCTION_PTR (void, __stdcall, GetComposition, 0x1402CA670, List<void> *composition, i32 id);
-FUNCTION_PTR (float *, __stdcall, GetCompositionLayer, 0x1402CA780, List<void> *composition, const char *layerName);
+FUNCTION_PTR (void *, __stdcall, LoadAetLayer, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
+FUNCTION_PTR (i32, __stdcall, PlayAetLayer, 0x1402CA220, void *data, i32 id);
+FUNCTION_PTR (void, __stdcall, GetComposition, 0x1402CA670, Map<String, void *> *composition, i32 id);
+FUNCTION_PTR (float *, __stdcall, GetCompositionLayer, 0x1402CA780, Map<String, void *> *composition, const char *layerName);
 FUNCTION_PTR (void, __stdcall, ApplyLocation, 0x14065FCC0, void *data, Vec3 *locationData);
 FUNCTION_PTR (void, __stdcall, PlaySoundEffect, 0x1405AA540, const char *name, float volume);
 FUNCTION_PTR (u64, __stdcall, GetPvLoadData, 0x14040B2A0);
 FUNCTION_PTR (i32, __stdcall, GetCurrentStyle, 0x1401D64F0);
 FUNCTION_PTR (InputType, __stdcall, NormalizeInputType, 0x1402ACAA0, i32 inputType);
 FUNCTION_PTR (String *, __stdcall, StringInit, 0x14014BA50, String *to, const char *from, u64 len);
-FUNCTION_PTR (void, __stdcall, FreeSubLayers, 0x1401AC240, List<void> *sublayerData, List<void> *sublayerData2, void *first_element);
+FUNCTION_PTR (void, __stdcall, FreeSubLayers, 0x1401AC240, Map<String, void *> *sublayerData, Map<String, void *> *sublayerData2, void *first_element);
 FUNCTION_PTR (void, __stdcall, StopAet, 0x1402ca330, i32 *id);
+
+auto pvs       = (List<i32> *)0x141753808;
+auto pvSprites = (Map<i32, PvSpriteIds> *)0x14CBBACC0;
 
 extern i32 theme;
 void
@@ -71,8 +74,6 @@ getInputType () {
 	return NormalizeInputType (*(i32 *)((u64)DivaGetInputState (0) + 0x2E8));
 }
 
-List<ListElement<i32>> *pvs = (List<ListElement<i32>> *)0x141753808;
-
 // Will return false for any songs without an ex chart
 bool
 isMovieOnly (u64 entry) {
@@ -108,15 +109,16 @@ getPlaceholderRect (float *placeholderData) {
 }
 
 void
-initCompositionData (List<void> *out) {
-	if (out->empty_element) FreeSubLayers (out, out, (void *)*(u64 *)((u64)out->empty_element + 8));
+initCompositionData (Map<String, void *> *out) {
+	if (out->root) FreeSubLayers (out, out, (void *)*(u64 *)((u64)out->root + 8));
 
-	out->empty_element                       = calloc (1, 0xB0);
-	*(void **)out->empty_element             = out->empty_element;
-	*(void **)((u64)out->empty_element + 8)  = out->empty_element;
-	*(void **)((u64)out->empty_element + 16) = out->empty_element;
-	*(u16 *)((u64)out->empty_element + 24)   = 0x101;
-	out->length                              = 0;
+	out->root         = (MapElement<String, void *> *)calloc (1, 0xB0);
+	out->root->left   = out->root;
+	out->root->parent = out->root;
+	out->root->right  = out->root;
+	out->root->colour = 1;
+	out->root->isNull = true;
+	out->length       = 0;
 }
 
 Vec2

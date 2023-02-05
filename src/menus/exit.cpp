@@ -14,7 +14,7 @@ i32 noButtonAetId      = 0;
 i32 hoveredButton      = 0;
 char *yesButtonName;
 char *noButtonName;
-List<void> compositionData;
+Map<String, void *> compositionData;
 Vec3 yesButtonLoc;
 Vec3 noButtonLoc;
 Vec4 yesButtonRect;
@@ -23,43 +23,43 @@ Vec4 noButtonRect;
 void
 moveDown () {
 	hoveredButton = 0;
-	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_IN);
-	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_LOOP);
+	LoadAetLayer (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_IN);
+	LoadAetLayer (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_LOOP);
 
 	ApplyLocation (yesButtonAetData, &yesButtonLoc);
 	ApplyLocation (noButtonAetData, &noButtonLoc);
 
-	PlayAet (yesButtonAetData, yesButtonAetId);
-	PlayAet (noButtonAetData, noButtonAetId);
+	PlayAetLayer (yesButtonAetData, yesButtonAetId);
+	PlayAetLayer (noButtonAetData, noButtonAetId);
 	PlaySoundEffect ("se_ft_sys_select_01", 1.0);
 }
 
 void
 moveUp () {
 	hoveredButton = 1;
-	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_LOOP);
-	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_IN);
+	LoadAetLayer (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_LOOP);
+	LoadAetLayer (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_IN);
 
 	ApplyLocation (yesButtonAetData, &yesButtonLoc);
 	ApplyLocation (noButtonAetData, &noButtonLoc);
 
-	PlayAet (yesButtonAetData, yesButtonAetId);
-	PlayAet (noButtonAetData, noButtonAetId);
+	PlayAetLayer (yesButtonAetData, yesButtonAetId);
+	PlayAetLayer (noButtonAetData, noButtonAetId);
 
 	PlaySoundEffect ("se_ft_sys_select_01", 1.0);
 }
 
 void
 leaveMenu () {
-	LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_OUT);
+	LoadAetLayer (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_OUT);
 
 	Vec3 offscreen = createVec3 (-1920, -1080, 0);
 	ApplyLocation (yesButtonAetData, &offscreen);
 	ApplyLocation (noButtonAetData, &offscreen);
 
-	PlayAet (menuAetData, menuAetId);
-	PlayAet (yesButtonAetData, yesButtonAetId);
-	PlayAet (noButtonAetData, noButtonAetId);
+	PlayAetLayer (menuAetData, menuAetId);
+	PlayAetLayer (yesButtonAetData, yesButtonAetId);
+	PlayAetLayer (noButtonAetData, noButtonAetId);
 
 	PlaySoundEffect ("se_ft_sys_cansel_01", 1.0);
 
@@ -71,8 +71,8 @@ void
 initMenu () {
 	wantsToExit = true;
 
-	LoadAet (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_IN_LOOP);
-	menuAetId = PlayAet (menuAetData, 0);
+	LoadAetLayer (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_IN_LOOP);
+	menuAetId = PlayAetLayer (menuAetData, 0);
 
 	initCompositionData (&compositionData);
 	GetComposition (&compositionData, menuAetId);
@@ -88,14 +88,14 @@ initMenu () {
 		noButtonRect = getPlaceholderRect (noButtonPlaceholderData);
 	}
 
-	LoadAet (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_IN);
-	LoadAet (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_LOOP);
+	LoadAetLayer (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_IN);
+	LoadAetLayer (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_LOOP);
 
 	ApplyLocation (yesButtonAetData, &yesButtonLoc);
 	ApplyLocation (noButtonAetData, &noButtonLoc);
 
-	yesButtonAetId = PlayAet (yesButtonAetData, 0);
-	noButtonAetId  = PlayAet (noButtonAetData, 0);
+	yesButtonAetId = PlayAetLayer (yesButtonAetData, 0);
+	noButtonAetId  = PlayAetLayer (noButtonAetData, 0);
 
 	PlaySoundEffect ("se_ft_sys_enter_01", 1.0);
 }
