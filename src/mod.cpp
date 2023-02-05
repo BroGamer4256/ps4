@@ -2,6 +2,7 @@
 #include "diva.h"
 #include "helpers.h"
 #include "menus/menus.h"
+#include <vector>
 
 SIG_SCAN (sigPvDbSwitch, "pv_db_switch.txt");
 SIG_SCAN (sigMenuTxt1, "menu_txt_01");
@@ -178,12 +179,67 @@ HOOK (void, __stdcall, PauseDestroy, 0x14065B100, u64 a1) {
 	originalPauseDestroy (a1);
 }
 
+std::vector<const char *> themeStrings = {"option_sub_menu_eachsong",
+                                          "option_sub_menu_allsong",
+                                          "timing",
+                                          "option_sub_menu_vibration",
+                                          "option_sub_menu_bgm_volume",
+                                          "option_sub_menu_button_volume",
+                                          "option_sub_menu_se_volume",
+                                          "option_sub_menu_back",
+                                          "gam_btn_resume",
+                                          "gam_btn_timing",
+                                          "gam_btn_retry",
+                                          "gam_btn_option",
+                                          "gam_btn_back",
+                                          "gam_btn_back_playlist",
+                                          "nswgam_cmnbg_bg"};
+
+HOOK (void *, __stdcall, LoadAetH, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action, u64 a6) {
+	if (layerName == 0) return originalLoadAetH (data, aetSceneId, layerName, layer, action, a6);
+	for (auto str : themeStrings) {
+		if (strcmp (str, layerName) == 0) {
+			const char *theme = appendTheme (layerName);
+			return originalLoadAetH (data, aetSceneId, theme, layer, action, a6);
+		}
+	}
+	return originalLoadAetH (data, aetSceneId, layerName, layer, action, a6);
+}
+
+HOOK (void, __stdcall, LoadAet2H, 0x14028de70, void *data, i32 aetSceneId, const char *layerName, i32 layer, const char *start_marker, const char *end_marker, const char *loop_marker,
+      AetAction action) {
+	if (layerName == 0) return originalLoadAet2H (data, aetSceneId, layerName, layer, start_marker, end_marker, loop_marker, action);
+	for (auto str : themeStrings) {
+		if (strcmp (str, layerName) == 0) {
+			const char *theme = appendTheme (layerName);
+			return originalLoadAet2H (data, aetSceneId, theme, layer, start_marker, end_marker, loop_marker, action);
+		}
+	}
+	return originalLoadAet2H (data, aetSceneId, layerName, layer, start_marker, end_marker, loop_marker, action);
+}
+
+HOOK (void, __stdcall, LoadAetFrameH, 0x1402CA590, void *data, i32 aetSceneId, const char *layerName, AetAction action, i32 layer, char *a6, float frame) {
+	if (layerName == 0) return originalLoadAetFrameH (data, aetSceneId, layerName, action, layer, a6, frame);
+	for (auto str : themeStrings) {
+		if (strcmp (str, layerName) == 0) {
+			const char *theme = appendTheme (layerName);
+			return originalLoadAetFrameH (data, aetSceneId, theme, action, layer, a6, frame);
+		}
+	}
+	return originalLoadAetFrameH (data, aetSceneId, layerName, action, layer, a6, frame);
+}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 void
 init () {
+	// freopen ("CONOUT$", "w", stdout);
+
+	toml_table_t *config = openConfig ("config.toml");
+	theme                = readConfigInt (config, "theme", 0);
+
 	INSTALL_HOOK (ChangeSubGameState);
 	INSTALL_HOOK (CsGalleryLoop);
 	INSTALL_HOOK (CustomizeSelInit);
@@ -195,6 +251,9 @@ init () {
 	INSTALL_HOOK (LoadPauseBackground);
 	INSTALL_HOOK (PauseExit);
 	INSTALL_HOOK (PauseDestroy);
+	INSTALL_HOOK (LoadAetH);
+	INSTALL_HOOK (LoadAet2H);
+	INSTALL_HOOK (LoadAetFrameH);
 
 	// 1.00 Samyuu, 1.03 BroGamer
 	WRITE_MEMORY (0x1414AB9E3, u8, 0x01);
@@ -208,22 +267,15 @@ init () {
 	// Fix song select ordering
 	WRITE_MEMORY (0x140BE9520, u64, 0x140C85CB0, 0x140C85CE8);
 
-	// Play load screen in
-	WRITE_MEMORY (0x140654505, AetAction, AETACTION_IN_LOOP);
-
 	// Reduce number of loading screens to 3
 	WRITE_MEMORY (0x1406542B4, u8, 0x02);
 
 	// Properly load rights_bg02
 	WRITE_MEMORY (0x15E99F118, u8, 0x04);
 
-	// Use AETACTION_IN_LOOP for cmn_win_help_y_inout
+	// Use AETACTION_IN_LOOP
 	WRITE_MEMORY (0x14066451D, AetAction, AETACTION_IN_LOOP);
-
-	toml_table_t *config = openConfig ("config.toml");
-	theme                = readConfigInt (config, "theme", 0);
-
-	appendThemeInPlaceString ((String *)0x140DCB300);
+	WRITE_MEMORY (0x140654505, AetAction, AETACTION_IN_LOOP);
 
 	exitMenu::init ();
 	shaderSel::init ();

@@ -8,12 +8,12 @@ void *menuAetData      = calloc (1, 0x1024);
 void *yesButtonAetData = calloc (1, 0x1024);
 void *noButtonAetData  = calloc (1, 0x1024);
 void *testAetData      = calloc (1, 0x1024);
-char *yesButtonName    = appendTheme ("cmn_menu_yes");
-char *noButtonName     = appendTheme ("cmn_menu_no");
 i32 menuAetId          = 0;
 i32 yesButtonAetId     = 0;
 i32 noButtonAetId      = 0;
 i32 hoveredButton      = 0;
+char *yesButtonName;
+char *noButtonName;
 List<void> compositionData;
 Vec3 yesButtonLoc;
 Vec3 noButtonLoc;
@@ -140,6 +140,8 @@ HOOK (bool, __thiscall, CsMenuLoop, 0x1401B29D0, u64 This) {
 
 void
 init () {
+	yesButtonName = appendTheme ("cmn_menu_yes");
+	noButtonName  = appendTheme ("cmn_menu_no");
 	INSTALL_HOOK (CsMenuLoop);
 }
 } // namespace exitMenu

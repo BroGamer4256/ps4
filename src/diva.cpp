@@ -29,7 +29,7 @@ appendThemeInPlace (char *name) {
 
 char *
 appendTheme (const char *name) {
-	char *themeStr = (char *)calloc (strlen (name) + 4, sizeof (char));
+	char *themeStr = (char *)calloc (strlen (name) + 5, sizeof (char));
 	strcpy (themeStr, name);
 	appendThemeInPlace (themeStr);
 
