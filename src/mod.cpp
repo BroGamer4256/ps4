@@ -36,69 +36,6 @@ HOOK (void, __stdcall, ChangeSubGameState, 0x1527E49E0, State state, SubState su
 	return originalChangeSubGameState (state, subState);
 }
 
-void *menuTxt1Data    = calloc (1, 0x1024);
-void *menuTxt2Data    = calloc (1, 0x1024);
-void *menuTxt3Data    = calloc (1, 0x1024);
-void *menuTxt4Data    = calloc (1, 0x1024);
-void *menuTxt5Data    = calloc (1, 0x1024);
-void *menuTxtBaseData = calloc (1, 0x1024);
-i32 menuTxt1Id        = 0;
-i32 menuTxt2Id        = 0;
-i32 menuTxt3Id        = 0;
-i32 menuTxt4Id        = 0;
-i32 menuTxt5Id        = 0;
-i32 menuTxtBaseId     = 0;
-void
-playGalleryTxt (i32 button, AetAction action) {
-	switch (button) {
-	case 0:
-		CreateAetLayerData (menuTxt1Data, 0x4FE, "menu_txt_01", 0x12, action);
-		menuTxt1Id = PlayAetLayer (menuTxt1Data, menuTxt1Id);
-		break;
-	case 1:
-		CreateAetLayerData (menuTxt2Data, 0x4FE, "menu_txt_02", 0x12, action);
-		menuTxt2Id = PlayAetLayer (menuTxt2Data, menuTxt2Id);
-		break;
-	case 2:
-		CreateAetLayerData (menuTxt3Data, 0x4FE, "menu_txt_03", 0x12, action);
-		menuTxt3Id = PlayAetLayer (menuTxt3Data, menuTxt3Id);
-		break;
-	case 3:
-		CreateAetLayerData (menuTxt4Data, 0x4FE, "menu_txt_04", 0x12, action);
-		menuTxt4Id = PlayAetLayer (menuTxt4Data, menuTxt4Id);
-		break;
-	case 4:
-		CreateAetLayerData (menuTxt5Data, 0x4FE, "menu_txt_05", 0x12, action);
-		menuTxt5Id = PlayAetLayer (menuTxt5Data, menuTxt5Id);
-		break;
-	}
-	CreateAetLayerData (menuTxtBaseData, 0x4FE, "menu_txt_base", 0x12, action);
-	menuTxtBaseId = PlayAetLayer (menuTxtBaseData, menuTxtBaseId);
-}
-
-// Fixes gallery not properly exiting
-i32 previousButton = 5;
-HOOK (bool, __thiscall, CsGalleryLoop, 0x1401AD590, u64 This) {
-	i32 state          = *(i32 *)(This + 0x68);
-	i32 selectedButton = *(i32 *)(This + 0x70);
-	if (state == 3 && previousButton != selectedButton) {
-		playGalleryTxt (selectedButton, AETACTION_IN_LOOP);
-		if (previousButton != 5) playGalleryTxt (previousButton, AETACTION_OUT);
-		previousButton = selectedButton;
-	} else if (state == 6) {
-		*(i32 *)(This + 0x68)   = 14;
-		*(i32 *)(This + 0x6C)   = 1;
-		*(i32 *)(This + 0x4598) = 5;
-		previousButton          = 5;
-		playGalleryTxt (selectedButton, AETACTION_OUT);
-	} else if (state == 4) {
-		previousButton = 5;
-		playGalleryTxt (selectedButton, AETACTION_OUT);
-	}
-
-	return originalCsGalleryLoop (This);
-}
-
 // Fixes the header/footer being present on customize
 HOOK (bool, __thiscall, CustomizeSelInit, 0x140687D10, u64 This) {
 	CmnMenuDestroy (0x14114C370);
@@ -124,59 +61,6 @@ HOOK (bool, __stdcall, CustomizeSelIsLoaded, 0x140687CD0) {
 	}
 
 	return originalCustomizeSelIsLoaded ();
-}
-
-void *optionMenuTopData = calloc (1, 0x1024);
-i32 optionMenuTopId     = 0;
-HOOK (bool, __stdcall, OptionMenuSwitchInit, 0x1406C3CB0, void *a1) {
-	CreateAetLayerData (optionMenuTopData, 0x525, "option_top_menu loop", 7, AETACTION_NONE);
-	optionMenuTopId = PlayAetLayer (optionMenuTopData, optionMenuTopId);
-	return originalOptionMenuSwitchInit (a1);
-}
-
-HOOK (bool, __stdcall, OptionMenuSwitchDestroy, 0x1406C2CE0, void *a1) {
-	StopAet (&optionMenuTopId);
-	return originalOptionMenuSwitchDestroy (a1);
-}
-
-typedef enum PauseAction : i32 {
-	Load         = 0,
-	Unload       = 1,
-	ButtonChange = 2,
-	ButtonSelect = 3,
-} PauseAction;
-
-void *pauseMenuBackground = calloc (1, 0x1024);
-i32 pauseMenuBackgroundId = 0;
-bool playedOut            = 0;
-HOOK (void, __stdcall, LoadPauseBackground, 0x1406570E0, u64 a1, bool playOut) {
-	if (playOut && !playedOut) {
-		playedOut = true;
-		CreateAetLayerData (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AETACTION_OUT);
-		*(u64 *)((u64)pauseMenuBackground + 0x148) = a1 + 0xB0;
-		pauseMenuBackgroundId                      = PlayAetLayer (pauseMenuBackground, pauseMenuBackgroundId);
-	} else {
-		playedOut = false;
-		CreateAetLayerData (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AETACTION_IN_LOOP);
-		*(u64 *)((u64)pauseMenuBackground + 0x148) = a1 + 0xB0;
-		pauseMenuBackgroundId                      = PlayAetLayer (pauseMenuBackground, pauseMenuBackgroundId);
-	}
-	originalLoadPauseBackground (a1, playOut);
-}
-
-HOOK (void, __stdcall, PauseExit, 0x14065B810, u64 a1) {
-	if (!playedOut) {
-		playedOut = true;
-		CreateAetLayerData (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AETACTION_OUT);
-		*(u64 *)((u64)pauseMenuBackground + 0x148) = a1 + 0xB0;
-		pauseMenuBackgroundId                      = PlayAetLayer (pauseMenuBackground, pauseMenuBackgroundId);
-	}
-	originalPauseExit (a1);
-}
-
-HOOK (void, __stdcall, PauseDestroy, 0x14065B100, u64 a1) {
-	StopAet (&pauseMenuBackgroundId);
-	originalPauseDestroy (a1);
 }
 
 std::vector<const char *> themeStrings = {"option_sub_menu_eachsong",
@@ -243,16 +127,10 @@ init () {
 	theme                = readConfigInt (config, "theme", 0);
 
 	INSTALL_HOOK (ChangeSubGameState);
-	INSTALL_HOOK (CsGalleryLoop);
 	INSTALL_HOOK (CustomizeSelInit);
 	INSTALL_HOOK (GetFtTheme);
 	INSTALL_HOOK (LoadAndPlayAet);
 	INSTALL_HOOK (CustomizeSelIsLoaded);
-	INSTALL_HOOK (OptionMenuSwitchInit);
-	INSTALL_HOOK (OptionMenuSwitchDestroy);
-	INSTALL_HOOK (LoadPauseBackground);
-	INSTALL_HOOK (PauseExit);
-	INSTALL_HOOK (PauseDestroy);
 	INSTALL_HOOK (CreateAetH);
 	INSTALL_HOOK (CreateAet2H);
 	INSTALL_HOOK (CreateAetFrameH);
@@ -286,6 +164,9 @@ init () {
 
 	exitMenu::init ();
 	shaderSel::init ();
+	gallery::init ();
+	options::init ();
+	pause::init ();
 }
 
 void
