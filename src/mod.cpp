@@ -4,13 +4,13 @@
 #include "menus/menus.h"
 #include <vector>
 
-SIG_SCAN (sigPvDbSwitch, "pv_db_switch.txt");
-SIG_SCAN (sigMenuTxt1, "menu_txt_01");
-SIG_SCAN (sigMenuTxt2, "menu_txt_02");
-SIG_SCAN (sigMenuTxt3, "menu_txt_03");
-SIG_SCAN (sigMenuTxt4, "menu_txt_04");
-SIG_SCAN (sigMenuTxt5, "menu_txt_05");
-SIG_SCAN (sigMenuTxtBase, "menu_txt_base");
+SIG_SCAN_STRING (sigPvDbSwitch, "pv_db_switch.txt");
+SIG_SCAN_STRING (sigMenuTxt1, "menu_txt_01");
+SIG_SCAN_STRING (sigMenuTxt2, "menu_txt_02");
+SIG_SCAN_STRING (sigMenuTxt3, "menu_txt_03");
+SIG_SCAN_STRING (sigMenuTxt4, "menu_txt_04");
+SIG_SCAN_STRING (sigMenuTxt5, "menu_txt_05");
+SIG_SCAN_STRING (sigMenuTxtBase, "menu_txt_base");
 
 i32 theme;
 
@@ -52,27 +52,27 @@ void
 playGalleryTxt (i32 button, AetAction action) {
 	switch (button) {
 	case 0:
-		LoadAetLayer (menuTxt1Data, 0x4FE, "menu_txt_01", 0x12, action);
+		CreateAetLayerData (menuTxt1Data, 0x4FE, "menu_txt_01", 0x12, action);
 		menuTxt1Id = PlayAetLayer (menuTxt1Data, menuTxt1Id);
 		break;
 	case 1:
-		LoadAetLayer (menuTxt2Data, 0x4FE, "menu_txt_02", 0x12, action);
+		CreateAetLayerData (menuTxt2Data, 0x4FE, "menu_txt_02", 0x12, action);
 		menuTxt2Id = PlayAetLayer (menuTxt2Data, menuTxt2Id);
 		break;
 	case 2:
-		LoadAetLayer (menuTxt3Data, 0x4FE, "menu_txt_03", 0x12, action);
+		CreateAetLayerData (menuTxt3Data, 0x4FE, "menu_txt_03", 0x12, action);
 		menuTxt3Id = PlayAetLayer (menuTxt3Data, menuTxt3Id);
 		break;
 	case 3:
-		LoadAetLayer (menuTxt4Data, 0x4FE, "menu_txt_04", 0x12, action);
+		CreateAetLayerData (menuTxt4Data, 0x4FE, "menu_txt_04", 0x12, action);
 		menuTxt4Id = PlayAetLayer (menuTxt4Data, menuTxt4Id);
 		break;
 	case 4:
-		LoadAetLayer (menuTxt5Data, 0x4FE, "menu_txt_05", 0x12, action);
+		CreateAetLayerData (menuTxt5Data, 0x4FE, "menu_txt_05", 0x12, action);
 		menuTxt5Id = PlayAetLayer (menuTxt5Data, menuTxt5Id);
 		break;
 	}
-	LoadAetLayer (menuTxtBaseData, 0x4FE, "menu_txt_base", 0x12, action);
+	CreateAetLayerData (menuTxtBaseData, 0x4FE, "menu_txt_base", 0x12, action);
 	menuTxtBaseId = PlayAetLayer (menuTxtBaseData, menuTxtBaseId);
 }
 
@@ -110,7 +110,7 @@ HOOK (i32 *, __stdcall, GetFtTheme, 0x1401D6540) { return &theme; }
 
 // Fixes gallery photos
 HOOK (void, __stdcall, LoadAndPlayAet, 0x1401AF0E0, u64 data, AetAction action) {
-	LoadAetLayer ((void *)data, 0x4FE, *(char **)(data + 0x08), *(i32 *)(data + 0x84), action);
+	CreateAetLayerData ((void *)data, 0x4FE, *(char **)(data + 0x08), *(i32 *)(data + 0x84), action);
 	PlayAetLayer ((void *)data, *(i32 *)(data + 0x15C));
 }
 
@@ -129,7 +129,7 @@ HOOK (bool, __stdcall, CustomizeSelIsLoaded, 0x140687CD0) {
 void *optionMenuTopData = calloc (1, 0x1024);
 i32 optionMenuTopId     = 0;
 HOOK (bool, __stdcall, OptionMenuSwitchInit, 0x1406C3CB0, void *a1) {
-	LoadAetLayer (optionMenuTopData, 0x525, "option_top_menu loop", 7, AETACTION_NONE);
+	CreateAetLayerData (optionMenuTopData, 0x525, "option_top_menu loop", 7, AETACTION_NONE);
 	optionMenuTopId = PlayAetLayer (optionMenuTopData, optionMenuTopId);
 	return originalOptionMenuSwitchInit (a1);
 }
@@ -152,12 +152,12 @@ bool playedOut            = 0;
 HOOK (void, __stdcall, LoadPauseBackground, 0x1406570E0, u64 a1, bool playOut) {
 	if (playOut && !playedOut) {
 		playedOut = true;
-		LoadAetLayer (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AETACTION_OUT);
+		CreateAetLayerData (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AETACTION_OUT);
 		*(u64 *)((u64)pauseMenuBackground + 0x148) = a1 + 0xB0;
 		pauseMenuBackgroundId                      = PlayAetLayer (pauseMenuBackground, pauseMenuBackgroundId);
 	} else {
 		playedOut = false;
-		LoadAetLayer (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AETACTION_IN_LOOP);
+		CreateAetLayerData (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AETACTION_IN_LOOP);
 		*(u64 *)((u64)pauseMenuBackground + 0x148) = a1 + 0xB0;
 		pauseMenuBackgroundId                      = PlayAetLayer (pauseMenuBackground, pauseMenuBackgroundId);
 	}
@@ -167,7 +167,7 @@ HOOK (void, __stdcall, LoadPauseBackground, 0x1406570E0, u64 a1, bool playOut) {
 HOOK (void, __stdcall, PauseExit, 0x14065B810, u64 a1) {
 	if (!playedOut) {
 		playedOut = true;
-		LoadAetLayer (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AETACTION_OUT);
+		CreateAetLayerData (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AETACTION_OUT);
 		*(u64 *)((u64)pauseMenuBackground + 0x148) = a1 + 0xB0;
 		pauseMenuBackgroundId                      = PlayAetLayer (pauseMenuBackground, pauseMenuBackgroundId);
 	}
@@ -193,7 +193,9 @@ std::vector<const char *> themeStrings = {"option_sub_menu_eachsong",
                                           "gam_btn_option",
                                           "gam_btn_back",
                                           "gam_btn_back_playlist",
-                                          "nswgam_cmnbg_bg"};
+                                          "nswgam_cmnbg_bg",
+                                          "nswgam_adv_bg",
+                                          "press_a_button"};
 
 HOOK (void *, __stdcall, LoadAetH, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action, u64 a6) {
 	if (layerName == 0) return originalLoadAetH (data, aetSceneId, layerName, layer, action, a6);
@@ -206,7 +208,7 @@ HOOK (void *, __stdcall, LoadAetH, 0x14028D560, void *data, i32 aetSceneId, cons
 	return originalLoadAetH (data, aetSceneId, layerName, layer, action, a6);
 }
 
-HOOK (void, __stdcall, LoadAet2H, 0x14028de70, void *data, i32 aetSceneId, const char *layerName, i32 layer, const char *start_marker, const char *end_marker, const char *loop_marker,
+HOOK (void, __stdcall, LoadAet2H, 0x14028DE70, void *data, i32 aetSceneId, const char *layerName, i32 layer, const char *start_marker, const char *end_marker, const char *loop_marker,
       AetAction action) {
 	if (layerName == 0) return originalLoadAet2H (data, aetSceneId, layerName, layer, start_marker, end_marker, loop_marker, action);
 	for (auto str : themeStrings) {
@@ -273,9 +275,14 @@ init () {
 	// Properly load rights_bg02
 	WRITE_MEMORY (0x15E99F118, u8, 0x04);
 
+	// Use Left/Right on FX select
+	WRITE_MEMORY (0x14069997F, Button, BUTTON_LEFT);
+	WRITE_MEMORY (0x1406999A6, Button, BUTTON_RIGHT);
+
 	// Use AETACTION_IN_LOOP
 	WRITE_MEMORY (0x14066451D, AetAction, AETACTION_IN_LOOP);
 	WRITE_MEMORY (0x140654505, AetAction, AETACTION_IN_LOOP);
+	WRITE_MEMORY (0x1401A9CF8, AetAction, AETACTION_IN_LOOP);
 
 	exitMenu::init ();
 	shaderSel::init ();

@@ -38,7 +38,7 @@ updateStyleAets (Style newStyle) {
 	}
 	strncat (selectorImgName, &c, 1);
 	strcat (selectorImgName, ".pic");
-	LoadAetLayer (selectorImgData, 0x4F8, selectorImgName, 0x12, AETACTION_NONE);
+	CreateAetLayerData (selectorImgData, 0x4F8, selectorImgName, 0x12, AETACTION_NONE);
 	ApplyLocation (selectorImgData, &txtLoc);
 	selectorImgId = PlayAetLayer (selectorImgData, selectorImgId);
 }
@@ -49,14 +49,14 @@ updateButtonPrompt (InputType input) {
 	strcpy (buttonName, "visual_key_0");
 	const char c = (u8)input | 48;
 	strncat (buttonName, &c, 1);
-	LoadAetLayer (keyHelpData, 0x4F8, buttonName, 0x13, AETACTION_NONE);
+	CreateAetLayerData (keyHelpData, 0x4F8, buttonName, 0x13, AETACTION_NONE);
 	ApplyLocation (keyHelpData, &keyHelpLoc);
 	keyHelpId = PlayAetLayer (keyHelpData, keyHelpId);
 }
 
 void
 initStyle (Style style, InputType input) {
-	LoadAetLayer (selectorData, 0x4F8, "visual_settings", 0x12, AETACTION_IN_LOOP);
+	CreateAetLayerData (selectorData, 0x4F8, "visual_settings", 0x12, AETACTION_IN_LOOP);
 	selectorId = PlayAetLayer (selectorData, selectorId);
 
 	initCompositionData (&compositionData);

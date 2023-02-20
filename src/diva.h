@@ -28,25 +28,23 @@ struct MapElement {
 	MapElement<K, V> *left;
 	MapElement<K, V> *parent;
 	MapElement<K, V> *right;
-	i8 colour;
+	bool isBlack;
 	bool isNull;
-	u8 padding[6];
-	K key;
+	alignas (8) K key;
 	V value;
 
 	MapElement<K, V> *next () {
 		auto ptr = this;
 		if (ptr->right->isNull) {
-			MapElement<K, V> *node;
-			while (!(node = ptr->parent)->isNull && ptr == node->right)
-				ptr = node;
-			return ptr;
+			while (!ptr->parent->isNull && ptr == ptr->parent->right)
+				ptr = ptr->parent;
+			ptr = ptr->parent;
 		} else {
 			ptr = ptr->right;
 			while (!ptr->left->isNull)
 				ptr = ptr->left;
-			return ptr;
 		}
+		return ptr;
 	}
 };
 
@@ -55,8 +53,16 @@ struct Map {
 	MapElement<K, V> *root;
 	u64 length;
 
-	MapElement<K, V> *begin () { return this->length ? this->root->left : this->root; }
-	MapElement<K, V> *end () { return this->root; }
+	Map () {
+		this->root          = (MapElement<K, V> *)calloc (1, sizeof (MapElement<K, V>));
+		this->root->left    = this->root;
+		this->root->parent  = this->root;
+		this->root->right   = this->root;
+		this->root->isBlack = true;
+		this->root->isNull  = true;
+		this->length        = 0;
+	}
+
 	MapElement<K, V> *find (K key) {
 		auto ptr = this->root->parent;
 		while (!ptr->isNull) {
@@ -66,6 +72,9 @@ struct Map {
 		}
 		return this->end ();
 	}
+
+	MapElement<K, V> *begin () { return this->length ? this->root->left : this->root; }
+	MapElement<K, V> *end () { return this->root; }
 };
 
 typedef enum State : i32 {
@@ -173,7 +182,6 @@ typedef enum Button : i32 {
 } Button;
 
 typedef struct PvSpriteIds {
-	i32 padding;
 	void *data;
 	i32 setId;
 	i32 bgId;
@@ -200,7 +208,7 @@ extern Map<i32, PvSpriteIds> *pvSprites;
 FUNCTION_PTR_H (bool, __thiscall, CmnMenuDestroy, u64 This);
 FUNCTION_PTR_H (void *, __stdcall, DivaGetInputState, i32 a1);
 FUNCTION_PTR_H (bool, __stdcall, IsButtonTapped, void *state, Button button);
-FUNCTION_PTR_H (void *, __stdcall, LoadAetLayer, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
+FUNCTION_PTR_H (void *, __stdcall, CreateAetLayerData, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
 FUNCTION_PTR_H (i32, __stdcall, PlayAetLayer, void *data, i32 id);
 FUNCTION_PTR_H (void, __stdcall, GetComposition, Map<String, void *> *composition, i32 id);
 FUNCTION_PTR_H (float *, __stdcall, GetCompositionLayer, Map<String, void *> *composition, const char *layerName);

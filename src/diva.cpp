@@ -4,7 +4,7 @@
 FUNCTION_PTR (bool, __thiscall, CmnMenuDestroy, 0x1401AAE50, u64 This);
 FUNCTION_PTR (void *, __stdcall, DivaGetInputState, 0x1402AC970, i32 a1);
 FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB260, void *state, Button button);
-FUNCTION_PTR (void *, __stdcall, LoadAetLayer, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
+FUNCTION_PTR (void *, __stdcall, CreateAetLayerData, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
 FUNCTION_PTR (i32, __stdcall, PlayAetLayer, 0x1402CA220, void *data, i32 id);
 FUNCTION_PTR (void, __stdcall, GetComposition, 0x1402CA670, Map<String, void *> *composition, i32 id);
 FUNCTION_PTR (float *, __stdcall, GetCompositionLayer, 0x1402CA780, Map<String, void *> *composition, const char *layerName);
@@ -112,13 +112,13 @@ void
 initCompositionData (Map<String, void *> *out) {
 	if (out->root) FreeSubLayers (out, out, (void *)*(u64 *)((u64)out->root + 8));
 
-	out->root         = (MapElement<String, void *> *)calloc (1, 0xB0);
-	out->root->left   = out->root;
-	out->root->parent = out->root;
-	out->root->right  = out->root;
-	out->root->colour = 1;
-	out->root->isNull = true;
-	out->length       = 0;
+	out->root          = (MapElement<String, void *> *)calloc (1, 0xB0);
+	out->root->left    = out->root;
+	out->root->parent  = out->root;
+	out->root->right   = out->root;
+	out->root->isBlack = true;
+	out->root->isNull  = true;
+	out->length        = 0;
 }
 
 Vec2

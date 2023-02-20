@@ -23,8 +23,8 @@ Vec4 noButtonRect;
 void
 moveDown () {
 	hoveredButton = 0;
-	LoadAetLayer (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_IN);
-	LoadAetLayer (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_LOOP);
+	CreateAetLayerData (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_IN);
+	CreateAetLayerData (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_LOOP);
 
 	ApplyLocation (yesButtonAetData, &yesButtonLoc);
 	ApplyLocation (noButtonAetData, &noButtonLoc);
@@ -37,8 +37,8 @@ moveDown () {
 void
 moveUp () {
 	hoveredButton = 1;
-	LoadAetLayer (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_LOOP);
-	LoadAetLayer (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_IN);
+	CreateAetLayerData (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_LOOP);
+	CreateAetLayerData (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_IN);
 
 	ApplyLocation (yesButtonAetData, &yesButtonLoc);
 	ApplyLocation (noButtonAetData, &noButtonLoc);
@@ -51,7 +51,7 @@ moveUp () {
 
 void
 leaveMenu () {
-	LoadAetLayer (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_OUT);
+	CreateAetLayerData (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_OUT);
 
 	Vec3 offscreen = createVec3 (-1920, -1080, 0);
 	ApplyLocation (yesButtonAetData, &offscreen);
@@ -71,7 +71,7 @@ void
 initMenu () {
 	wantsToExit = true;
 
-	LoadAetLayer (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_IN_LOOP);
+	CreateAetLayerData (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_IN_LOOP);
 	menuAetId = PlayAetLayer (menuAetData, 0);
 
 	initCompositionData (&compositionData);
@@ -88,8 +88,8 @@ initMenu () {
 		noButtonRect = getPlaceholderRect (noButtonPlaceholderData);
 	}
 
-	LoadAetLayer (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_IN);
-	LoadAetLayer (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_LOOP);
+	CreateAetLayerData (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_IN);
+	CreateAetLayerData (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_LOOP);
 
 	ApplyLocation (yesButtonAetData, &yesButtonLoc);
 	ApplyLocation (noButtonAetData, &noButtonLoc);
