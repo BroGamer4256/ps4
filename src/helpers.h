@@ -26,22 +26,8 @@ typedef uint64_t u64;
 	void *where##functionName           = (void *)location;                                                                                                                                            \
 	returnType callingConvention implOf##functionName (__VA_ARGS__)
 
-#define HOOK_DYNAMIC(returnType, callingConvention, functionName, ...)                                                                                                                                 \
-	typedef returnType callingConvention (*functionName) (__VA_ARGS__);                                                                                                                                \
-	functionName original##functionName = NULL;                                                                                                                                                        \
-	void *where##functionName           = NULL;                                                                                                                                                        \
-	returnType callingConvention implOf##functionName (__VA_ARGS__)
-
 #define INSTALL_HOOK(functionName)                                                                                                                                                                     \
 	{                                                                                                                                                                                                  \
-		MH_Initialize ();                                                                                                                                                                              \
-		MH_CreateHook ((void *)where##functionName, (void *)implOf##functionName, (void **)(&original##functionName));                                                                                 \
-		MH_EnableHook ((void *)where##functionName);                                                                                                                                                   \
-	}
-
-#define INSTALL_HOOK_DYNAMIC(functionName, location)                                                                                                                                                   \
-	{                                                                                                                                                                                                  \
-		where##functionName = location;                                                                                                                                                                \
 		MH_Initialize ();                                                                                                                                                                              \
 		MH_CreateHook ((void *)where##functionName, (void *)implOf##functionName, (void **)(&original##functionName));                                                                                 \
 		MH_EnableHook ((void *)where##functionName);                                                                                                                                                   \

@@ -119,6 +119,8 @@ HOOK (void, __stdcall, CreateAetFrameH, 0x1402CA590, void *data, i32 aetSceneId,
 extern "C" {
 #endif
 
+HOOK (void, __stdcall, CmnMenuTouchCheck, 0x14022C590);
+
 void
 init () {
 	// freopen ("CONOUT$", "w", stdout);
@@ -134,6 +136,7 @@ init () {
 	INSTALL_HOOK (CreateAetH);
 	INSTALL_HOOK (CreateAet2H);
 	INSTALL_HOOK (CreateAetFrameH);
+	INSTALL_HOOK (CmnMenuTouchCheck);
 
 	// 1.00 Samyuu, 1.03 BroGamer
 	WRITE_MEMORY (0x1414AB9E3, u8, 0x01);

@@ -2,8 +2,8 @@ OUT = ps4
 CC = clang
 CXX = clang++
 TARGET = x86_64-pc-windows-gnu
-SRC = src/mod.cpp src/SigScan.cpp src/helpers.c src/diva.cpp src/menus/exit.cpp src/menus/shaderSel.cpp tomlc99/toml.c minhook/src/buffer.c minhook/src/hook.c minhook/src/trampoline.c minhook/src/hde/hde32.c minhook/src/hde/hde64.c
-OBJ = $(addprefix $(TARGET)/,$(subst .c,.o,$(SRC:.cpp=.o)))
+SRC = src/mod.cpp src/SigScan.cpp src/helpers.c src/diva.cpp src/menus/exit.cpp src/menus/shaderSel.cpp src/menus/gallery.cpp src/menus/options.cpp src/menus/pause.cpp tomlc99/toml.c minhook/src/buffer.c minhook/src/hook.c minhook/src/trampoline.c minhook/src/hde/hde32.c minhook/src/hde/hde64.c
+OBJ = $(addprefix $(TARGET)/,$(subst .c,.o,$(SRC:.cpp=.o))) $(TARGET)/src/menu_touch.o
 CFLAGS = -g -std=c99 -Iminhook/include -Itomlc99 -Isrc -Wall -Ofast -target $(TARGET) -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=_WIN32_WINNT_WIN7
 CXXFLAGS = -g -std=c++20 -Iminhook/include -Itomlc99 -Isrc -Wall -Ofast -target $(TARGET) -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=_WIN32_WINNT_WIN7
 LDFLAGS = -shared -static -static-libgcc -pthread -lgdi32 -ldwmapi
@@ -29,6 +29,10 @@ $(TARGET)/%.o: %.cpp
 $(TARGET)/%.o: %.c
 	@echo BUILD $<
 	@bear -- $(CC) -c $(CFLAGS) $< -o $@
+
+$(TARGET)/%.o: %.s
+	@echo BUILD $<
+	@$(CC) -m64 -masm=intel -Wall -Ofast -target $(TARGET) -c $< -o $@
 
 .PHONY: $(OUT)
 $(OUT): dirs $(OBJ)
