@@ -72,7 +72,7 @@ initMenu () {
 	wantsToExit = true;
 
 	CreateAetLayerData (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_IN_LOOP);
-	menuAetId = PlayAetLayer (menuAetData, 0);
+	menuAetId = PlayAetLayer (menuAetData, menuAetId);
 
 	initCompositionData (&compositionData);
 	GetComposition (&compositionData, menuAetId);
@@ -94,8 +94,8 @@ initMenu () {
 	ApplyLocation (yesButtonAetData, &yesButtonLoc);
 	ApplyLocation (noButtonAetData, &noButtonLoc);
 
-	yesButtonAetId = PlayAetLayer (yesButtonAetData, 0);
-	noButtonAetId  = PlayAetLayer (noButtonAetData, 0);
+	yesButtonAetId = PlayAetLayer (yesButtonAetData, yesButtonAetId);
+	noButtonAetId  = PlayAetLayer (noButtonAetData, noButtonAetId);
 
 	PlaySoundEffect ("se_ft_sys_enter_01", 1.0);
 }
@@ -116,8 +116,9 @@ HOOK (bool, __thiscall, CsMenuLoop, 0x1401B29D0, u64 This) {
 	if (*(i32 *)(This + 0x68) != 2) return originalCsMenuLoop (This);
 
 	void *inputState = DivaGetInputState (0);
+	Vec2 clickedPos  = getClickedPos (inputState);
+
 	if (wantsToExit) {
-		Vec2 clickedPos = getClickedPos (inputState);
 		if (clickedPos.x > 0 && !hasClicked) {
 			handleClick (clickedPos);
 			hasClicked = true;
@@ -134,7 +135,6 @@ HOOK (bool, __thiscall, CsMenuLoop, 0x1401B29D0, u64 This) {
 	}
 
 	if (IsButtonTapped (inputState, BUTTON_BACK)) initMenu ();
-
 	return originalCsMenuLoop (This);
 }
 
