@@ -79,7 +79,8 @@ std::vector<const char *> themeStrings = {"option_sub_menu_eachsong",
                                           "gam_btn_back_playlist",
                                           "nswgam_cmnbg_bg",
                                           "nswgam_adv_bg",
-                                          "press_a_button"};
+                                          "press_a_button",
+                                          "footer_01"};
 
 HOOK (void *, __stdcall, CreateAetH, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action, u64 a6) {
 	if (layerName == 0) return originalCreateAetH (data, aetSceneId, layerName, layer, action, a6);
@@ -119,6 +120,8 @@ HOOK (void, __stdcall, CreateAetFrameH, 0x1402CA590, void *data, i32 aetSceneId,
 extern "C" {
 #endif
 
+FUNCTION_PTR (float, __stdcall, GetLayerFrame, 0x1402CA120, i32 id, char *layer_name);
+FUNCTION_PTR (String *, __stdcall, AppendLayerSuffix, 0x14022D070, void *a1, String *base_layer_name);
 HOOK (void, __stdcall, CmnMenuTouchCheck, 0x14022C590);
 
 void

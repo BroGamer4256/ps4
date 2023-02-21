@@ -2,15 +2,13 @@
 
 implOfCmnMenuTouchCheck:
 	cmp edi, eax
-	jz exit
+	jz 1f
 	mov [rbx], edi
 
 	push rax
-	push rbx
 	push rcx
 	push rdx
 	push rsi
-	push rdi
 	push r8
 	push r9
 	push r10
@@ -23,25 +21,24 @@ implOfCmnMenuTouchCheck:
 	lea rdx, [rbp - 0x51]
 	mov rcx, rbx
 	mov dword ptr [rcx + 0xAC], 1
-	movabs rax, 0x14022D070
+	movabs rax, [AppendLayerSuffix]
 	call rax
 
 	mov rdx, rax
 	cmp qword ptr [rdx + 0x18], 0x10
 	cmovnc rdx, [rdx]
 	mov ecx, [rbx + 0x1C]
-	movabs rax, 0x1402CA120
+	movabs rax, [GetLayerFrame]
 	call rax
 	movss [rbx + 0x90], xmm0
 	movss [rbx + 0x94], xmm0
 
-	lea rdx, [rbx + 0x58]
-	cmp qword ptr [rdx + 0x18], 0x10
-	cmovnc rdx, [rdx]
+	lea rcx, [rbx + 0x58]
+	cmp qword ptr [rcx + 0x18], 0x10
+	cmovnc rcx, [rcx]
 	mov rax, 0x3F800000
-	movd xmm2, rax
-	mov rcx, 1
-	movabs rax, 0x1405aa550
+	movd xmm1, rax
+	movabs rax, [PlaySoundEffect]
 	call rax
 
 	pop r15
@@ -52,15 +49,16 @@ implOfCmnMenuTouchCheck:
 	pop r10
 	pop r9
 	pop r8
-	pop rdi
 	pop rsi
 	pop rdx
 	pop rcx
-	pop rbx
 	pop rax
-exit:
-	cmp edi, eax
+1:
+	mov edx, eax
+	movabs rax, qword ptr [whereCmnMenuTouchCheck]
+	add rax, 7
+
+	cmp edi, edx
 	mov edi, 1
 
-	movabs rcx, 0x14022C597
-	jmp rcx
+	jmp rax

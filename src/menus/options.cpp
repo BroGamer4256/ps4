@@ -15,6 +15,7 @@ i32 menuTxt3Id     = 0;
 i32 menuTxt4Id     = 0;
 i32 menuTxt5Id     = 0;
 i32 menuTxt6Id     = 0;
+char *topLoopName;
 
 void
 playMenuTxt (i32 button, AetAction action) {
@@ -50,7 +51,7 @@ playMenuTxt (i32 button, AetAction action) {
 void *optionMenuTopData = calloc (1, 0x1024);
 i32 optionMenuTopId     = 0;
 HOOK (bool, __stdcall, OptionMenuSwitchInit, 0x1406C3CB0, void *a1) {
-	CreateAetLayerData (optionMenuTopData, 0x525, "option_top_menu loop", 7, AETACTION_NONE);
+	CreateAetLayerData (optionMenuTopData, 0x525, topLoopName, 7, AETACTION_NONE);
 	optionMenuTopId = PlayAetLayer (optionMenuTopData, optionMenuTopId);
 	playMenuTxt (0, AETACTION_IN_LOOP);
 	return originalOptionMenuSwitchInit (a1);
@@ -89,6 +90,8 @@ HOOK (bool, __stdcall, OptionMenuSwitchDestroy, 0x1406C2CE0, void *a1) {
 
 void
 init () {
+	topLoopName = appendTheme ("option_top_menu loop");
+
 	INSTALL_HOOK (OptionMenuSwitchInit);
 	INSTALL_HOOK (OptionMenuSwitchLoop);
 	INSTALL_HOOK (OptionMenuSwitchDestroy);
