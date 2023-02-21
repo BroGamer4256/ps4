@@ -26,6 +26,24 @@ implOfCmnMenuTouchCheck:
 	movabs rax, 0x14022D070
 	call rax
 
+	mov rdx, rax
+	cmp qword ptr [rdx + 0x18], 0x10
+	cmovnc rdx, [rdx]
+	mov ecx, [rbx + 0x1C]
+	movabs rax, 0x1402CA120
+	call rax
+	movss [rbx + 0x90], xmm0
+	movss [rbx + 0x94], xmm0
+
+	lea rdx, [rbx + 0x58]
+	cmp qword ptr [rdx + 0x18], 0x10
+	cmovnc rdx, [rdx]
+	mov rax, 0x3F800000
+	movd xmm2, rax
+	mov rcx, 1
+	movabs rax, 0x1405aa550
+	call rax
+
 	pop r15
 	pop r14
 	pop r13
