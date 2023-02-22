@@ -80,7 +80,8 @@ std::vector<const char *> themeStrings = {"option_sub_menu_eachsong",
                                           "nswgam_cmnbg_bg",
                                           "nswgam_adv_bg",
                                           "press_a_button",
-                                          "footer_01"};
+                                          "footer_01",
+                                          "option_top_menu loop"};
 
 HOOK (void *, __stdcall, CreateAetH, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action, u64 a6) {
 	if (layerName == 0) return originalCreateAetH (data, aetSceneId, layerName, layer, action, a6);
