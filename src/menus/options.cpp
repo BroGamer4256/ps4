@@ -9,12 +9,15 @@ void *menuTxt3Data = calloc (1, 0x1024);
 void *menuTxt4Data = calloc (1, 0x1024);
 void *menuTxt5Data = calloc (1, 0x1024);
 void *menuTxt6Data = calloc (1, 0x1024);
+void *footerData   = calloc (1, 0x1024);
 i32 menuTxt1Id     = 0;
 i32 menuTxt2Id     = 0;
 i32 menuTxt3Id     = 0;
 i32 menuTxt4Id     = 0;
 i32 menuTxt5Id     = 0;
 i32 menuTxt6Id     = 0;
+i32 footerId;
+char *footerName = (char *)calloc (32, sizeof (char));
 char *topLoopName;
 
 void
@@ -25,8 +28,8 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		switch (subMenu) {
 		case 0: name = "option_top_menu_txt_sound"; break;
 		case 1: name = "option_menu_sound_txt_audio_device"; break;
-		case 3: name = "option_menu_display_txt_target"; break;
-		case 4: name = "option_menu_graphic_txt_graphic"; break;
+		case 2: name = "option_menu_display_txt_target"; break;
+		case 3: name = "option_menu_graphic_txt_graphic"; break;
 		default: name = ""; break;
 		}
 		CreateAetLayerData (menuTxt1Data, 0x525, name, 13, action);
@@ -36,8 +39,8 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		switch (subMenu) {
 		case 0: name = "option_top_menu_txt_display"; break;
 		case 1: name = "option_menu_sound_txt_theme"; break;
-		case 3: name = "option_menu_display_txt_mode"; break;
-		case 4: name = "option_menu_graphic_txt_image"; break;
+		case 2: name = "option_menu_display_txt_mode"; break;
+		case 3: name = "option_menu_graphic_txt_image"; break;
 		default: name = ""; break;
 		}
 		CreateAetLayerData (menuTxt2Data, 0x525, name, 13, action);
@@ -47,8 +50,8 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		switch (subMenu) {
 		case 0: name = "option_top_menu_txt_graphic"; break;
 		case 1: name = "option_menu_sound_txt_bgm"; break;
-		case 3: name = "option_menu_display_txt_resolution"; break;
-		case 4: name = "option_menu_graphic_txt_aa"; break;
+		case 2: name = "option_menu_display_txt_resolution"; break;
+		case 3: name = "option_menu_graphic_txt_aa"; break;
 		default: name = ""; break;
 		}
 		CreateAetLayerData (menuTxt3Data, 0x525, name, 13, action);
@@ -58,7 +61,7 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		switch (subMenu) {
 		case 0: name = "option_top_menu_txt_npr"; break;
 		case 1: name = "option_menu_sound_txt_btn"; break;
-		case 4: name = "option_menu_graphic_txt_shadow"; break;
+		case 3: name = "option_menu_graphic_txt_shadow"; break;
 		default: name = ""; break;
 		}
 		CreateAetLayerData (menuTxt4Data, 0x525, name, 13, action);
@@ -68,7 +71,7 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		switch (subMenu) {
 		case 0: name = "option_top_menu_txt_autosave"; break;
 		case 1: name = "option_menu_sound_txt_se"; break;
-		case 4: name = "option_menu_graphic_txt_reflection"; break;
+		case 3: name = "option_menu_graphic_txt_reflection"; break;
 		default: name = ""; break;
 		}
 		CreateAetLayerData (menuTxt5Data, 0x525, name, 13, action);
@@ -87,9 +90,17 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 
 void *optionMenuTopData = calloc (1, 0x1024);
 i32 optionMenuTopId     = 0;
+InputType previousInput = INPUTTYPE_UNKNOWN;
 HOOK (bool, __stdcall, OptionMenuSwitchInit, 0x1406C3CB0, void *a1) {
 	CreateAetLayerData (optionMenuTopData, 0x525, topLoopName, 7, AETACTION_NONE);
 	optionMenuTopId = PlayAetLayer (optionMenuTopData, optionMenuTopId);
+
+	InputType input = getInputType ();
+	previousInput   = input;
+	sprintf (footerName, "footer_button_01_%02d", input);
+	CreateAetLayerData (footerData, 0x525, footerName, 13, AETACTION_NONE);
+	footerId = PlayAetLayer (footerData, footerId);
+
 	playMenuTxt (0, 0, AETACTION_IN_LOOP);
 	return originalOptionMenuSwitchInit (a1);
 }
@@ -97,8 +108,16 @@ HOOK (bool, __stdcall, OptionMenuSwitchInit, 0x1406C3CB0, void *a1) {
 u8 previousButton  = 0;
 u8 previousSubMenu = 0;
 HOOK (bool, __stdcall, OptionMenuSwitchLoop, 0x1406C2920, u64 a1) {
-	u8 subMenu = *(u8 *)(a1 + 0xB3);
-	u8 button  = *(u8 *)(a1 + 0xB4 + (subMenu > 1 ? subMenu - 1 : subMenu));
+	u8 subMenu      = *(u8 *)(a1 + 0xB3);
+	subMenu         = subMenu > 1 ? subMenu - 1 : subMenu;
+	u8 button       = *(u8 *)(a1 + 0xB4 + subMenu);
+	InputType input = getInputType ();
+	if (input != previousInput || previousSubMenu != subMenu) {
+		sprintf (footerName, "footer_button_%02d_%02d", (bool)subMenu + 1, input);
+		CreateAetLayerData (footerData, 0x525, footerName, 13, AETACTION_NONE);
+		footerId      = PlayAetLayer (footerData, footerId);
+		previousInput = input;
+	}
 	if (button != previousButton || previousSubMenu != subMenu) {
 		playMenuTxt (previousButton, previousSubMenu, AETACTION_OUT);
 		playMenuTxt (button, subMenu, AETACTION_IN_LOOP);
@@ -116,6 +135,7 @@ HOOK (bool, __stdcall, OptionMenuSwitchDestroy, 0x1406C2CE0, void *a1) {
 	StopAet (&menuTxt4Id);
 	StopAet (&menuTxt5Id);
 	StopAet (&menuTxt6Id);
+	StopAet (&footerId);
 	return originalOptionMenuSwitchDestroy (a1);
 }
 
