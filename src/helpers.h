@@ -1,9 +1,12 @@
-#pragma once
 #include <MinHook.h>
+#include <bits/stdc++.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <toml.h>
+#include <stdlib.h>
+#include <string.h>
+#include <toml.hpp>
 #include <windows.h>
 
 typedef int8_t i8;
@@ -90,17 +93,6 @@ typedef struct Vec4 {
 	float w;
 } Vec4;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-toml_table_t *openConfig (const char *configFilePath);
-toml_table_t *openConfigSection (toml_table_t *config, const char *sectionName);
-bool readConfigBool (toml_table_t *table, const char *key, bool notFoundValue);
-int64_t readConfigInt (toml_table_t *table, const char *key, int64_t notFoundValue);
-char *readConfigString (toml_table_t *table, const char *key, char *notFoundValue);
 Vec2 createVec2 (float x, float y);
 Vec3 createVec3 (float x, float y, float z);
 bool vec4ContainsVec2 (Vec4 box, Vec2 location);
-#ifdef __cplusplus
-}
-#endif

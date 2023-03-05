@@ -1,8 +1,7 @@
 #include "SigScan.h"
 #include "diva.h"
-#include "helpers.h"
 #include "menus/menus.h"
-#include <vector>
+#include <string>
 
 SIG_SCAN_STRING (sigPvDbSwitch, "pv_db_switch.txt");
 SIG_SCAN_STRING (sigMenuTxt1, "menu_txt_01");
@@ -63,33 +62,42 @@ HOOK (bool, __stdcall, CustomizeSelIsLoaded, 0x140687CD0) {
 	return originalCustomizeSelIsLoaded ();
 }
 
-std::vector<const char *> themeStrings = {"option_sub_menu_eachsong",
-                                          "option_sub_menu_allsong",
-                                          "timing",
-                                          "option_sub_menu_vibration",
-                                          "option_sub_menu_bgm_volume",
-                                          "option_sub_menu_button_volume",
-                                          "option_sub_menu_se_volume",
-                                          "option_sub_menu_back",
-                                          "gam_btn_resume",
-                                          "gam_btn_timing",
-                                          "gam_btn_retry",
-                                          "gam_btn_option",
-                                          "gam_btn_back",
-                                          "gam_btn_back_playlist",
-                                          "nswgam_cmnbg_bg",
-                                          "nswgam_adv_bg",
-                                          "press_a_button",
-                                          "footer_01",
-                                          "option_top_menu loop"};
+std::unordered_set<std::string> themeStrings = {"option_sub_menu_eachsong",
+                                                "option_sub_menu_allsong",
+                                                "timing",
+                                                "option_sub_menu_vibration",
+                                                "option_sub_menu_bgm_volume",
+                                                "option_sub_menu_button_volume",
+                                                "option_sub_menu_se_volume",
+                                                "option_sub_menu_back",
+                                                "gam_btn_resume",
+                                                "gam_btn_timing",
+                                                "gam_btn_retry",
+                                                "gam_btn_option",
+                                                "gam_btn_back",
+                                                "gam_btn_back_playlist",
+                                                "nswgam_cmnbg_bg",
+                                                "nswgam_adv_bg",
+                                                "press_a_button",
+                                                "footer_01",
+                                                "option_top_menu loop",
+                                                "fotter01",
+                                                "fotter02",
+                                                "fotter03",
+                                                "fotter04",
+                                                "fotter05",
+                                                "fotter08",
+                                                "fotter09",
+                                                "setting_menu_bg_arcade_base_in",
+                                                "setting_menu_bg_arcade_base_up",
+                                                "setting_menu_bg_arcade_base_down",
+                                                "bg02"};
 
 HOOK (void *, __stdcall, CreateAetH, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action, u64 a6) {
 	if (layerName == 0) return originalCreateAetH (data, aetSceneId, layerName, layer, action, a6);
-	for (auto str : themeStrings) {
-		if (strcmp (str, layerName) == 0) {
-			const char *theme = appendTheme (layerName);
-			return originalCreateAetH (data, aetSceneId, theme, layer, action, a6);
-		}
+	if (themeStrings.find (layerName) != themeStrings.end ()) {
+		const char *theme = appendTheme (layerName);
+		return originalCreateAetH (data, aetSceneId, theme, layer, action, a6);
 	}
 	return originalCreateAetH (data, aetSceneId, layerName, layer, action, a6);
 }
@@ -97,29 +105,33 @@ HOOK (void *, __stdcall, CreateAetH, 0x14028D560, void *data, i32 aetSceneId, co
 HOOK (void, __stdcall, CreateAet2H, 0x14028DE70, void *data, i32 aetSceneId, const char *layerName, i32 layer, const char *start_marker, const char *end_marker, const char *loop_marker,
       AetAction action) {
 	if (layerName == 0) return originalCreateAet2H (data, aetSceneId, layerName, layer, start_marker, end_marker, loop_marker, action);
-	for (auto str : themeStrings) {
-		if (strcmp (str, layerName) == 0) {
-			const char *theme = appendTheme (layerName);
-			return originalCreateAet2H (data, aetSceneId, theme, layer, start_marker, end_marker, loop_marker, action);
-		}
+	if (themeStrings.find (layerName) != themeStrings.end ()) {
+		const char *theme = appendTheme (layerName);
+		return originalCreateAet2H (data, aetSceneId, theme, layer, start_marker, end_marker, loop_marker, action);
 	}
 	return originalCreateAet2H (data, aetSceneId, layerName, layer, start_marker, end_marker, loop_marker, action);
 }
 
+HOOK (void, __stdcall, CreateAet3H, 0x15f9811D0, void *data, String *layerName) {
+	if (layerName == 0) return originalCreateAet3H (data, layerName);
+	if (themeStrings.find (layerName->c_str ()) != themeStrings.end ()) {
+		appendThemeInPlaceString (layerName);
+		return originalCreateAet3H (data, layerName);
+	}
+
+	return originalCreateAet3H (data, layerName);
+}
+
 HOOK (void, __stdcall, CreateAetFrameH, 0x1402CA590, void *data, i32 aetSceneId, const char *layerName, AetAction action, i32 layer, char *a6, float frame) {
 	if (layerName == 0) return originalCreateAetFrameH (data, aetSceneId, layerName, action, layer, a6, frame);
-	for (auto str : themeStrings) {
-		if (strcmp (str, layerName) == 0) {
-			const char *theme = appendTheme (layerName);
-			return originalCreateAetFrameH (data, aetSceneId, theme, action, layer, a6, frame);
-		}
+	if (themeStrings.find (layerName) != themeStrings.end ()) {
+		const char *theme = appendTheme (layerName);
+		return originalCreateAetFrameH (data, aetSceneId, theme, action, layer, a6, frame);
 	}
 	return originalCreateAetFrameH (data, aetSceneId, layerName, action, layer, a6, frame);
 }
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 FUNCTION_PTR (float, __stdcall, GetLayerFrame, 0x1402CA120, i32 id, char *layer_name);
 FUNCTION_PTR (String *, __stdcall, AppendLayerSuffix, 0x14022D070, void *a1, String *base_layer_name);
@@ -129,8 +141,8 @@ void
 init () {
 	// freopen ("CONOUT$", "w", stdout);
 
-	toml_table_t *config = openConfig ("config.toml");
-	theme                = readConfigInt (config, "theme", 0);
+	auto config = toml::parse_file ("config.toml");
+	theme       = config["theme"].value_or (0);
 
 	INSTALL_HOOK (ChangeSubGameState);
 	INSTALL_HOOK (CustomizeSelInit);
@@ -139,6 +151,7 @@ init () {
 	INSTALL_HOOK (CustomizeSelIsLoaded);
 	INSTALL_HOOK (CreateAetH);
 	INSTALL_HOOK (CreateAet2H);
+	INSTALL_HOOK (CreateAet3H);
 	INSTALL_HOOK (CreateAetFrameH);
 	INSTALL_HOOK (CmnMenuTouchCheck);
 
@@ -186,7 +199,4 @@ preInit () {
 	WRITE_NULL (sigMenuTxt5 (), 1);
 	WRITE_NULL (sigMenuTxtBase (), 1);
 }
-
-#ifdef __cplusplus
 }
-#endif

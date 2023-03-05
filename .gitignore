@@ -1,3 +1,6 @@
-x86_64-pc-windows-gnu/
+build/
 compile_commands.json
 .cache
+subprojects/minhook
+subprojects/packagecache
+subprojects/tomlplusplus

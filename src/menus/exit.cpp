@@ -1,5 +1,4 @@
 #include "diva.h"
-#include "helpers.h"
 
 namespace exitMenu {
 bool wantsToExit       = false;

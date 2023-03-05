@@ -1,5 +1,4 @@
 #include "SigScan.h"
-#include "helpers.h"
 #include <psapi.h>
 
 MODULEINFO moduleInfo;

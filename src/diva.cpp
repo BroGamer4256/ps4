@@ -1,5 +1,4 @@
 #include "diva.h"
-#include "helpers.h"
 
 FUNCTION_PTR (bool, __thiscall, CmnMenuDestroy, 0x1401AAE50, u64 This);
 FUNCTION_PTR (void *, __stdcall, DivaGetInputState, 0x1402AC970, i32 a1);
@@ -15,10 +14,10 @@ FUNCTION_PTR (i32, __stdcall, GetCurrentStyle, 0x1401D64F0);
 FUNCTION_PTR (InputType, __stdcall, NormalizeInputType, 0x1402ACAA0, i32 inputType);
 FUNCTION_PTR (String *, __stdcall, StringInit, 0x14014BA50, String *to, const char *from, u64 len);
 FUNCTION_PTR (void, __stdcall, FreeSubLayers, 0x1401AC240, Map<String, void *> *sublayerData, Map<String, void *> *sublayerData2, void *first_element);
-FUNCTION_PTR (void, __stdcall, StopAet, 0x1402ca330, i32 *id);
+FUNCTION_PTR (void, __stdcall, StopAet, 0x1402CA330, i32 *id);
 
-auto pvs       = (List<i32> *)0x141753808;
-auto pvSprites = (Map<i32, PvSpriteIds> *)0x14CBBACC0;
+List<i32> *pvs                   = (List<i32> *)0x141753808;
+Map<i32, PvSpriteIds> *pvSprites = (Map<i32, PvSpriteIds> *)0x14CBBACC0;
 
 extern i32 theme;
 void
@@ -84,9 +83,9 @@ isMovieOnly (u64 entry) {
 u64
 getPvDbEntry (i32 id) {
 	if (id < 0) return 0;
-	for (ListElement<i32> *currentElement = pvs->empty_element->next; currentElement->current > 0; currentElement = currentElement->next) {
-		if (currentElement->current != id) continue;
-		return (u64)&currentElement->current;
+	for (auto current = pvs->begin (); current != pvs->end (); current = current->next) {
+		if (current->current != id) continue;
+		return (u64)&current->current;
 	}
 	return 0;
 }

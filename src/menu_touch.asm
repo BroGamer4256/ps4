@@ -1,8 +1,13 @@
-.global implOfCmnMenuTouchCheck
+extern implOfCmnMenuTouchCheck
+extern AppendLayerSuffix
+extern GetLayerFrame
+extern PlaySoundEffect
+extern whereCmnMenuTouchCheck
 
+section .text
 implOfCmnMenuTouchCheck:
 	cmp edi, eax
-	jz 1f
+	jz implOfCmnMenuTouchCheckExit
 	mov [rbx], edi
 
 	push rax
@@ -20,25 +25,27 @@ implOfCmnMenuTouchCheck:
 
 	lea rdx, [rbp - 0x51]
 	mov rcx, rbx
-	mov dword ptr [rcx + 0xAC], 1
-	movabs rax, [AppendLayerSuffix]
+	mov dword [rcx + 0xAC], 1
+	mov rax, [rel AppendLayerSuffix]
 	call rax
 
 	mov rdx, rax
-	cmp qword ptr [rdx + 0x18], 0x10
+	; std::string to char *
+	cmp qword [rdx + 0x18], 0x10
 	cmovnc rdx, [rdx]
 	mov ecx, [rbx + 0x1C]
-	movabs rax, [GetLayerFrame]
+	mov rax, [rel GetLayerFrame]
 	call rax
 	movss [rbx + 0x90], xmm0
 	movss [rbx + 0x94], xmm0
 
 	lea rcx, [rbx + 0x58]
-	cmp qword ptr [rcx + 0x18], 0x10
+	; std::string to char *
+	cmp qword [rcx + 0x18], 0x10
 	cmovnc rcx, [rcx]
-	mov rax, 0x3F800000
-	movd xmm1, rax
-	movabs rax, [PlaySoundEffect]
+	mov eax, __?float32?__(1.0)
+	movd xmm1, eax
+	mov rax, [rel PlaySoundEffect]
 	call rax
 
 	pop r15
@@ -53,9 +60,9 @@ implOfCmnMenuTouchCheck:
 	pop rdx
 	pop rcx
 	pop rax
-1:
+implOfCmnMenuTouchCheckExit:
 	mov edx, eax
-	movabs rax, qword ptr [whereCmnMenuTouchCheck]
+	mov rax, [rel whereCmnMenuTouchCheck]
 	add rax, 7
 
 	cmp edi, edx

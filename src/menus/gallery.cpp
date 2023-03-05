@@ -1,5 +1,4 @@
 #include "diva.h"
-#include "helpers.h"
 #include "menus.h"
 
 namespace gallery {

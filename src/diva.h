@@ -1,5 +1,4 @@
 #pragma once
-#include "helpers.h"
 
 typedef struct String {
 	union {
@@ -8,6 +7,11 @@ typedef struct String {
 	};
 	u64 length;
 	u64 capacity;
+
+	char *c_str () {
+		if (this->capacity > 16) return this->ptr;
+		else return this->data;
+	}
 } String;
 
 template <typename T>
@@ -15,12 +19,18 @@ struct ListElement {
 	ListElement<T> *next;
 	ListElement<T> *previous;
 	T current;
+
+	bool operator== (const ListElement<T> &rhs) { return this->current == rhs->current; }
+	bool operator== (const T &rhs) { return this->current == rhs; }
 };
 
 template <typename T>
 struct List {
-	ListElement<T> *empty_element;
+	ListElement<T> *root;
 	u64 length;
+
+	ListElement<T> *begin () { return this->length ? this->root->next : this->root; }
+	ListElement<T> *end () { return this->root; }
 };
 
 template <typename K, typename V>
