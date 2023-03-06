@@ -183,11 +183,13 @@ optionsSelectTouch (u64 This) {
 	}
 	hasClicked = true;
 
-	i32 selectedButton = *(i32 *)(This + 0x78);
-	i32 subMenu        = *(i32 *)(This + 0x9C);
-	bool extraVocals   = *(bool *)(This + 0xB4);
-	bool extraStage    = *(bool *)(This + 0xB5);
-	bool success       = *(bool *)(This + 0xB6);
+	i32 selectedButton   = *(i32 *)(This + 0x78);
+	i32 subMenu          = *(i32 *)(This + 0x9C);
+	bool extraVocals     = *(bool *)(This + 0xB4);
+	i32 extraVocalsCount = 0;
+	if (extraVocals) extraVocalsCount = (*(u64 *)(This + 0x480) - *(u64 *)(This + 0x478)) / 0x68;
+	bool extraStage = *(bool *)(This + 0xB5);
+	bool success    = *(bool *)(This + 0xB6);
 
 	bool topButtonEnabled    = subMenu != 1 || success;
 	bool middleButtonEnabled = subMenu != 1 || extraVocals;
@@ -227,9 +229,11 @@ optionsSelectTouch (u64 This) {
 			if (extraVocals) {
 				if (vec4ContainsVec2 (bottomButtonLeft, clickedPos)) {
 					*(i32 *)(This + 0xA8) = *(i32 *)(This + 0xA8) - 1;
+					if (*(i32 *)(This + 0xA8) < 0) *(i32 *)(This + 0xA8) = extraVocalsCount - 1;
 					PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 				} else if (vec4ContainsVec2 (bottomButtonRight, clickedPos)) {
 					*(i32 *)(This + 0xA8) = *(i32 *)(This + 0xA8) + 1;
+					if (*(i32 *)(This + 0xA8) >= extraVocalsCount) *(i32 *)(This + 0xA8) = 0;
 					PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 				}
 			} else if (vec4ContainsVec2 (bottomButtonLeft, clickedPos) || vec4ContainsVec2 (bottomButtonRight, clickedPos)) {
@@ -246,9 +250,11 @@ optionsSelectTouch (u64 This) {
 		} else if (selectedButton == 2) {
 			if (vec4ContainsVec2 (bottomButtonLeft, clickedPos)) {
 				*(i32 *)(This + 0xA8) = *(i32 *)(This + 0xA8) - 1;
+				if (*(i32 *)(This + 0xA8) < 0) *(i32 *)(This + 0xA8) = extraVocalsCount - 1;
 				PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 			} else if (vec4ContainsVec2 (bottomButtonRight, clickedPos)) {
 				*(i32 *)(This + 0xA8) = *(i32 *)(This + 0xA8) + 1;
+				if (*(i32 *)(This + 0xA8) >= extraVocalsCount) *(i32 *)(This + 0xA8) = 0;
 				PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 			}
 		} else if (selectedButton == 3) {
