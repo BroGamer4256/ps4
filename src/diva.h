@@ -1,5 +1,3 @@
-#pragma once
-
 typedef struct String {
 	union {
 		char data[16];
@@ -238,5 +236,7 @@ InputType getInputType ();
 bool isMovieOnly (u64 entry);
 u64 getPvDbEntry (i32 id);
 Vec4 getPlaceholderRect (float *placeholderData);
+Vec4 getPlaceholderRect (float *placeholderData);
 void initCompositionData (Map<String, void *> *out);
 Vec2 getClickedPos (void *inputState);
+std::optional<Vec4> getTouchArea (Map<String, void *> compositionData, const char *name);

@@ -39,7 +39,7 @@ shared_module(
 		'src/menus/gallery.cpp',
 		'src/menus/options.cpp',
 		'src/menus/pause.cpp',
-		'src/menus/shaderSel.cpp'
+		'src/menus/pvSel.cpp'
 	],
 	name_prefix: ''
 )

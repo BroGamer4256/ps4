@@ -1,10 +1,10 @@
 namespace exitMenu {
 void init ();
 } // namespace exitMenu
-namespace shaderSel {
+namespace pvSel {
 void init ();
 void hide ();
-} // namespace shaderSel
+} // namespace pvSel
 namespace gallery {
 void init ();
 } // namespace gallery

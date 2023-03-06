@@ -107,6 +107,22 @@ getPlaceholderRect (float *placeholderData) {
 	return vec;
 }
 
+Vec4
+getPlaceholderRectCenteredAnchor (float *placeholderData) {
+	float xDiff   = placeholderData[19];
+	float yDiff   = placeholderData[20];
+	float xCenter = placeholderData[16];
+	float yCenter = placeholderData[17];
+
+	Vec4 vec;
+	vec.x = xCenter - xDiff;
+	vec.y = xCenter + xDiff;
+	vec.z = yCenter - yDiff;
+	vec.w = yCenter + yDiff;
+
+	return vec;
+}
+
 void
 initCompositionData (Map<String, void *> *out) {
 	if (out->root) FreeSubLayers (out, out, (void *)*(u64 *)((u64)out->root + 8));
@@ -130,4 +146,11 @@ getClickedPos (void *inputState) {
 	float y = initialVec.y / (float)rect.bottom * 1080;
 
 	return createVec2 (x, y);
+}
+
+std::optional<Vec4>
+getTouchArea (Map<String, void *> compositionData, const char *name) {
+	float *placeholderData = GetCompositionLayer (&compositionData, name);
+	if (placeholderData) return std::optional (getPlaceholderRectCenteredAnchor (placeholderData));
+	else return {};
 }

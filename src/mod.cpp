@@ -1,7 +1,6 @@
 #include "SigScan.h"
 #include "diva.h"
 #include "menus/menus.h"
-#include <string>
 
 SIG_SCAN_STRING (sigPvDbSwitch, "pv_db_switch.txt");
 SIG_SCAN_STRING (sigMenuTxt1, "menu_txt_01");
@@ -38,7 +37,7 @@ HOOK (void, __stdcall, ChangeSubGameState, 0x1527E49E0, State state, SubState su
 // Fixes the header/footer being present on customize
 HOOK (bool, __thiscall, CustomizeSelInit, 0x140687D10, u64 This) {
 	CmnMenuDestroy (0x14114C370);
-	shaderSel::hide ();
+	pvSel::hide ();
 	return originalCustomizeSelInit (This);
 }
 
@@ -183,7 +182,7 @@ init () {
 	WRITE_MEMORY (0x1401A9CF8, AetAction, AETACTION_IN_LOOP);
 
 	exitMenu::init ();
-	shaderSel::init ();
+	pvSel::init ();
 	gallery::init ();
 	options::init ();
 	pause::init ();
