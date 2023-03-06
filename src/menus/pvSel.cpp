@@ -152,22 +152,6 @@ updateSelectedButton (u64 This, i32 selectedButton) {
 }
 
 void
-subtractModifier (u64 This) {
-	i32 *modifier = (i32 *)(This + 0xA4);
-	if (*modifier == 0) *modifier = 3;
-	else *modifier = *modifier - 1;
-	PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
-}
-
-void
-incrementModifier (u64 This) {
-	i32 *modifier = (i32 *)(This + 0xA4);
-	if (*modifier == 3) *modifier = 0;
-	else *modifier = *modifier + 1;
-	PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
-}
-
-void
 optionsSelectTouch (u64 This) {
 	if (!optSelectorInited) {
 		initOptionsSelectTouch ();
@@ -223,8 +207,17 @@ optionsSelectTouch (u64 This) {
 				}
 			}
 		} else if (selectedButton == 2) {
-			if (vec4ContainsVec2 (middleButtonLeft, clickedPos)) subtractModifier (This);
-			if (vec4ContainsVec2 (middleButtonRight, clickedPos)) incrementModifier (This);
+			if (vec4ContainsVec2 (middleButtonLeft, clickedPos)) {
+				i32 *modifier = (i32 *)(This + 0xA4);
+				if (*modifier == 0) *modifier = 3;
+				else *modifier = *modifier - 1;
+				PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
+			} else if (vec4ContainsVec2 (middleButtonRight, clickedPos)) {
+				i32 *modifier = (i32 *)(This + 0xA4);
+				if (*modifier == 3) *modifier = 0;
+				else *modifier = *modifier + 1;
+				PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
+			}
 		} else if (selectedButton == 3) {
 			if (extraVocals) {
 				if (vec4ContainsVec2 (bottomButtonLeft, clickedPos)) {
