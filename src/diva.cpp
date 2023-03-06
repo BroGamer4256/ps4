@@ -92,25 +92,13 @@ getPvDbEntry (i32 id) {
 
 // Uses anchor X/Y + position X/Y to create a rect, primarily useful for touch interactions
 Vec4
-getPlaceholderRect (float *placeholderData) {
-	float xDiff   = placeholderData[19] / 2;
-	float yDiff   = placeholderData[20] / 2;
-	float xCenter = placeholderData[16];
-	float yCenter = placeholderData[17];
-
-	Vec4 vec;
-	vec.x = xCenter - xDiff;
-	vec.y = xCenter + xDiff;
-	vec.z = yCenter - yDiff;
-	vec.w = yCenter + yDiff;
-
-	return vec;
-}
-
-Vec4
-getPlaceholderRectCenteredAnchor (float *placeholderData) {
-	float xDiff   = placeholderData[19];
-	float yDiff   = placeholderData[20];
+getPlaceholderRect (float *placeholderData, bool centeredAnchor) {
+	float xDiff = placeholderData[19];
+	float yDiff = placeholderData[20];
+	if (!centeredAnchor) {
+		xDiff /= 2;
+		yDiff /= 2;
+	}
 	float xCenter = placeholderData[16];
 	float yCenter = placeholderData[17];
 
@@ -149,8 +137,8 @@ getClickedPos (void *inputState) {
 }
 
 std::optional<Vec4>
-getTouchArea (Map<String, void *> compositionData, const char *name) {
+getTouchArea (Map<String, void *> compositionData, const char *name, bool centeredAnchor) {
 	float *placeholderData = GetCompositionLayer (&compositionData, name);
-	if (placeholderData) return std::optional (getPlaceholderRectCenteredAnchor (placeholderData));
+	if (placeholderData) return std::optional (getPlaceholderRect (placeholderData, centeredAnchor));
 	else return {};
 }

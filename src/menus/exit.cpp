@@ -79,12 +79,12 @@ initMenu () {
 	float *yesButtonPlaceholderData = GetCompositionLayer (&compositionData, "p_submenu_03_c");
 	if (yesButtonPlaceholderData) {
 		yesButtonLoc  = createVec3 (yesButtonPlaceholderData[16], yesButtonPlaceholderData[17], yesButtonPlaceholderData[18]);
-		yesButtonRect = getPlaceholderRect (yesButtonPlaceholderData);
+		yesButtonRect = getPlaceholderRect (yesButtonPlaceholderData, false);
 	}
 	float *noButtonPlaceholderData = GetCompositionLayer (&compositionData, "p_submenu_04_c");
 	if (noButtonPlaceholderData) {
 		noButtonLoc  = createVec3 (noButtonPlaceholderData[16], noButtonPlaceholderData[17], noButtonPlaceholderData[18]);
-		noButtonRect = getPlaceholderRect (noButtonPlaceholderData);
+		noButtonRect = getPlaceholderRect (noButtonPlaceholderData, false);
 	}
 
 	CreateAetLayerData (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_IN);

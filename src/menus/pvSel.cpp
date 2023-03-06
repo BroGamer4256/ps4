@@ -84,7 +84,7 @@ initStyle (Style style, InputType input) {
 	float *textPlaceholderData = GetCompositionLayer (&compositionData, "visual_settings_txt");
 	if (textPlaceholderData) txtLoc = createVec3 (textPlaceholderData[16], textPlaceholderData[17], textPlaceholderData[18]);
 	float *buttonTouchAreaData = GetCompositionLayer (&compositionData, "p_visual_settings_touch");
-	if (buttonTouchAreaData) touchArea = getPlaceholderRect (buttonTouchAreaData);
+	if (buttonTouchAreaData) touchArea = getPlaceholderRect (buttonTouchAreaData, false);
 
 	updateStyleAets (style);
 	updateButtonPrompt (input);
@@ -100,7 +100,7 @@ updateLocs () {
 	float *textPlaceholderData = GetCompositionLayer (&compositionData, "visual_settings_txt");
 	if (textPlaceholderData) txtLoc = createVec3 (textPlaceholderData[16], textPlaceholderData[17], textPlaceholderData[18]);
 	float *buttonTouchAreaData = GetCompositionLayer (&compositionData, "p_visual_settings_touch");
-	if (buttonTouchAreaData) touchArea = getPlaceholderRect (buttonTouchAreaData);
+	if (buttonTouchAreaData) touchArea = getPlaceholderRect (buttonTouchAreaData, false);
 
 	ApplyLocation (keyHelpData, &keyHelpLoc);
 	ApplyLocation (selectorImgData, &txtLoc);
@@ -125,18 +125,18 @@ initOptionsSelectTouch () {
 	initCompositionData (&optSelectorCompositionData);
 	GetComposition (&optSelectorCompositionData, optSelectorId);
 
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_base01_touch_c")) topButton = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_l01_touch_c")) topButtonLeft = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_r01_touch_c")) topButtonRight = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_base02_touch_c")) middleButton = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_l02_touch_c")) middleButtonLeft = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_r02_touch_c")) middleButtonRight = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_base03_touch_c")) bottomButton = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_l03_touch_c")) bottomButtonLeft = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_r03_touch_c")) bottomButtonRight = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_start_btn_touch_c")) startButton = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_start_arrow_l_touch_c")) startButtonLeft = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_start_arrow_r_touch_c")) startButtonRight = *touch;
+	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_base01_touch_c", true)) topButton = *touch;
+	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_l01_touch_c", true)) topButtonLeft = *touch;
+	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_r01_touch_c", true)) topButtonRight = *touch;
+	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_base02_touch_c", true)) middleButton = *touch;
+	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_l02_touch_c", true)) middleButtonLeft = *touch;
+	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_r02_touch_c", true)) middleButtonRight = *touch;
+	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_base03_touch_c", true)) bottomButton = *touch;
+	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_l03_touch_c", true)) bottomButtonLeft = *touch;
+	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_r03_touch_c", true)) bottomButtonRight = *touch;
+	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_start_btn_touch_c", true)) startButton = *touch;
+	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_start_arrow_l_touch_c", true)) startButtonLeft = *touch;
+	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_start_arrow_r_touch_c", true)) startButtonRight = *touch;
 
 	StopAet (&optSelectorId);
 }
