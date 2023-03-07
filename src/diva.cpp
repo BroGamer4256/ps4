@@ -140,5 +140,5 @@ std::optional<Vec4>
 getTouchArea (Map<String, void *> compositionData, const char *name, bool centeredAnchor) {
 	float *placeholderData = GetCompositionLayer (&compositionData, name);
 	if (placeholderData) return std::optional (getPlaceholderRect (placeholderData, centeredAnchor));
-	else return {};
+	else return std::nullopt;
 }

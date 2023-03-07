@@ -2,16 +2,19 @@ project('ps4', 'c', 'cpp', 'nasm', version: '1.0.0')
 warning_level = 3
 cpp_std = 'c++20'
 debug = true
+optimization = 3
+b_lto = true
+b_pgo = 'use'
 
 add_project_arguments(
 	'-DWIN32_LEAN_AND_MEAN',
 	'-D_WIN32_WINNT=_WIN32_WINNT_WIN10',
-	'-Ofast', # Speed
 	language: 'cpp',
 )
 
 add_project_link_arguments(
 	'-static',
+	'-s',
 	language: 'cpp',
 )
 

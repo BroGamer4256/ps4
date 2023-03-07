@@ -193,16 +193,16 @@ optionsSelectTouch (u64 This) {
 					UpdateButtons (This + 0x78, 0, 0, 0, 0);
 				}
 			} else if (subMenu == 2) {
-				float max = *(float *)(This + 0x36A3C) - 30.0;
+				float maxTime = *(float *)(This + 0x36A3C) - 30.0;
 				if (vec4ContainsVec2 (topButtonLeft, clickedPos)) {
-					i32 start = *(i32 *)(This + 0xB0) - 10;
-					if (start < 0) start = max;
-					*(i32 *)(This + +0xB0) = start;
+					i32 startTime = *(i32 *)(This + 0xB0) - 10;
+					if (startTime < 0) startTime = std::floor ((float)maxTime / 10) * 10;
+					*(i32 *)(This + +0xB0) = startTime;
 					PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 				} else if (vec4ContainsVec2 (topButtonRight, clickedPos)) {
-					i32 start = *(i32 *)(This + 0xB0) + 10;
-					if (start > max) start = 0;
-					*(i32 *)(This + +0xB0) = start;
+					i32 startTime = *(i32 *)(This + 0xB0) + 10;
+					if (startTime > maxTime) startTime = 0;
+					*(i32 *)(This + +0xB0) = startTime;
 					PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 				}
 			}
@@ -266,8 +266,7 @@ optionsSelectTouch (u64 This) {
 		UpdateButtons (This + 0x78, 1, 0, 0, 0);
 		PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 
-		UpdateSubMenu (This + 0x78, subMenu, This + 0x78 + 0x40, *(i32 *)(This + 0x78 + 0x30), *(i32 *)(This + 0x78 + 0x38), *(u8 *)(This + 0x78 + 0x3D), *(u8 *)(This + 0x78 + 0x3E),
-		               This + 0x78 + 0x40, This + 0x78 + 0x418, 0, *(u8 *)(This + 0x78 + 0x3F));
+		UpdateSubMenu (This + 0x78, subMenu, This + 0xB8, *(i32 *)(This + 0xA8), *(i32 *)(This + 0xB0), *(u8 *)(This + 0xB5), *(u8 *)(This + 0xB6), This + 0xB8, This + 0x490, 0, *(u8 *)(This + 0xB7));
 		UpdateButtons (This + 0x78, 1, 0, 0, 0);
 	} else if (vec4ContainsVec2 (startButtonRight, clickedPos)) {
 		if (subMenu == 2) subMenu = 0;
@@ -276,8 +275,7 @@ optionsSelectTouch (u64 This) {
 		*(i32 *)(This + 0x78) = 0;
 		PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 
-		UpdateSubMenu (This + 0x78, subMenu, This + 0x78 + 0x40, *(i32 *)(This + 0x78 + 0x30), *(i32 *)(This + 0x78 + 0x38), *(u8 *)(This + 0x78 + 0x3D), *(u8 *)(This + 0x78 + 0x3E),
-		               This + 0x78 + 0x40, This + 0x78 + 0x418, 0, *(u8 *)(This + 0x78 + 0x3F));
+		UpdateSubMenu (This + 0x78, subMenu, This + 0xB8, *(i32 *)(This + 0xA8), *(i32 *)(This + 0xB0), *(u8 *)(This + 0xB5), *(u8 *)(This + 0xB6), This + 0xB8, This + 0x490, 0, *(u8 *)(This + 0xB7));
 		UpdateButtons (This + 0x78, 0, 1, 0, 0);
 	} else if (vec4ContainsVec2 (startButton, clickedPos) && selectedButton == 0) {
 		PlaySoundEffect ("se_ft_music_selector_enter_01", 1.0);
@@ -288,7 +286,7 @@ optionsSelectTouch (u64 This) {
 }
 
 HOOK (bool, __thiscall, PVSelLoop, 0x1402033C0, u64 This) {
-	// Touch for the box
+	// Touch
 	if (*(i32 *)(This + 0x68) == 8) optionsSelectTouch (This);
 
 	// Allow swapping of visual style on song select
