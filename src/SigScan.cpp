@@ -19,8 +19,8 @@ sigScan (const char *signature) {
 	const u64 sigSize      = strlen (signature);
 
 	char *newSig    = (char *)calloc (sigSize + 1, sizeof (char));
-	int newSigIndex = 0;
-	for (int i = 0; i < sigSize; i++) {
+	u64 newSigIndex = 0;
+	for (u64 i = 0; i < sigSize; i++) {
 		if (signature[i] == ' ') continue;
 		newSig[newSigIndex] = signature[i];
 		newSigIndex++;

@@ -15,6 +15,8 @@ i32 menuTxt4Id        = 0;
 i32 menuTxt5Id        = 0;
 i32 menuTxtBaseId     = 0;
 
+using diva::AetAction;
+
 void
 playGalleryTxt (i32 button, AetAction action) {
 	switch (button) {
@@ -49,18 +51,18 @@ HOOK (bool, __thiscall, CsGalleryLoop, 0x1401AD590, u64 This) {
 	i32 state          = *(i32 *)(This + 0x68);
 	i32 selectedButton = *(i32 *)(This + 0x70);
 	if (state == 3 && previousButton != selectedButton) {
-		playGalleryTxt (selectedButton, AETACTION_IN_LOOP);
-		if (previousButton != 5) playGalleryTxt (previousButton, AETACTION_OUT);
+		playGalleryTxt (selectedButton, AetAction::IN_LOOP);
+		if (previousButton != 5) playGalleryTxt (previousButton, AetAction::OUT_ONCE);
 		previousButton = selectedButton;
 	} else if (state == 6) {
 		*(i32 *)(This + 0x68)   = 14;
 		*(i32 *)(This + 0x6C)   = 1;
 		*(i32 *)(This + 0x4598) = 5;
 		previousButton          = 5;
-		playGalleryTxt (selectedButton, AETACTION_OUT);
+		playGalleryTxt (selectedButton, AetAction::OUT_ONCE);
 	} else if (state == 4) {
 		previousButton = 5;
-		playGalleryTxt (selectedButton, AETACTION_OUT);
+		playGalleryTxt (selectedButton, AetAction::OUT_ONCE);
 	}
 
 	return originalCsGalleryLoop (This);

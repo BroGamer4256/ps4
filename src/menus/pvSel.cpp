@@ -8,6 +8,10 @@ typedef enum Style : i32 {
 	STYLE_NONE = 2,
 } Style;
 
+using diva::AetAction;
+using diva::Button;
+using diva::InputType;
+
 bool loaded           = false;
 bool hasClicked       = false;
 i32 pvId              = 0;
@@ -19,7 +23,7 @@ char *selectorImgName = (char *)calloc (64, sizeof (char));
 i32 selectorId        = 0;
 i32 selectorImgId     = 0;
 i32 keyHelpId         = 0;
-Map<String, void *> compositionData;
+diva::map<diva::string, void *> compositionData;
 InputType lastInputType;
 Vec4 touchArea;
 Vec3 keyHelpLoc = createVec3 (0, 0, 0);
@@ -28,7 +32,7 @@ Vec3 txtLoc     = createVec3 (0, 0, 0);
 bool optSelectorInited = false;
 void *optSelectorData  = calloc (1, 0x1024);
 i32 optSelectorId      = 0;
-Map<String, void *> optSelectorCompositionData;
+diva::map<diva::string, void *> optSelectorCompositionData;
 Vec4 topButton;
 Vec4 topButtonLeft;
 Vec4 topButtonRight;
@@ -54,7 +58,7 @@ updateStyleAets (Style newStyle) {
 	}
 	strncat (selectorImgName, &c, 1);
 	strcat (selectorImgName, ".pic");
-	CreateAetLayerData (selectorImgData, 0x4F8, selectorImgName, 0x12, AETACTION_NONE);
+	CreateAetLayerData (selectorImgData, 0x4F8, selectorImgName, 0x12, diva::AetAction::NONE);
 	ApplyLocation (selectorImgData, &txtLoc);
 	selectorImgId = PlayAetLayer (selectorImgData, selectorImgId);
 }
@@ -66,14 +70,14 @@ updateButtonPrompt (InputType input) {
 	const char c = (u8)input | 48;
 	strncat (buttonName, &c, 1);
 	strcat (buttonName, "");
-	CreateAetLayerData (keyHelpData, 0x4F8, buttonName, 0x13, AETACTION_NONE);
+	CreateAetLayerData (keyHelpData, 0x4F8, buttonName, 0x13, diva::AetAction::NONE);
 	ApplyLocation (keyHelpData, &keyHelpLoc);
 	keyHelpId = PlayAetLayer (keyHelpData, keyHelpId);
 }
 
 void
 initStyle (Style style, InputType input) {
-	CreateAetLayerData (selectorData, 0x4F8, "visual_settings", 0x12, AETACTION_IN_LOOP);
+	CreateAetLayerData (selectorData, 0x4F8, "visual_settings", 0x12, diva::AetAction::NONE);
 	selectorId = PlayAetLayer (selectorData, selectorId);
 
 	initCompositionData (&compositionData);
@@ -120,7 +124,7 @@ FUNCTION_PTR (void, __stdcall, Test, 0x1402c53d0, void *);
 
 void
 initOptionsSelectTouch () {
-	CreateAetLayerData (optSelectorData, 0x4F8, "conf_set_touch", 0, AETACTION_NONE);
+	CreateAetLayerData (optSelectorData, 0x4F8, "conf_set_touch", 0, diva::AetAction::NONE);
 	optSelectorId = PlayAetLayer (optSelectorData, 0);
 	initCompositionData (&optSelectorCompositionData);
 	GetComposition (&optSelectorCompositionData, optSelectorId);
@@ -300,7 +304,7 @@ HOOK (bool, __thiscall, PVSelLoop, 0x1402033C0, u64 This) {
 	u64 pvLoadData   = GetPvLoadData ();
 	i32 style        = *(i32 *)(pvLoadData + 0x1D08);
 
-	if (input == INPUTTYPE_UNKNOWN) input = INPUTTYPE_PLAYSTATION;
+	if (input == InputType::UNKNOWN) input = InputType::PLAYSTATION;
 
 	if (style == -1) {
 		style = GetCurrentStyle ();
@@ -313,7 +317,7 @@ HOOK (bool, __thiscall, PVSelLoop, 0x1402033C0, u64 This) {
 		updateButtonPrompt (input);
 	}
 
-	if (IsButtonTapped (inputState, BUTTON_L3) && !isMovie) {
+	if (IsButtonTapped (inputState, Button::L3) && !isMovie) {
 		PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 		style = !style;
 		updateStyleAets (getStyle (style, isMovie));

@@ -12,22 +12,27 @@ SIG_SCAN_STRING (sigMenuTxtBase, "menu_txt_base");
 
 i32 theme;
 
+using diva::AetAction;
+using diva::Button;
+using diva::State;
+using diva::SubState;
+
 bool wantsToSettings = false;
 HOOK (void, __stdcall, ChangeSubGameState, 0x1527E49E0, State state, SubState subState) {
-	if (state == STATE_MENU_SWITCH) {
-		state = STATE_CS_MENU;
-	} else if (subState == SUBSTATE_CS_OPTION_MENU) {
-		state           = STATE_MENU_SWITCH;
-		subState        = SUBSTATE_OPTION_MENU_SWITCH;
+	if (state == State::MENU_SWITCH) {
+		state = State::CS_MENU;
+	} else if (subState == SubState::CS_OPTION_MENU) {
+		state           = State::MENU_SWITCH;
+		subState        = SubState::OPTION_MENU_SWITCH;
 		wantsToSettings = true;
 		CmnMenuDestroy (0x14114C370);
-	} else if (subState == SUBSTATE_MENU_SWITCH) {
+	} else if (subState == SubState::MENU_SWITCH) {
 		if (wantsToSettings) {
-			subState        = SUBSTATE_OPTION_MENU_SWITCH;
+			subState        = SubState::OPTION_MENU_SWITCH;
 			wantsToSettings = false;
 		} else {
-			state    = STATE_CS_MENU;
-			subState = SUBSTATE_CS_MENU;
+			state    = State::CS_MENU;
+			subState = SubState::CS_MENU;
 		}
 	}
 
@@ -111,7 +116,7 @@ HOOK (void, __stdcall, CreateAet2H, 0x14028DE70, void *data, i32 aetSceneId, con
 	return originalCreateAet2H (data, aetSceneId, layerName, layer, start_marker, end_marker, loop_marker, action);
 }
 
-HOOK (void, __stdcall, CreateAet3H, 0x15f9811D0, void *data, String *layerName) {
+HOOK (void, __stdcall, CreateAet3H, 0x15f9811D0, void *data, diva::string *layerName) {
 	if (layerName == 0) return originalCreateAet3H (data, layerName);
 	if (themeStrings.find (layerName->c_str ()) != themeStrings.end ()) {
 		appendThemeInPlaceString (layerName);
@@ -133,7 +138,7 @@ HOOK (void, __stdcall, CreateAetFrameH, 0x1402CA590, void *data, i32 aetSceneId,
 extern "C" {
 
 FUNCTION_PTR (float, __stdcall, GetLayerFrame, 0x1402CA120, i32 id, char *layer_name);
-FUNCTION_PTR (String *, __stdcall, AppendLayerSuffix, 0x14022D070, void *a1, String *base_layer_name);
+FUNCTION_PTR (diva::string *, __stdcall, AppendLayerSuffix, 0x14022D070, void *a1, diva::string *base_layer_name);
 HOOK (void, __stdcall, CmnMenuTouchCheck, 0x14022C590);
 
 void
@@ -173,13 +178,12 @@ init () {
 	WRITE_MEMORY (0x15E99F118, u8, 0x04);
 
 	// Use Left/Right on FX select
-	WRITE_MEMORY (0x14069997F, Button, BUTTON_LEFT);
-	WRITE_MEMORY (0x1406999A6, Button, BUTTON_RIGHT);
+	WRITE_MEMORY (0x14069997F, Button, Button::LEFT);
+	WRITE_MEMORY (0x1406999A6, Button, Button::RIGHT);
 
-	// Use AETACTION_IN_LOOP
-	WRITE_MEMORY (0x14066451D, AetAction, AETACTION_IN_LOOP);
-	WRITE_MEMORY (0x140654505, AetAction, AETACTION_IN_LOOP);
-	WRITE_MEMORY (0x1401A9CF8, AetAction, AETACTION_IN_LOOP);
+	WRITE_MEMORY (0x14066451D, AetAction, AetAction::IN_LOOP);
+	WRITE_MEMORY (0x140654505, AetAction, AetAction::IN_LOOP);
+	WRITE_MEMORY (0x1401A9CF8, AetAction, AetAction::IN_LOOP);
 
 	exitMenu::init ();
 	pvSel::init ();

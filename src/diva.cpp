@@ -2,22 +2,22 @@
 
 FUNCTION_PTR (bool, __thiscall, CmnMenuDestroy, 0x1401AAE50, u64 This);
 FUNCTION_PTR (void *, __stdcall, DivaGetInputState, 0x1402AC970, i32 a1);
-FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB260, void *state, Button button);
-FUNCTION_PTR (void *, __stdcall, CreateAetLayerData, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
+FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB260, void *state, diva::Button button);
+FUNCTION_PTR (void *, __stdcall, CreateAetLayerData, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, diva::AetAction action);
 FUNCTION_PTR (i32, __stdcall, PlayAetLayer, 0x1402CA220, void *data, i32 id);
-FUNCTION_PTR (void, __stdcall, GetComposition, 0x1402CA670, Map<String, void *> *composition, i32 id);
-FUNCTION_PTR (float *, __stdcall, GetCompositionLayer, 0x1402CA780, Map<String, void *> *composition, const char *layerName);
+FUNCTION_PTR (void, __stdcall, GetComposition, 0x1402CA670, diva::map<diva::string, void *> *composition, i32 id);
+FUNCTION_PTR (float *, __stdcall, GetCompositionLayer, 0x1402CA780, diva::map<diva::string, void *> *composition, const char *layerName);
 FUNCTION_PTR (void, __stdcall, ApplyLocation, 0x14065FCC0, void *data, Vec3 *locationData);
 FUNCTION_PTR (void, __stdcall, PlaySoundEffect, 0x1405AA540, const char *name, float volume);
 FUNCTION_PTR (u64, __stdcall, GetPvLoadData, 0x14040B2A0);
 FUNCTION_PTR (i32, __stdcall, GetCurrentStyle, 0x1401D64F0);
-FUNCTION_PTR (InputType, __stdcall, NormalizeInputType, 0x1402ACAA0, i32 inputType);
-FUNCTION_PTR (String *, __stdcall, StringInit, 0x14014BA50, String *to, const char *from, u64 len);
-FUNCTION_PTR (void, __stdcall, FreeSubLayers, 0x1401AC240, Map<String, void *> *sublayerData, Map<String, void *> *sublayerData2, void *first_element);
+FUNCTION_PTR (diva::InputType, __stdcall, NormalizeInputType, 0x1402ACAA0, i32 inputType);
+FUNCTION_PTR (diva::string *, __stdcall, StringInit, 0x14014BA50, diva::string *to, const char *from, u64 len);
+FUNCTION_PTR (void, __stdcall, FreeSubLayers, 0x1401AC240, diva::map<diva::string, void *> *sublayerData, diva::map<diva::string, void *> *sublayerData2, void *first_element);
 FUNCTION_PTR (void, __stdcall, StopAet, 0x1402CA330, i32 *id);
 
-List<i32> *pvs                   = (List<i32> *)0x141753808;
-Map<i32, PvSpriteIds> *pvSprites = (Map<i32, PvSpriteIds> *)0x14CBBACC0;
+diva::list<i32> *pvs                         = (diva::list<i32> *)0x141753808;
+diva::map<i32, diva::PvSpriteIds> *pvSprites = (diva::map<i32, diva::PvSpriteIds> *)0x14CBBACC0;
 
 extern i32 theme;
 void
@@ -39,8 +39,8 @@ appendTheme (const char *name) {
 }
 
 void
-appendStringInPlace (String *str, const char *append) {
-	i32 lengthNeeded = str->length + strlen (append) + 1;
+appendStringInPlace (diva::string *str, const char *append) {
+	u64 lengthNeeded = str->length + strlen (append) + 1;
 	if (lengthNeeded > str->capacity) {
 		char *temp = (char *)calloc (lengthNeeded, sizeof (char));
 		if (str->capacity > 15) {
@@ -60,7 +60,7 @@ appendStringInPlace (String *str, const char *append) {
 }
 
 void
-appendThemeInPlaceString (String *name) {
+appendThemeInPlaceString (diva::string *name) {
 	switch (theme) {
 	case 1: appendStringInPlace (name, "_f"); break;
 	case 2: appendStringInPlace (name, "_t"); break;
@@ -68,7 +68,7 @@ appendThemeInPlaceString (String *name) {
 	}
 }
 
-InputType
+diva::InputType
 getInputType () {
 	return NormalizeInputType (*(i32 *)((u64)DivaGetInputState (0) + 0x2E8));
 }
@@ -112,10 +112,10 @@ getPlaceholderRect (float *placeholderData, bool centeredAnchor) {
 }
 
 void
-initCompositionData (Map<String, void *> *out) {
+initCompositionData (diva::map<diva::string, void *> *out) {
 	if (out->root) FreeSubLayers (out, out, (void *)*(u64 *)((u64)out->root + 8));
 
-	out->root          = (MapElement<String, void *> *)calloc (1, 0xB0);
+	out->root          = (diva::mapElement<diva::string, void *> *)calloc (1, 0xB0);
 	out->root->left    = out->root;
 	out->root->parent  = out->root;
 	out->root->right   = out->root;
@@ -137,7 +137,7 @@ getClickedPos (void *inputState) {
 }
 
 std::optional<Vec4>
-getTouchArea (Map<String, void *> compositionData, const char *name, bool centeredAnchor) {
+getTouchArea (diva::map<diva::string, void *> compositionData, const char *name, bool centeredAnchor) {
 	float *placeholderData = GetCompositionLayer (&compositionData, name);
 	if (placeholderData) return std::optional (getPlaceholderRect (placeholderData, centeredAnchor));
 	else return std::nullopt;

@@ -13,17 +13,20 @@ i32 noButtonAetId      = 0;
 i32 hoveredButton      = 0;
 char *yesButtonName;
 char *noButtonName;
-Map<String, void *> compositionData;
+diva::map<diva::string, void *> compositionData;
 Vec3 yesButtonLoc;
 Vec3 noButtonLoc;
 Vec4 yesButtonRect;
 Vec4 noButtonRect;
 
+using diva::AetAction;
+using diva::Button;
+
 void
 moveDown () {
 	hoveredButton = 0;
-	CreateAetLayerData (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_IN);
-	CreateAetLayerData (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_LOOP);
+	CreateAetLayerData (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AetAction::IN_ONCE);
+	CreateAetLayerData (noButtonAetData, 0x4F8, noButtonName, 0x13, AetAction::LOOP);
 
 	ApplyLocation (yesButtonAetData, &yesButtonLoc);
 	ApplyLocation (noButtonAetData, &noButtonLoc);
@@ -36,8 +39,8 @@ moveDown () {
 void
 moveUp () {
 	hoveredButton = 1;
-	CreateAetLayerData (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_LOOP);
-	CreateAetLayerData (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_IN);
+	CreateAetLayerData (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AetAction::LOOP);
+	CreateAetLayerData (noButtonAetData, 0x4F8, noButtonName, 0x13, AetAction::IN_ONCE);
 
 	ApplyLocation (yesButtonAetData, &yesButtonLoc);
 	ApplyLocation (noButtonAetData, &noButtonLoc);
@@ -50,7 +53,7 @@ moveUp () {
 
 void
 leaveMenu () {
-	CreateAetLayerData (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_OUT);
+	CreateAetLayerData (menuAetData, 0x4F8, "dialog_01", 0x12, AetAction::OUT_ONCE);
 
 	Vec3 offscreen = createVec3 (-1920, -1080, 0);
 	ApplyLocation (yesButtonAetData, &offscreen);
@@ -70,7 +73,7 @@ void
 initMenu () {
 	wantsToExit = true;
 
-	CreateAetLayerData (menuAetData, 0x4F8, "dialog_01", 0x12, AETACTION_IN_LOOP);
+	CreateAetLayerData (menuAetData, 0x4F8, "dialog_01", 0x12, AetAction::IN_LOOP);
 	menuAetId = PlayAetLayer (menuAetData, menuAetId);
 
 	initCompositionData (&compositionData);
@@ -87,8 +90,8 @@ initMenu () {
 		noButtonRect = getPlaceholderRect (noButtonPlaceholderData, false);
 	}
 
-	CreateAetLayerData (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AETACTION_IN);
-	CreateAetLayerData (noButtonAetData, 0x4F8, noButtonName, 0x13, AETACTION_LOOP);
+	CreateAetLayerData (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AetAction::IN_ONCE);
+	CreateAetLayerData (noButtonAetData, 0x4F8, noButtonName, 0x13, AetAction::LOOP);
 
 	ApplyLocation (yesButtonAetData, &yesButtonLoc);
 	ApplyLocation (noButtonAetData, &noButtonLoc);
@@ -125,15 +128,15 @@ HOOK (bool, __thiscall, CsMenuLoop, 0x1401B29D0, u64 This) {
 			hasClicked = false;
 		}
 
-		if (IsButtonTapped (inputState, BUTTON_BACK)) leaveMenu ();
-		else if (IsButtonTapped (inputState, BUTTON_ACCEPT) && hoveredButton == 0) leaveMenu ();
-		else if (IsButtonTapped (inputState, BUTTON_ACCEPT) && hoveredButton == 1) ExitProcess (0);
-		else if (IsButtonTapped (inputState, BUTTON_UP) && hoveredButton == 0) moveUp ();
-		else if (IsButtonTapped (inputState, BUTTON_DOWN) && hoveredButton == 1) moveDown ();
+		if (IsButtonTapped (inputState, Button::BACK)) leaveMenu ();
+		else if (IsButtonTapped (inputState, Button::ACCEPT) && hoveredButton == 0) leaveMenu ();
+		else if (IsButtonTapped (inputState, Button::ACCEPT) && hoveredButton == 1) ExitProcess (0);
+		else if (IsButtonTapped (inputState, Button::UP) && hoveredButton == 0) moveUp ();
+		else if (IsButtonTapped (inputState, Button::DOWN) && hoveredButton == 1) moveDown ();
 		return false;
 	}
 
-	if (IsButtonTapped (inputState, BUTTON_BACK)) initMenu ();
+	if (IsButtonTapped (inputState, Button::BACK)) initMenu ();
 	return originalCsMenuLoop (This);
 }
 

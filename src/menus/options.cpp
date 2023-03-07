@@ -19,6 +19,9 @@ i32 footerId;
 char *footerName = (char *)calloc (32, sizeof (char));
 char *topLoopName;
 
+using diva::AetAction;
+using diva::InputType;
+
 void
 playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 	const char *name;
@@ -89,18 +92,18 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 
 void *optionMenuTopData = calloc (1, 0x1024);
 i32 optionMenuTopId     = 0;
-InputType previousInput = INPUTTYPE_UNKNOWN;
+InputType previousInput = InputType::UNKNOWN;
 HOOK (bool, __stdcall, OptionMenuSwitchInit, 0x1406C3CB0, void *a1) {
-	CreateAetLayerData (optionMenuTopData, 0x525, topLoopName, 7, AETACTION_NONE);
+	CreateAetLayerData (optionMenuTopData, 0x525, topLoopName, 7, AetAction::NONE);
 	optionMenuTopId = PlayAetLayer (optionMenuTopData, optionMenuTopId);
 
 	InputType input = getInputType ();
 	previousInput   = input;
-	sprintf (footerName, "footer_button_01_%02d", input);
-	CreateAetLayerData (footerData, 0x525, footerName, 13, AETACTION_NONE);
+	sprintf (footerName, "footer_button_01_%02d", (i32)input);
+	CreateAetLayerData (footerData, 0x525, footerName, 13, AetAction::NONE);
 	footerId = PlayAetLayer (footerData, footerId);
 
-	playMenuTxt (0, 0, AETACTION_IN_LOOP);
+	playMenuTxt (0, 0, AetAction::IN_LOOP);
 	return originalOptionMenuSwitchInit (a1);
 }
 
@@ -112,14 +115,14 @@ HOOK (bool, __stdcall, OptionMenuSwitchLoop, 0x1406C2920, u64 a1) {
 	u8 button       = *(u8 *)(a1 + 0xB4 + subMenu);
 	InputType input = getInputType ();
 	if (input != previousInput || previousSubMenu != subMenu) {
-		sprintf (footerName, "footer_button_%02d_%02d", (bool)subMenu + 1, input);
-		CreateAetLayerData (footerData, 0x525, footerName, 13, AETACTION_NONE);
+		sprintf (footerName, "footer_button_%02d_%02d", (bool)subMenu + 1, (i32)input);
+		CreateAetLayerData (footerData, 0x525, footerName, 13, AetAction::NONE);
 		footerId      = PlayAetLayer (footerData, footerId);
 		previousInput = input;
 	}
 	if (button != previousButton || previousSubMenu != subMenu) {
-		playMenuTxt (previousButton, previousSubMenu, AETACTION_OUT);
-		playMenuTxt (button, subMenu, AETACTION_IN_LOOP);
+		playMenuTxt (previousButton, previousSubMenu, AetAction::OUT_ONCE);
+		playMenuTxt (button, subMenu, AetAction::IN_LOOP);
 		previousButton  = button;
 		previousSubMenu = subMenu;
 	}
