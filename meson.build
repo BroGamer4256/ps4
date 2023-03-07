@@ -6,15 +6,20 @@ optimization = 3
 b_lto = true
 b_pgo = 'use'
 
+cpp = meson.get_compiler('cpp')
+
 add_project_arguments(
-	'-DWIN32_LEAN_AND_MEAN',
-	'-D_WIN32_WINNT=_WIN32_WINNT_WIN10',
+	cpp.get_supported_arguments(
+		'-D_WIN32_WINNT=_WIN32_WINNT_WIN10',
+	),
 	language: 'cpp',
 )
 
 add_project_link_arguments(
-	'-static',
-	'-s',
+	cpp.get_supported_arguments(
+		'-static',
+		'-s'
+	),
 	language: 'cpp',
 )
 
@@ -22,7 +27,7 @@ cmake = import('cmake')
 minhook = cmake.subproject('minhook')
 subproject('tomlplusplus')
 
-shared_module(
+library(
 	'ps4',
 	include_directories: [
 		'src',

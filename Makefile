@@ -1,5 +1,5 @@
-all: meson.build
-	@ninja -C build
+all:
+	@meson compile -C build
 
-meson.build:
+setup:
 	@meson setup build --cross cross-mingw-64.txt
