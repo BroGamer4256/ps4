@@ -17,3 +17,4 @@ SpacesInAngles: Never
 SpaceBeforeParens: Always
 AlwaysBreakAfterReturnType: TopLevelDefinitions
 RemoveBracesLLVM: True
+AlignEscapedNewlines: Left

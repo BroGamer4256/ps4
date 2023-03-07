@@ -14,43 +14,36 @@ getModuleInfo () {
 }
 
 void *
-sigScan (const char *signature) {
+sigScan_memory (const char *signature, const char *mask, size_t sigSize, void *memory, const size_t memorySize) {
+	if (sigSize == 0) sigSize = strlen (mask);
+
+	for (size_t i = 0; i < memorySize; i++) {
+		char *currMemory = (char *)memory + i;
+
+		size_t j;
+		for (j = 0; j < sigSize; j++)
+			if (mask[j] != '?' && signature[j] != currMemory[j]) break;
+
+		if (j == sigSize) return currMemory;
+	}
+
+	return nullptr;
+}
+
+void *
+sigScan (const char *signature, const char *mask, void *hint) {
 	const MODULEINFO &info = getModuleInfo ();
-	const u64 sigSize      = strlen (signature);
+	const size_t sigSize   = strlen (mask);
 
-	char *newSig    = (char *)calloc (sigSize + 1, sizeof (char));
-	u64 newSigIndex = 0;
-	for (u64 i = 0; i < sigSize; i++) {
-		if (signature[i] == ' ') continue;
-		newSig[newSigIndex] = signature[i];
-		newSigIndex++;
+	// Ensure hint address is within the process memory region so there are no
+	// crashes.
+	if ((hint >= info.lpBaseOfDll) && ((char *)hint + sigSize <= (char *)info.lpBaseOfDll + info.SizeOfImage)) {
+		void *result = sigScan_memory (signature, mask, sigSize, hint, sigSize);
+
+		if (result) return result;
 	}
 
-	if (strlen (newSig) % 2 != 0) return 0;
-	u64 newSigSize = strlen (newSig) / 2;
-
-	for (u64 i = 0; i < info.SizeOfImage; i++) {
-		u8 *currMemory = (u8 *)info.lpBaseOfDll + i;
-
-		u64 j;
-		for (j = 0; j < newSigSize; j++) {
-			char buf[3];
-			buf[0] = newSig[j];
-			buf[1] = newSig[j + 1];
-			buf[2] = 0;
-			if (strcmp (buf, "??") == 0) continue;
-			if (strtol (buf, 0, 16) == currMemory[j]) continue;
-			break;
-		}
-
-		if (j == sigSize) {
-			free (newSig);
-			return currMemory;
-		}
-	}
-
-	free (newSig);
-	return 0;
+	return sigScan_memory (signature, mask, sigSize, info.lpBaseOfDll, info.SizeOfImage);
 }
 
 void *
