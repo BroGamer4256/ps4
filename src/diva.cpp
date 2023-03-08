@@ -15,17 +15,15 @@ SIG_SCAN (sigOperatorDelete, 0x1409B1E90,
 FUNCTION_PTR (bool, __thiscall, CmnMenuDestroy, 0x1401AAE50, u64 This);
 FUNCTION_PTR (void *, __stdcall, GetInputState, 0x1402AC970, i32 a1);
 FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB260, void *state, Button button);
-FUNCTION_PTR (void *, __stdcall, CreateAetLayerData, 0x14028D560, aetLayer *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
-FUNCTION_PTR (i32, __stdcall, PlayAetLayer, 0x1402CA220, aetLayer *data, i32 id);
-FUNCTION_PTR (void, __stdcall, GetComposition, 0x1402CA670, compositionData *composition, i32 id);
-FUNCTION_PTR (float *, __stdcall, GetCompositionLayer, 0x1402CA780, compositionData *composition, const char *layerName);
-FUNCTION_PTR (void, __stdcall, ApplyAetLayerLocation, 0x14065FCC0, aetLayer *data, Vec3 *locationData);
+FUNCTION_PTR (void *, __stdcall, CreateAetLayerData, 0x14028D560, aetLayerArgs *args, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
+FUNCTION_PTR (i32, __stdcall, PlayAetLayer, 0x1402CA220, aetLayerArgs *args, i32 id);
+FUNCTION_PTR (void, __stdcall, GetComposition, 0x1402CA670, aetComposition *composition, i32 id);
+FUNCTION_PTR (void, __stdcall, ApplyAetLayerLocation, 0x14065FCC0, aetLayerArgs *args, Vec3 *locationData);
 FUNCTION_PTR (void, __stdcall, PlaySoundEffect, 0x1405AA540, const char *name, float volume);
 FUNCTION_PTR (u64, __stdcall, GetPvLoadData, 0x14040B2A0);
 FUNCTION_PTR (i32, __stdcall, GetCurrentStyle, 0x1401D64F0);
 FUNCTION_PTR (InputType, __stdcall, NormalizeInputType, 0x1402ACAA0, i32 inputType);
-FUNCTION_PTR (string *, __stdcall, StringInit, 0x14014BA50, string *to, const char *from, u64 len);
-FUNCTION_PTR (void, __stdcall, FreeSubLayers, 0x1401AC240, compositionData *sublayerData, compositionData *sublayerData2, void *first_element);
+FUNCTION_PTR (void, __stdcall, FreeSubLayers, 0x1401AC240, aetComposition *sublayerData, aetComposition *sublayerData2, void *first_element);
 FUNCTION_PTR (void, __stdcall, StopAet, 0x1402CA330, i32 *id);
 FUNCTION_PTR (void *, __fastcall, operatorNew, sigOperatorNew (), u64);
 FUNCTION_PTR (void *, __fastcall, operatorDelete, sigOperatorDelete (), void *);
@@ -103,38 +101,18 @@ getPvDbEntry (i32 id) {
 	return 0;
 }
 
-// Uses anchor X/Y + position X/Y to create a rect, primarily useful for touch interactions
 Vec4
-getPlaceholderRect (float *placeholderData, bool centeredAnchor) {
-	float xDiff = placeholderData[19];
-	float yDiff = placeholderData[20];
-	if (!centeredAnchor) {
-		xDiff /= 2;
-		yDiff /= 2;
-	}
-	float xCenter = placeholderData[16];
-	float yCenter = placeholderData[17];
+getPlaceholderRect (aetLayerData layer) {
+	float xDiff = layer.width / 2;
+	float yDiff = layer.height / 2;
 
 	Vec4 vec;
-	vec.x = xCenter - xDiff;
-	vec.y = xCenter + xDiff;
-	vec.z = yCenter - yDiff;
-	vec.w = yCenter + yDiff;
+	vec.x = layer.position.x - xDiff;
+	vec.y = layer.position.x + xDiff;
+	vec.z = layer.position.y - yDiff;
+	vec.w = layer.position.y + yDiff;
 
 	return vec;
-}
-
-void
-initCompositionData (compositionData *out) {
-	if (out->root) FreeSubLayers (out, out, (void *)*(u64 *)((u64)out->root + 8));
-
-	out->root          = (mapElement<string, void *> *)calloc (1, 0xB0);
-	out->root->left    = out->root;
-	out->root->parent  = out->root;
-	out->root->right   = out->root;
-	out->root->isBlack = true;
-	out->root->isNull  = true;
-	out->length        = 0;
 }
 
 Vec2
@@ -150,26 +128,26 @@ getClickedPos (void *inputState) {
 }
 
 std::optional<Vec4>
-getTouchArea (compositionData compositionData, const char *name, bool centeredAnchor) {
-	float *placeholderData = GetCompositionLayer (&compositionData, name);
-	if (placeholderData) return std::optional (getPlaceholderRect (placeholderData, centeredAnchor));
+getTouchArea (aetComposition composition, const char *name) {
+	auto placeholderData = composition.find (string (name));
+	if (placeholderData) return std::optional (getPlaceholderRect (placeholderData->value));
 	else return std::nullopt;
 }
 
-aetLayer::aetLayer (i32 sceneId, const char *layerName, i32 layer, AetAction action) { this->with_data (sceneId, layerName, layer, action); }
+aetLayerArgs::aetLayerArgs (i32 sceneId, const char *layerName, i32 layer, AetAction action) { this->with_data (sceneId, layerName, layer, action); }
 
 void
-aetLayer::with_data (i32 sceneId, const char *layerName, i32 layer, AetAction action) {
+aetLayerArgs::with_data (i32 sceneId, const char *layerName, i32 layer, AetAction action) {
 	CreateAetLayerData (this, sceneId, layerName, layer, action);
 }
 
 void
-aetLayer::play (i32 *id) {
+aetLayerArgs::play (i32 *id) {
 	*id = PlayAetLayer (this, *id);
 }
 
 void
-aetLayer::setPosition (Vec3 position) {
+aetLayerArgs::setPosition (Vec3 position) {
 	ApplyAetLayerLocation (this, &position);
 }
 } // namespace diva

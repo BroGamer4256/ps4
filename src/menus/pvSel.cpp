@@ -18,7 +18,6 @@ char *selectorImgName = (char *)calloc (64, sizeof (char));
 i32 selectorId        = 0;
 i32 selectorImgId     = 0;
 i32 keyHelpId         = 0;
-compositionData compositionData;
 InputType lastInputType;
 Vec4 touchArea;
 Vec3 keyHelpLoc;
@@ -26,7 +25,6 @@ Vec3 txtLoc;
 
 bool optSelectorInited = false;
 i32 optSelectorId      = 0;
-diva::compositionData optSelectorCompositionData;
 Vec4 topButton;
 Vec4 topButtonLeft;
 Vec4 topButtonRight;
@@ -53,7 +51,7 @@ updateStyleAets (Style newStyle) {
 	strncat (selectorImgName, &c, 1);
 	strcat (selectorImgName, ".pic");
 
-	aetLayer selectorImgData (0x4F8, selectorImgName, 0x12, diva::AetAction::NONE);
+	aetLayerArgs selectorImgData (0x4F8, selectorImgName, 0x12, diva::AetAction::NONE);
 	selectorImgData.setPosition (txtLoc);
 	selectorImgData.play (&selectorImgId);
 }
@@ -66,25 +64,25 @@ updateButtonPrompt (InputType input) {
 	strncat (buttonName, &c, 1);
 	strcat (buttonName, "");
 
-	aetLayer keyHelpData (0x4F8, buttonName, 0x13, diva::AetAction::NONE);
+	aetLayerArgs keyHelpData (0x4F8, buttonName, 0x13, diva::AetAction::NONE);
 	keyHelpData.setPosition (keyHelpLoc);
 	keyHelpData.play (&keyHelpId);
 }
 
 void
 initStyle (Style style, InputType input) {
-	aetLayer selectorData (0x4F8, "visual_settings", 0x12, diva::AetAction::NONE);
+	aetLayerArgs selectorData (0x4F8, "visual_settings", 0x12, diva::AetAction::NONE);
 	selectorData.play (&selectorId);
 
-	initCompositionData (&compositionData);
+	aetComposition compositionData;
 	GetComposition (&compositionData, selectorId);
 
-	float *buttonPlaceholderData = GetCompositionLayer (&compositionData, "key_help_lv_tab_01");
-	if (buttonPlaceholderData) keyHelpLoc = Vec3 (buttonPlaceholderData[16], buttonPlaceholderData[17], buttonPlaceholderData[18]);
-	float *textPlaceholderData = GetCompositionLayer (&compositionData, "visual_settings_txt");
-	if (textPlaceholderData) txtLoc = Vec3 (textPlaceholderData[16], textPlaceholderData[17], textPlaceholderData[18]);
-	float *buttonTouchAreaData = GetCompositionLayer (&compositionData, "p_visual_settings_touch");
-	if (buttonTouchAreaData) touchArea = getPlaceholderRect (buttonTouchAreaData, false);
+	auto buttonPlaceholderData = compositionData.find_val (string ("key_help_lv_tab_01"));
+	if (buttonPlaceholderData) keyHelpLoc = buttonPlaceholderData->position;
+	auto textPlaceholderData = compositionData.find_val (string ("visual_settings_txt"));
+	if (textPlaceholderData) txtLoc = textPlaceholderData->position;
+	auto buttonTouchAreaData = compositionData.find_val (string ("p_visual_settings_touch"));
+	if (buttonTouchAreaData) touchArea = getPlaceholderRect (*buttonTouchAreaData);
 
 	updateStyleAets (style);
 	updateButtonPrompt (input);
@@ -92,21 +90,21 @@ initStyle (Style style, InputType input) {
 
 void
 updateLocs () {
-	initCompositionData (&compositionData);
+	aetComposition compositionData;
 	GetComposition (&compositionData, selectorId);
 
-	float *buttonPlaceholderData = GetCompositionLayer (&compositionData, "key_help_lv_tab_01");
-	if (buttonPlaceholderData) keyHelpLoc = Vec3 (buttonPlaceholderData[16], buttonPlaceholderData[17], buttonPlaceholderData[18]);
-	float *textPlaceholderData = GetCompositionLayer (&compositionData, "visual_settings_txt");
-	if (textPlaceholderData) txtLoc = Vec3 (textPlaceholderData[16], textPlaceholderData[17], textPlaceholderData[18]);
-	float *buttonTouchAreaData = GetCompositionLayer (&compositionData, "p_visual_settings_touch");
-	if (buttonTouchAreaData) touchArea = getPlaceholderRect (buttonTouchAreaData, false);
+	auto buttonPlaceholderData = compositionData.find_val (string ("key_help_lv_tab_01"));
+	if (buttonPlaceholderData) keyHelpLoc = buttonPlaceholderData->position;
+	auto textPlaceholderData = compositionData.find_val (string ("visual_settings_txt"));
+	if (textPlaceholderData) txtLoc = textPlaceholderData->position;
+	auto buttonTouchAreaData = compositionData.find_val (string ("p_visual_settings_touch"));
+	if (buttonTouchAreaData) touchArea = getPlaceholderRect (*buttonTouchAreaData);
 
-	aetLayer keyHelpData (0x4F8, buttonName, 0x13, diva::AetAction::NONE);
+	aetLayerArgs keyHelpData (0x4F8, buttonName, 0x13, diva::AetAction::NONE);
 	keyHelpData.setPosition (keyHelpLoc);
 	keyHelpData.play (&keyHelpId);
 
-	aetLayer selectorImgData (0x4F8, selectorImgName, 0x12, diva::AetAction::NONE);
+	aetLayerArgs selectorImgData (0x4F8, selectorImgName, 0x12, diva::AetAction::NONE);
 	selectorImgData.setPosition (txtLoc);
 	selectorImgData.play (&selectorImgId);
 }
@@ -122,23 +120,23 @@ FUNCTION_PTR (void, __stdcall, Test, 0x1402c53d0, void *);
 
 void
 initOptionsSelectTouch () {
-	aetLayer optSelectorData (0x4F8, "conf_set_touch", 0, diva::AetAction::NONE);
+	aetLayerArgs optSelectorData (0x4F8, "conf_set_touch", 0, diva::AetAction::NONE);
 	optSelectorData.play (&optSelectorId);
-	initCompositionData (&optSelectorCompositionData);
-	GetComposition (&optSelectorCompositionData, optSelectorId);
+	aetComposition compositionData;
+	GetComposition (&compositionData, optSelectorId);
 
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_base01_touch_c", true)) topButton = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_l01_touch_c", true)) topButtonLeft = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_r01_touch_c", true)) topButtonRight = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_base02_touch_c", true)) middleButton = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_l02_touch_c", true)) middleButtonLeft = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_r02_touch_c", true)) middleButtonRight = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_base03_touch_c", true)) bottomButton = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_l03_touch_c", true)) bottomButtonLeft = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_set_arrow_r03_touch_c", true)) bottomButtonRight = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_start_btn_touch_c", true)) startButton = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_start_arrow_l_touch_c", true)) startButtonLeft = *touch;
-	if (auto touch = getTouchArea (optSelectorCompositionData, "p_conf_start_arrow_r_touch_c", true)) startButtonRight = *touch;
+	if (auto touch = getTouchArea (compositionData, "p_conf_set_base01_touch_c")) topButton = *touch;
+	if (auto touch = getTouchArea (compositionData, "p_conf_set_arrow_l01_touch_c")) topButtonLeft = *touch;
+	if (auto touch = getTouchArea (compositionData, "p_conf_set_arrow_r01_touch_c")) topButtonRight = *touch;
+	if (auto touch = getTouchArea (compositionData, "p_conf_set_base02_touch_c")) middleButton = *touch;
+	if (auto touch = getTouchArea (compositionData, "p_conf_set_arrow_l02_touch_c")) middleButtonLeft = *touch;
+	if (auto touch = getTouchArea (compositionData, "p_conf_set_arrow_r02_touch_c")) middleButtonRight = *touch;
+	if (auto touch = getTouchArea (compositionData, "p_conf_set_base03_touch_c")) bottomButton = *touch;
+	if (auto touch = getTouchArea (compositionData, "p_conf_set_arrow_l03_touch_c")) bottomButtonLeft = *touch;
+	if (auto touch = getTouchArea (compositionData, "p_conf_set_arrow_r03_touch_c")) bottomButtonRight = *touch;
+	if (auto touch = getTouchArea (compositionData, "p_conf_start_btn_touch_c")) startButton = *touch;
+	if (auto touch = getTouchArea (compositionData, "p_conf_start_arrow_l_touch_c")) startButtonLeft = *touch;
+	if (auto touch = getTouchArea (compositionData, "p_conf_start_arrow_r_touch_c")) startButtonRight = *touch;
 
 	StopAet (&optSelectorId);
 }

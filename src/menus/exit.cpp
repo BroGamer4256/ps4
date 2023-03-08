@@ -11,7 +11,6 @@ i32 noButtonAetId  = 0;
 i32 hoveredButton  = 0;
 char *yesButtonName;
 char *noButtonName;
-compositionData compositionData;
 Vec3 yesButtonLoc;
 Vec3 noButtonLoc;
 Vec4 yesButtonRect;
@@ -19,8 +18,8 @@ Vec4 noButtonRect;
 
 void
 moveDown () {
-	aetLayer yesButtonAetData (0x4F8, yesButtonName, 0x13, AetAction::IN_ONCE);
-	aetLayer noButtonAetData (0x4F8, noButtonName, 0x13, AetAction::LOOP);
+	aetLayerArgs yesButtonAetData (0x4F8, yesButtonName, 0x13, AetAction::IN_ONCE);
+	aetLayerArgs noButtonAetData (0x4F8, noButtonName, 0x13, AetAction::LOOP);
 
 	yesButtonAetData.setPosition (yesButtonLoc);
 	noButtonAetData.setPosition (noButtonLoc);
@@ -34,8 +33,8 @@ moveDown () {
 
 void
 moveUp () {
-	aetLayer yesButtonAetData (0x4F8, yesButtonName, 0x13, AetAction::LOOP);
-	aetLayer noButtonAetData (0x4F8, noButtonName, 0x13, AetAction::IN_ONCE);
+	aetLayerArgs yesButtonAetData (0x4F8, yesButtonName, 0x13, AetAction::LOOP);
+	aetLayerArgs noButtonAetData (0x4F8, noButtonName, 0x13, AetAction::IN_ONCE);
 
 	yesButtonAetData.setPosition (yesButtonLoc);
 	noButtonAetData.setPosition (noButtonLoc);
@@ -49,7 +48,7 @@ moveUp () {
 
 void
 leaveMenu () {
-	aetLayer menuAetData (0x4F8, "dialog_01", 0x12, AetAction::OUT_ONCE);
+	aetLayerArgs menuAetData (0x4F8, "dialog_01", 0x12, AetAction::OUT_ONCE);
 	menuAetData.play (&menuAetId);
 
 	StopAet (&yesButtonAetId);
@@ -62,25 +61,25 @@ leaveMenu () {
 
 void
 initMenu () {
-	aetLayer menuAetData (0x4F8, "dialog_01", 0x12, AetAction::IN_LOOP);
+	aetLayerArgs menuAetData (0x4F8, "dialog_01", 0x12, AetAction::IN_LOOP);
 	menuAetData.play (&menuAetId);
 
-	initCompositionData (&compositionData);
+	aetComposition compositionData;
 	GetComposition (&compositionData, menuAetId);
 
-	float *yesButtonPlaceholderData = GetCompositionLayer (&compositionData, "p_submenu_03_c");
-	if (yesButtonPlaceholderData) {
-		yesButtonLoc  = Vec3 (yesButtonPlaceholderData[16], yesButtonPlaceholderData[17], yesButtonPlaceholderData[18]);
-		yesButtonRect = getPlaceholderRect (yesButtonPlaceholderData, false);
+	if (auto opt = compositionData.find_val (string ("p_submenu_03_c"))) {
+		auto yesButtonPlaceholderData = *opt;
+		yesButtonLoc                  = yesButtonPlaceholderData.position;
+		yesButtonRect                 = getPlaceholderRect (yesButtonPlaceholderData);
 	}
-	float *noButtonPlaceholderData = GetCompositionLayer (&compositionData, "p_submenu_04_c");
-	if (noButtonPlaceholderData) {
-		noButtonLoc  = Vec3 (noButtonPlaceholderData[16], noButtonPlaceholderData[17], noButtonPlaceholderData[18]);
-		noButtonRect = getPlaceholderRect (noButtonPlaceholderData, false);
+	if (auto opt = compositionData.find_val (string ("p_submenu_04_c"))) {
+		auto noButtonPlaceholderData = *opt;
+		noButtonLoc                  = noButtonPlaceholderData.position;
+		noButtonRect                 = getPlaceholderRect (noButtonPlaceholderData);
 	}
 
-	aetLayer yesButtonAetData (0x4F8, yesButtonName, 0x13, AetAction::IN_ONCE);
-	aetLayer noButtonAetData (0x4F8, noButtonName, 0x13, AetAction::LOOP);
+	aetLayerArgs yesButtonAetData (0x4F8, yesButtonName, 0x13, AetAction::IN_ONCE);
+	aetLayerArgs noButtonAetData (0x4F8, noButtonName, 0x13, AetAction::LOOP);
 
 	yesButtonAetData.setPosition (yesButtonLoc);
 	noButtonAetData.setPosition (noButtonLoc);

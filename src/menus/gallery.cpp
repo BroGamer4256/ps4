@@ -10,11 +10,11 @@ i32 menuTxt5Id    = 0;
 i32 menuTxtBaseId = 0;
 
 using diva::AetAction;
-using diva::aetLayer;
+using diva::aetLayerArgs;
 
 void
 playGalleryTxt (i32 button, AetAction action) {
-	aetLayer menuTxtData;
+	aetLayerArgs menuTxtData;
 	switch (button) {
 	case 0:
 		menuTxtData.with_data (0x4FE, "menu_txt_01", 0x12, action);
@@ -37,7 +37,7 @@ playGalleryTxt (i32 button, AetAction action) {
 		menuTxtData.play (&menuTxt5Id);
 		break;
 	}
-	aetLayer menuTxtBaseData (0x4FE, "menu_txt_base", 0x12, action);
+	aetLayerArgs menuTxtBaseData (0x4FE, "menu_txt_base", 0x12, action);
 	menuTxtBaseData.play (&menuTxtBaseId);
 }
 

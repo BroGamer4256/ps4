@@ -1,6 +1,6 @@
 project('ps4', 'c', 'cpp', 'nasm', version: '1.0.0')
 warning_level = 3
-cpp_std = 'c++20'
+cpp_std = 'c++20' # Dosen't seem to actually do anything ???
 debug = true
 optimization = 3
 b_lto = true
@@ -10,15 +10,23 @@ cpp = meson.get_compiler('cpp')
 
 add_project_arguments(
 	cpp.get_supported_arguments(
+		# GCC
 		'-D_WIN32_WINNT=_WIN32_WINNT_WIN10',
+		'-std=c++20',
+		# MSVC
+		'/std:c++20',
 	),
 	language: 'cpp',
 )
 
 add_project_link_arguments(
 	cpp.get_supported_arguments(
+		# GCC
 		'-static',
-		'-s'
+		'-s',
+		'-std=c++20',
+		# MSVC
+		'/std:c++20',
 	),
 	language: 'cpp',
 )

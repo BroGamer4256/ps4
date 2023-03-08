@@ -1,23 +1,23 @@
 namespace diva {
 struct Vec2 {
-	float x;
-	float y;
+	f32 x;
+	f32 y;
 
 	inline Vec2 () {
 		this->x = 0;
 		this->y = 0;
 	}
 
-	inline Vec2 (float x, float y) {
+	inline Vec2 (f32 x, f32 y) {
 		this->x = x;
 		this->y = y;
 	}
 };
 
 struct Vec3 {
-	float x;
-	float y;
-	float z;
+	f32 x;
+	f32 y;
+	f32 z;
 
 	inline Vec3 () {
 		this->x = 0;
@@ -25,7 +25,7 @@ struct Vec3 {
 		this->z = 0;
 	}
 
-	inline Vec3 (float x, float y, float z) {
+	inline Vec3 (f32 x, f32 y, f32 z) {
 		this->x = x;
 		this->y = y;
 		this->z = z;
@@ -33,10 +33,10 @@ struct Vec3 {
 };
 
 struct Vec4 {
-	float x;
-	float y;
-	float z;
-	float w;
+	f32 x;
+	f32 y;
+	f32 z;
+	f32 w;
 
 	inline Vec4 () {
 		this->x = 0;
@@ -45,7 +45,7 @@ struct Vec4 {
 		this->w = 0;
 	}
 
-	inline Vec4 (float x, float y, float z, float w) {
+	inline Vec4 (f32 x, f32 y, f32 z, f32 w) {
 		this->x = x;
 		this->y = y;
 		this->z = z;
@@ -77,9 +77,47 @@ struct string {
 	u64 length;
 	u64 capacity;
 
-	char *c_str () {
+	inline char *c_str () {
 		if (this->capacity > 16) return this->ptr;
 		else return this->data;
+	}
+
+	inline string () {}
+	inline string (const char *cstr) {
+		u64 len = strlen (cstr);
+		if (len > 16) {
+			u64 new_len = (len + 1) | 0xF;
+			this->ptr   = allocate<char> (new_len);
+			strcpy (this->ptr, cstr);
+			this->length   = len;
+			this->capacity = new_len;
+		} else {
+			strcpy_s (this->data, cstr);
+			this->length   = len;
+			this->capacity = 15;
+		}
+	}
+	inline string (char *cstr) {
+		u64 len = strlen (cstr);
+		if (len > 16) {
+			this->ptr      = cstr;
+			this->length   = len;
+			this->capacity = len;
+		} else {
+			strcpy_s (this->data, cstr);
+			this->length   = len;
+			this->capacity = 15;
+		}
+	}
+
+	inline bool operator== (string &rhs) { return strcmp (this->c_str (), rhs.c_str ()) == 0; }
+	inline bool operator== (const char *rhs) { return strcmp (this->c_str (), rhs) == 0; }
+	inline bool operator== (char *rhs) { return strcmp (this->c_str (), rhs) == 0; }
+	inline std::strong_ordering operator<=> (string &rhs) {
+		auto value = strcmp (this->c_str (), rhs.c_str ());
+		if (value > 0) return std::strong_ordering::greater;
+		else if (value < 0) return std::strong_ordering::less;
+		else return std::strong_ordering::equal;
 	}
 };
 
@@ -132,6 +170,18 @@ struct map {
 	mapElement<K, V> *root;
 	u64 length;
 
+	map () {
+		this->root          = allocate<mapElement<K, V>> (1);
+		this->root->left    = this->root;
+		this->root->parent  = this->root;
+		this->root->right   = this->root;
+		this->root->isBlack = true;
+		this->root->isNull  = true;
+		this->length        = 0;
+	}
+
+	~map () { deallocate (this->root); }
+
 	mapElement<K, V> *find (K key) {
 		auto ptr = this->root->parent;
 		while (!ptr->isNull) {
@@ -140,6 +190,12 @@ struct map {
 			if (key < ptr->key) ptr = ptr->left;
 		}
 		return this->end ();
+	}
+
+	std::optional<V> find_val (K key) {
+		auto found = this->find (key);
+		if (!found || found == this->end ()) return std::nullopt;
+		return std::optional (found->value);
 	}
 
 	mapElement<K, V> *begin () { return this->length ? this->root->left : this->root; }
@@ -318,29 +374,29 @@ struct PvSpriteIds {
 	i32 thumbnailIdExtreme;
 };
 
-struct aetLayer {
-	int sceneId;
+struct aetLayerArgs {
+	i32 sceneId;
 	char *layerName;
 	string StartMarker;
 	string EndMarker;
 	string LoopMarker;
-	float start_time;
+	f32 start_time;
 	float end_time;
-	int flags;
-	int unk_0x7C;
-	int unk_0x80;
-	int layer;
-	int resolutionMode;
+	i32 flags;
+	i32 unk_0x7C;
+	i32 unk_0x80;
+	i32 layer;
+	i32 resolutionMode;
 	Vec3 position;
 	Vec3 rotation;
 	Vec3 scale;
 	Vec3 anchor;
-	float frameSpeed;
+	f32 frameSpeed;
 	Vec4 color;
 	map<string, i32> layerSprite;
 	string sound_path;
 	map<string, string> soundReplace;
-	int soundQueueIndex;
+	i32 soundQueueIndex;
 	map<u32, u32> spriteReplace;
 	map<u32, void *> spriteTexture;
 	map<u32, u32> spriteDiscard;
@@ -352,29 +408,50 @@ struct aetLayer {
 	void *unk_0x160;
 	Vec3 position_2;
 
-	aetLayer () {}
-	aetLayer (i32 sceneId, const char *layerName, i32 layer, AetAction action);
+	aetLayerArgs () {}
+	aetLayerArgs (i32 sceneId, const char *layerName, i32 layer, AetAction action);
 	void with_data (i32 sceneId, const char *layerName, i32 layer, AetAction action);
 	void play (i32 *id);
 	void setPosition (Vec3 position);
+};
+
+struct aetLayerData {
+	struct matrix {
+		Vec4 x;
+		Vec4 y;
+		Vec4 z;
+		Vec4 w;
+	} matrix;
+	Vec3 position;
+	Vec3 anchor;
+	f32 width;
+	f32 height;
+	u32 unk_60;
+	u32 unk_64;
+	i32 resolutionMode;
+	u32 unk_6C;
+	i32 unk_70;
+	u8 blendMode;
+	u8 transferFlags;
+	u8 trackMatte;
+	i32 unk_78;
+	i32 unk_7C;
 };
 #pragma pack(pop)
 
 extern list<i32> *pvs;
 extern map<i32, PvSpriteIds> *pvSprites;
 
-using compositionData = map<string, void *>;
+using aetComposition = map<string, aetLayerData>;
 
 FUNCTION_PTR_H (bool, __thiscall, CmnMenuDestroy, u64 This);
 FUNCTION_PTR_H (void *, __stdcall, GetInputState, i32 a1);
 FUNCTION_PTR_H (bool, __stdcall, IsButtonTapped, void *state, Button button);
-FUNCTION_PTR_H (void, __stdcall, GetComposition, compositionData *composition, i32 id);
-FUNCTION_PTR_H (float *, __stdcall, GetCompositionLayer, compositionData *composition, const char *layerName);
+FUNCTION_PTR_H (void, __stdcall, GetComposition, aetComposition *composition, i32 id);
 FUNCTION_PTR_H (void, __stdcall, PlaySoundEffect, const char *name, float volume);
 FUNCTION_PTR_H (u64, __stdcall, GetPvLoadData);
 FUNCTION_PTR_H (i32, __stdcall, GetCurrentStyle);
 FUNCTION_PTR_H (InputType, __stdcall, NormalizeInputType, i32 inputType);
-FUNCTION_PTR_H (string *, __stdcall, StringInit, string *to, const char *from, u64 len);
 FUNCTION_PTR_H (void, __stdcall, StopAet, i32 *id);
 
 void appendThemeInPlace (char *name);
@@ -384,8 +461,7 @@ void appendThemeInPlaceString (string *name);
 InputType getInputType ();
 bool isMovieOnly (u64 entry);
 u64 getPvDbEntry (i32 id);
-Vec4 getPlaceholderRect (float *placeholderData, bool centeredAnchor);
-void initCompositionData (compositionData *out);
+Vec4 getPlaceholderRect (aetLayerData layer);
 Vec2 getClickedPos (void *inputState);
-std::optional<Vec4> getTouchArea (compositionData compositionData, const char *name, bool centeredAnchor);
+std::optional<Vec4> getTouchArea (aetComposition compositionData, const char *name);
 } // namespace diva

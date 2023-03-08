@@ -10,19 +10,19 @@ typedef enum PauseAction : i32 {
 } PauseAction;
 
 using diva::AetAction;
-using diva::aetLayer;
+using diva::aetLayerArgs;
 
 i32 pauseMenuBackgroundId = 0;
 bool playedOut            = 0;
 HOOK (void, __stdcall, LoadPauseBackground, 0x1406570E0, u64 a1, bool playOut) {
 	if (playOut && !playedOut) {
 		playedOut = true;
-		aetLayer pauseMenuBackground (0x51C, "pause_win_add_base", 0x12, AetAction::OUT_ONCE);
+		aetLayerArgs pauseMenuBackground (0x51C, "pause_win_add_base", 0x12, AetAction::OUT_ONCE);
 		pauseMenuBackground.frameRateControl = (void *)(a1 + 0xB0);
 		pauseMenuBackground.play (&pauseMenuBackgroundId);
 	} else {
 		playedOut = false;
-		aetLayer pauseMenuBackground (0x51C, "pause_win_add_base", 0x12, AetAction::IN_LOOP);
+		aetLayerArgs pauseMenuBackground (0x51C, "pause_win_add_base", 0x12, AetAction::IN_LOOP);
 		pauseMenuBackground.frameRateControl = (void *)(a1 + 0xB0);
 		pauseMenuBackground.play (&pauseMenuBackgroundId);
 	}
@@ -32,7 +32,7 @@ HOOK (void, __stdcall, LoadPauseBackground, 0x1406570E0, u64 a1, bool playOut) {
 HOOK (void, __stdcall, PauseExit, 0x14065B810, u64 a1) {
 	if (!playedOut) {
 		playedOut = true;
-		aetLayer pauseMenuBackground (0x51C, "pause_win_add_base", 0x12, AetAction::OUT_ONCE);
+		aetLayerArgs pauseMenuBackground (0x51C, "pause_win_add_base", 0x12, AetAction::OUT_ONCE);
 		pauseMenuBackground.frameRateControl = (void *)(a1 + 0xB0);
 		pauseMenuBackground.play (&pauseMenuBackgroundId);
 	}
