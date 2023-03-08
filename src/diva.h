@@ -152,7 +152,7 @@ struct vector {
 	T *last;
 	void *capacity_end;
 
-	vector () { vector (16); }
+	vector () {}
 	vector (u64 n) {
 		this->first        = allocate<T> (n);
 		this->last         = this->first;
