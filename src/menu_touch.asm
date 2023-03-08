@@ -1,7 +1,7 @@
 extern implOfCmnMenuTouchCheck
 extern AppendLayerSuffix
 extern GetLayerFrame
-extern PlaySoundEffect
+extern _ZN4diva15PlaySoundEffectE
 extern whereCmnMenuTouchCheck
 
 section .text
@@ -45,7 +45,7 @@ implOfCmnMenuTouchCheck:
 	cmovnc rcx, [rcx]
 	mov eax, __?float32?__(1.0)
 	movd xmm1, eax
-	mov rax, [rel PlaySoundEffect]
+	mov rax, [rel _ZN4diva15PlaySoundEffectE]
 	call rax
 
 	pop r15

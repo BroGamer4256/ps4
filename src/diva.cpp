@@ -1,6 +1,7 @@
 #include "diva.h"
 #include "SigScan.h"
 
+extern i32 theme;
 namespace diva {
 SIG_SCAN (sigOperatorNew, 0x1409777D0,
           "\x40\x53\x48\x83\xEC\x20\x48\x8B\xD9\xEB\x0F\x48\x8B\xCB\xE8\x00\x00\x00\x00\x85\xC0\x74\x13\x48\x8B\xCB\xE8\x00\x00\x00\x00\x48\x85\xC0\x74\xE7\x48\x83\xC4\x20\x5B\xC3\x48\x83\xFB\xFF\x74"
@@ -32,7 +33,6 @@ FUNCTION_PTR (void *, __fastcall, operatorDelete, sigOperatorDelete (), void *);
 list<i32> *pvs                   = (list<i32> *)0x141753808;
 map<i32, PvSpriteIds> *pvSprites = (map<i32, PvSpriteIds> *)0x14CBBACC0;
 
-extern i32 theme;
 void
 appendThemeInPlace (char *name) {
 	switch (theme) {
