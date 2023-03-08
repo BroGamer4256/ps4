@@ -126,14 +126,14 @@ initCompositionData (diva::map<diva::string, void *> *out) {
 
 Vec2
 getClickedPos (void *inputState) {
-	Vec2 initialVec = createVec2 (*(i32 *)((u64)inputState + 0x158), *(i32 *)((u64)inputState + 0x15C));
+	Vec2 initialVec (*(i32 *)((u64)inputState + 0x158), *(i32 *)((u64)inputState + 0x15C));
 
 	RECT rect;
 	GetClientRect (FindWindow ("DIVAMIXP", 0), &rect);
 	float x = initialVec.x / (float)rect.right * 1920;
 	float y = initialVec.y / (float)rect.bottom * 1080;
 
-	return createVec2 (x, y);
+	return Vec2 (x, y);
 }
 
 std::optional<Vec4>

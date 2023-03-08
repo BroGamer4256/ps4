@@ -72,12 +72,12 @@ initMenu () {
 
 	float *yesButtonPlaceholderData = GetCompositionLayer (&compositionData, "p_submenu_03_c");
 	if (yesButtonPlaceholderData) {
-		yesButtonLoc  = createVec3 (yesButtonPlaceholderData[16], yesButtonPlaceholderData[17], yesButtonPlaceholderData[18]);
+		yesButtonLoc  = Vec3 (yesButtonPlaceholderData[16], yesButtonPlaceholderData[17], yesButtonPlaceholderData[18]);
 		yesButtonRect = getPlaceholderRect (yesButtonPlaceholderData, false);
 	}
 	float *noButtonPlaceholderData = GetCompositionLayer (&compositionData, "p_submenu_04_c");
 	if (noButtonPlaceholderData) {
-		noButtonLoc  = createVec3 (noButtonPlaceholderData[16], noButtonPlaceholderData[17], noButtonPlaceholderData[18]);
+		noButtonLoc  = Vec3 (noButtonPlaceholderData[16], noButtonPlaceholderData[17], noButtonPlaceholderData[18]);
 		noButtonRect = getPlaceholderRect (noButtonPlaceholderData, false);
 	}
 
@@ -96,10 +96,10 @@ initMenu () {
 
 void
 handleClick (Vec2 clickedPos) {
-	if (vec4ContainsVec2 (yesButtonRect, clickedPos)) {
+	if (yesButtonRect.contains (clickedPos)) {
 		if (hoveredButton == 0) moveUp ();
 		else ExitProcess (0);
-	} else if (vec4ContainsVec2 (noButtonRect, clickedPos)) {
+	} else if (noButtonRect.contains (clickedPos)) {
 		if (hoveredButton == 1) moveDown ();
 		else leaveMenu ();
 	}

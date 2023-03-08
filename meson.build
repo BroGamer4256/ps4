@@ -39,7 +39,6 @@ library(
 	],
 	sources : [
 		'src/mod.cpp',
-		'src/helpers.cpp',
 		'src/SigScan.cpp',
 		'src/diva.cpp',
 		'src/menu_touch.asm',

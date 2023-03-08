@@ -73,25 +73,3 @@ typedef uint64_t u64;
 	}
 
 #define COUNTOFARR(arr) sizeof (arr) / sizeof (arr[0])
-
-typedef struct Vec2 {
-	float x;
-	float y;
-} Vec2;
-
-typedef struct Vec3 {
-	float x;
-	float y;
-	float z;
-} Vec3;
-
-typedef struct Vec4 {
-	float x;
-	float y;
-	float z;
-	float w;
-} Vec4;
-
-Vec2 createVec2 (float x, float y);
-Vec3 createVec3 (float x, float y, float z);
-bool vec4ContainsVec2 (Vec4 box, Vec2 location);

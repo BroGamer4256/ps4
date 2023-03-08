@@ -24,8 +24,8 @@ i32 keyHelpId         = 0;
 diva::map<diva::string, void *> compositionData;
 InputType lastInputType;
 Vec4 touchArea;
-Vec3 keyHelpLoc = createVec3 (0, 0, 0);
-Vec3 txtLoc     = createVec3 (0, 0, 0);
+Vec3 keyHelpLoc;
+Vec3 txtLoc;
 
 bool optSelectorInited = false;
 i32 optSelectorId      = 0;
@@ -83,9 +83,9 @@ initStyle (Style style, InputType input) {
 	GetComposition (&compositionData, selectorId);
 
 	float *buttonPlaceholderData = GetCompositionLayer (&compositionData, "key_help_lv_tab_01");
-	if (buttonPlaceholderData) keyHelpLoc = createVec3 (buttonPlaceholderData[16], buttonPlaceholderData[17], buttonPlaceholderData[18]);
+	if (buttonPlaceholderData) keyHelpLoc = Vec3 (buttonPlaceholderData[16], buttonPlaceholderData[17], buttonPlaceholderData[18]);
 	float *textPlaceholderData = GetCompositionLayer (&compositionData, "visual_settings_txt");
-	if (textPlaceholderData) txtLoc = createVec3 (textPlaceholderData[16], textPlaceholderData[17], textPlaceholderData[18]);
+	if (textPlaceholderData) txtLoc = Vec3 (textPlaceholderData[16], textPlaceholderData[17], textPlaceholderData[18]);
 	float *buttonTouchAreaData = GetCompositionLayer (&compositionData, "p_visual_settings_touch");
 	if (buttonTouchAreaData) touchArea = getPlaceholderRect (buttonTouchAreaData, false);
 
@@ -99,9 +99,9 @@ updateLocs () {
 	GetComposition (&compositionData, selectorId);
 
 	float *buttonPlaceholderData = GetCompositionLayer (&compositionData, "key_help_lv_tab_01");
-	if (buttonPlaceholderData) keyHelpLoc = createVec3 (buttonPlaceholderData[16], buttonPlaceholderData[17], buttonPlaceholderData[18]);
+	if (buttonPlaceholderData) keyHelpLoc = Vec3 (buttonPlaceholderData[16], buttonPlaceholderData[17], buttonPlaceholderData[18]);
 	float *textPlaceholderData = GetCompositionLayer (&compositionData, "visual_settings_txt");
-	if (textPlaceholderData) txtLoc = createVec3 (textPlaceholderData[16], textPlaceholderData[17], textPlaceholderData[18]);
+	if (textPlaceholderData) txtLoc = Vec3 (textPlaceholderData[16], textPlaceholderData[17], textPlaceholderData[18]);
 	float *buttonTouchAreaData = GetCompositionLayer (&compositionData, "p_visual_settings_touch");
 	if (buttonTouchAreaData) touchArea = getPlaceholderRect (buttonTouchAreaData, false);
 
@@ -184,27 +184,27 @@ optionsSelectTouch (u64 This) {
 	bool middleButtonEnabled = subMenu != 1 || extraVocals;
 	bool bottomButtonEnabled = (subMenu == 1 && extraStage) || (subMenu != 1 && (extraVocals || extraStage));
 
-	if (vec4ContainsVec2 (startButton, clickedPos) && selectedButton != 0) updateSelectedButton (This, 0);
-	else if (vec4ContainsVec2 (topButton, clickedPos) && selectedButton != 1 && topButtonEnabled) updateSelectedButton (This, 1);
-	else if (vec4ContainsVec2 (middleButton, clickedPos) && selectedButton != 2 && middleButtonEnabled) updateSelectedButton (This, 2);
-	else if (vec4ContainsVec2 (bottomButton, clickedPos) && selectedButton != 3 && bottomButtonEnabled) updateSelectedButton (This, 3);
+	if (startButton.contains (clickedPos) && selectedButton != 0) updateSelectedButton (This, 0);
+	else if (topButton.contains (clickedPos) && selectedButton != 1 && topButtonEnabled) updateSelectedButton (This, 1);
+	else if (middleButton.contains (clickedPos) && selectedButton != 2 && middleButtonEnabled) updateSelectedButton (This, 2);
+	else if (bottomButton.contains (clickedPos) && selectedButton != 3 && bottomButtonEnabled) updateSelectedButton (This, 3);
 
 	if (subMenu == 0 || subMenu == 2) {
 		if (selectedButton == 1) {
 			if (subMenu == 0) {
-				if (vec4ContainsVec2 (topButtonLeft, clickedPos) || vec4ContainsVec2 (topButtonRight, clickedPos)) {
+				if (topButtonLeft.contains (clickedPos) || topButtonRight.contains (clickedPos)) {
 					*(bool *)(This + 0xA0) = !*(bool *)(This + 0xA0);
 					PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 					UpdateButtons (This + 0x78, 0, 0, 0, 0);
 				}
 			} else if (subMenu == 2) {
 				float maxTime = *(float *)(This + 0x36A3C) - 30.0;
-				if (vec4ContainsVec2 (topButtonLeft, clickedPos)) {
+				if (topButtonLeft.contains (clickedPos)) {
 					i32 startTime = *(i32 *)(This + 0xB0) - 10;
 					if (startTime < 0) startTime = std::floor ((float)maxTime / 10) * 10;
 					*(i32 *)(This + +0xB0) = startTime;
 					PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
-				} else if (vec4ContainsVec2 (topButtonRight, clickedPos)) {
+				} else if (topButtonRight.contains (clickedPos)) {
 					i32 startTime = *(i32 *)(This + 0xB0) + 10;
 					if (startTime > maxTime) startTime = 0;
 					*(i32 *)(This + +0xB0) = startTime;
@@ -212,12 +212,12 @@ optionsSelectTouch (u64 This) {
 				}
 			}
 		} else if (selectedButton == 2) {
-			if (vec4ContainsVec2 (middleButtonLeft, clickedPos)) {
+			if (middleButtonLeft.contains (clickedPos)) {
 				i32 *modifier = (i32 *)(This + 0xA4);
 				if (*modifier == 0) *modifier = 3;
 				else *modifier = *modifier - 1;
 				PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
-			} else if (vec4ContainsVec2 (middleButtonRight, clickedPos)) {
+			} else if (middleButtonRight.contains (clickedPos)) {
 				i32 *modifier = (i32 *)(This + 0xA4);
 				if (*modifier == 3) *modifier = 0;
 				else *modifier = *modifier + 1;
@@ -225,45 +225,45 @@ optionsSelectTouch (u64 This) {
 			}
 		} else if (selectedButton == 3) {
 			if (extraVocals) {
-				if (vec4ContainsVec2 (bottomButtonLeft, clickedPos)) {
+				if (bottomButtonLeft.contains (clickedPos)) {
 					*(i32 *)(This + 0xA8) = *(i32 *)(This + 0xA8) - 1;
 					if (*(i32 *)(This + 0xA8) < 0) *(i32 *)(This + 0xA8) = extraVocalsCount - 1;
 					PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
-				} else if (vec4ContainsVec2 (bottomButtonRight, clickedPos)) {
+				} else if (bottomButtonRight.contains (clickedPos)) {
 					*(i32 *)(This + 0xA8) = *(i32 *)(This + 0xA8) + 1;
 					if (*(i32 *)(This + 0xA8) >= extraVocalsCount) *(i32 *)(This + 0xA8) = 0;
 					PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 				}
-			} else if (vec4ContainsVec2 (bottomButtonLeft, clickedPos) || vec4ContainsVec2 (bottomButtonRight, clickedPos)) {
+			} else if (bottomButtonLeft.contains (clickedPos) || bottomButtonRight.contains (clickedPos)) {
 				*(bool *)(This + 0xAC) = !*(bool *)(This + 0xAC);
 				PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 			}
 		}
 	} else if (subMenu == 1) {
 		if (selectedButton == 1) {
-			if (vec4ContainsVec2 (topButtonLeft, clickedPos) || vec4ContainsVec2 (topButtonRight, clickedPos)) {
+			if (topButtonLeft.contains (clickedPos) || topButtonRight.contains (clickedPos)) {
 				*(bool *)(This + 0xAD) = !*(bool *)(This + 0xAD);
 				PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 			}
 		} else if (selectedButton == 2) {
-			if (vec4ContainsVec2 (bottomButtonLeft, clickedPos)) {
+			if (bottomButtonLeft.contains (clickedPos)) {
 				*(i32 *)(This + 0xA8) = *(i32 *)(This + 0xA8) - 1;
 				if (*(i32 *)(This + 0xA8) < 0) *(i32 *)(This + 0xA8) = extraVocalsCount - 1;
 				PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
-			} else if (vec4ContainsVec2 (bottomButtonRight, clickedPos)) {
+			} else if (bottomButtonRight.contains (clickedPos)) {
 				*(i32 *)(This + 0xA8) = *(i32 *)(This + 0xA8) + 1;
 				if (*(i32 *)(This + 0xA8) >= extraVocalsCount) *(i32 *)(This + 0xA8) = 0;
 				PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 			}
 		} else if (selectedButton == 3) {
-			if (vec4ContainsVec2 (bottomButtonLeft, clickedPos) || vec4ContainsVec2 (bottomButtonRight, clickedPos)) {
+			if (bottomButtonLeft.contains (clickedPos) || bottomButtonRight.contains (clickedPos)) {
 				*(bool *)(This + 0xAC) = !*(bool *)(This + 0xAC);
 				PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 			}
 		}
 	}
 
-	if (vec4ContainsVec2 (startButtonLeft, clickedPos)) {
+	if (startButtonLeft.contains (clickedPos)) {
 		if (subMenu == 0) subMenu = 2;
 		else subMenu = subMenu - 1;
 
@@ -273,7 +273,7 @@ optionsSelectTouch (u64 This) {
 
 		UpdateSubMenu (This + 0x78, subMenu, This + 0xB8, *(i32 *)(This + 0xA8), *(i32 *)(This + 0xB0), *(u8 *)(This + 0xB5), *(u8 *)(This + 0xB6), This + 0xB8, This + 0x490, 0, *(u8 *)(This + 0xB7));
 		UpdateButtons (This + 0x78, 1, 0, 0, 0);
-	} else if (vec4ContainsVec2 (startButtonRight, clickedPos)) {
+	} else if (startButtonRight.contains (clickedPos)) {
 		if (subMenu == 2) subMenu = 0;
 		else subMenu = subMenu + 1;
 
@@ -282,7 +282,7 @@ optionsSelectTouch (u64 This) {
 
 		UpdateSubMenu (This + 0x78, subMenu, This + 0xB8, *(i32 *)(This + 0xA8), *(i32 *)(This + 0xB0), *(u8 *)(This + 0xB5), *(u8 *)(This + 0xB6), This + 0xB8, This + 0x490, 0, *(u8 *)(This + 0xB7));
 		UpdateButtons (This + 0x78, 0, 1, 0, 0);
-	} else if (vec4ContainsVec2 (startButton, clickedPos) && selectedButton == 0) {
+	} else if (startButton.contains (clickedPos) && selectedButton == 0) {
 		PlaySoundEffect ("se_ft_music_selector_enter_01", 1.0);
 		*(u8 *)(This + 0x99) = 1;
 		*(u8 *)(This + 0x9B) = 1;
@@ -331,7 +331,7 @@ HOOK (bool, __thiscall, PVSelLoop, 0x1402033C0, u64 This) {
 	Vec2 clickedPos = getClickedPos (inputState);
 	if (clickedPos.x > 0 && !hasClicked) {
 		hasClicked = true;
-		if (vec4ContainsVec2 (touchArea, clickedPos) && !isMovie) {
+		if (touchArea.contains (clickedPos) && !isMovie) {
 			style = !style;
 			PlaySoundEffect ("se_ft_music_selector_select_01", 1.0);
 			updateStyleAets (getStyle (style, isMovie));

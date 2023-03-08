@@ -1,3 +1,59 @@
+struct Vec2 {
+	float x;
+	float y;
+
+	inline Vec2 () {
+		this->x = 0;
+		this->y = 0;
+	}
+
+	inline Vec2 (float x, float y) {
+		this->x = x;
+		this->y = y;
+	}
+};
+
+struct Vec3 {
+	float x;
+	float y;
+	float z;
+
+	inline Vec3 () {
+		this->x = 0;
+		this->y = 0;
+		this->z = 0;
+	}
+
+	inline Vec3 (float x, float y, float z) {
+		this->x = x;
+		this->y = y;
+		this->z = z;
+	}
+};
+
+struct Vec4 {
+	float x;
+	float y;
+	float z;
+	float w;
+
+	inline Vec4 () {
+		this->x = 0;
+		this->y = 0;
+		this->z = 0;
+		this->w = 0;
+	}
+
+	inline Vec4 (float x, float y, float z, float w) {
+		this->x = x;
+		this->y = y;
+		this->z = z;
+		this->w = w;
+	}
+
+	inline bool contains (Vec2 location) { return location.x > this->x && location.x < this->y && location.y > this->z && location.y < this->w; }
+};
+
 namespace diva {
 #pragma pack(push, 8)
 struct string {
