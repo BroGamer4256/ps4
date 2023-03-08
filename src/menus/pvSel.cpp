@@ -8,10 +8,7 @@ typedef enum Style : i32 {
 	STYLE_NONE = 2,
 } Style;
 
-using diva::AetAction;
-using diva::aetLayer;
-using diva::Button;
-using diva::InputType;
+using namespace diva;
 
 bool loaded           = false;
 bool hasClicked       = false;
@@ -21,7 +18,7 @@ char *selectorImgName = (char *)calloc (64, sizeof (char));
 i32 selectorId        = 0;
 i32 selectorImgId     = 0;
 i32 keyHelpId         = 0;
-diva::map<diva::string, void *> compositionData;
+compositionData compositionData;
 InputType lastInputType;
 Vec4 touchArea;
 Vec3 keyHelpLoc;
@@ -29,7 +26,7 @@ Vec3 txtLoc;
 
 bool optSelectorInited = false;
 i32 optSelectorId      = 0;
-diva::map<diva::string, void *> optSelectorCompositionData;
+diva::compositionData optSelectorCompositionData;
 Vec4 topButton;
 Vec4 topButtonLeft;
 Vec4 topButtonRight;
@@ -163,7 +160,7 @@ optionsSelectTouch (u64 This) {
 		optSelectorInited = true;
 	}
 
-	void *inputState = DivaGetInputState (0);
+	void *inputState = diva::GetInputState (0);
 	Vec2 clickedPos  = getClickedPos (inputState);
 	if (hasClicked) return;
 	if (clickedPos.x <= 0) {
@@ -301,7 +298,7 @@ HOOK (bool, __thiscall, PVSelLoop, 0x1402033C0, u64 This) {
 	loaded           = true;
 	bool isMovie     = isMovieOnly (getPvDbEntry (*(i32 *)(This + 0x36A30)));
 	InputType input  = getInputType ();
-	void *inputState = DivaGetInputState (0);
+	void *inputState = diva::GetInputState (0);
 	u64 pvLoadData   = GetPvLoadData ();
 	i32 style        = *(i32 *)(pvLoadData + 0x1D08);
 

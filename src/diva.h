@@ -1,3 +1,4 @@
+namespace diva {
 struct Vec2 {
 	float x;
 	float y;
@@ -54,7 +55,19 @@ struct Vec4 {
 	inline bool contains (Vec2 location) { return location.x > this->x && location.x < this->y && location.y > this->z && location.y < this->w; }
 };
 
-namespace diva {
+FUNCTION_PTR_H (void *, __fastcall, operatorNew, u64);
+FUNCTION_PTR_H (void *, __fastcall, operatorDelete, void *);
+template <typename T>
+T *
+allocate (u64 count) {
+	return (T *)(operatorNew (count * sizeof (T)));
+}
+
+inline void
+deallocate (void *p) {
+	operatorDelete (p);
+}
+
 #pragma pack(push, 8)
 struct string {
 	union {
@@ -119,16 +132,6 @@ struct map {
 	mapElement<K, V> *root;
 	u64 length;
 
-	map () {
-		this->root          = (mapElement<K, V> *)calloc (1, sizeof (mapElement<K, V>));
-		this->root->left    = this->root;
-		this->root->parent  = this->root;
-		this->root->right   = this->root;
-		this->root->isBlack = true;
-		this->root->isNull  = true;
-		this->length        = 0;
-	}
-
 	mapElement<K, V> *find (K key) {
 		auto ptr = this->root->parent;
 		while (!ptr->isNull) {
@@ -141,6 +144,53 @@ struct map {
 
 	mapElement<K, V> *begin () { return this->length ? this->root->left : this->root; }
 	mapElement<K, V> *end () { return this->root; }
+};
+
+template <typename T>
+struct vector {
+	T *first;
+	T *last;
+	void *capacity_end;
+
+	vector () { vector (16); }
+	vector (u64 n) {
+		this->first        = allocate<T> (n);
+		this->last         = this->first;
+		this->capacity_end = (void *)((u64)this->first + (n * sizeof (T)));
+	}
+
+	~vector () { deallocate (this->first); }
+
+	std::optional<T *> at (u64 index) {
+		if (index >= this->length ()) return std::nullopt;
+		std::optional (&this->first[index]);
+	}
+
+	void push_back (T value) {
+		if (this->remaining_capcity () > 0) {
+			this->first[this->length ()] = value;
+			this->last++;
+			return;
+		}
+
+		u64 new_length = this->length () + (this->length () / 2);
+		T *new_first   = allocate<T> (new_length);
+		u64 old_length = (u64)this->last - (u64)this->first;
+		memcpy (new_first, this->first, old_length);
+		deallocate (this->first);
+
+		this->first        = new_first;
+		this->last         = (T *)((u64)new_first + old_length);
+		this->capacity_end = (void *)((u64)new_first + (new_length * sizeof (T)));
+		this->push_back (value);
+	}
+
+	u64 length () { return ((u64)this->last - (u64)this->first) / sizeof (T); }
+	u64 capacity () { return ((u64)this->capacity_end - (u64)this->first) / sizeof (T); }
+	u64 remaining_capcity () { return this->capacity () - this->length (); }
+
+	T *begin () { return this->first; }
+	T *end () { return this->last; }
 };
 
 enum class State : i32 {
@@ -312,28 +362,30 @@ struct aetLayer {
 
 extern list<i32> *pvs;
 extern map<i32, PvSpriteIds> *pvSprites;
-} // namespace diva
+
+using compositionData = map<string, void *>;
 
 FUNCTION_PTR_H (bool, __thiscall, CmnMenuDestroy, u64 This);
-FUNCTION_PTR_H (void *, __stdcall, DivaGetInputState, i32 a1);
-FUNCTION_PTR_H (bool, __stdcall, IsButtonTapped, void *state, diva::Button button);
-FUNCTION_PTR_H (void, __stdcall, GetComposition, diva::map<diva::string, void *> *composition, i32 id);
-FUNCTION_PTR_H (float *, __stdcall, GetCompositionLayer, diva::map<diva::string, void *> *composition, const char *layerName);
+FUNCTION_PTR_H (void *, __stdcall, GetInputState, i32 a1);
+FUNCTION_PTR_H (bool, __stdcall, IsButtonTapped, void *state, Button button);
+FUNCTION_PTR_H (void, __stdcall, GetComposition, compositionData *composition, i32 id);
+FUNCTION_PTR_H (float *, __stdcall, GetCompositionLayer, compositionData *composition, const char *layerName);
 FUNCTION_PTR_H (void, __stdcall, PlaySoundEffect, const char *name, float volume);
 FUNCTION_PTR_H (u64, __stdcall, GetPvLoadData);
 FUNCTION_PTR_H (i32, __stdcall, GetCurrentStyle);
-FUNCTION_PTR_H (diva::InputType, __stdcall, NormalizeInputType, i32 inputType);
-FUNCTION_PTR_H (diva::string *, __stdcall, StringInit, diva::string *to, const char *from, u64 len);
+FUNCTION_PTR_H (InputType, __stdcall, NormalizeInputType, i32 inputType);
+FUNCTION_PTR_H (string *, __stdcall, StringInit, string *to, const char *from, u64 len);
 FUNCTION_PTR_H (void, __stdcall, StopAet, i32 *id);
 
 void appendThemeInPlace (char *name);
 char *appendTheme (const char *name);
-void appendStringInPlace (diva::string *str, const char *append);
-void appendThemeInPlaceString (diva::string *name);
-diva::InputType getInputType ();
+void appendStringInPlace (string *str, const char *append);
+void appendThemeInPlaceString (string *name);
+InputType getInputType ();
 bool isMovieOnly (u64 entry);
 u64 getPvDbEntry (i32 id);
 Vec4 getPlaceholderRect (float *placeholderData, bool centeredAnchor);
-void initCompositionData (diva::map<diva::string, void *> *out);
+void initCompositionData (compositionData *out);
 Vec2 getClickedPos (void *inputState);
-std::optional<Vec4> getTouchArea (diva::map<diva::string, void *> compositionData, const char *name, bool centeredAnchor);
+std::optional<Vec4> getTouchArea (compositionData compositionData, const char *name, bool centeredAnchor);
+} // namespace diva

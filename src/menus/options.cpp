@@ -92,7 +92,7 @@ HOOK (bool, __stdcall, OptionMenuSwitchInit, 0x1406C3CB0, void *a1) {
 	aetLayer optionMenuTopData (0x525, topLoopName, 7, AetAction::NONE);
 	optionMenuTopData.play (&optionMenuTopId);
 
-	InputType input = getInputType ();
+	InputType input = diva::getInputType ();
 	previousInput   = input;
 	sprintf (footerName, "footer_button_01_%02d", (i32)input);
 
@@ -109,7 +109,7 @@ HOOK (bool, __stdcall, OptionMenuSwitchLoop, 0x1406C2920, u64 a1) {
 	u8 subMenu      = *(u8 *)(a1 + 0xB3);
 	subMenu         = subMenu > 1 ? subMenu - 1 : subMenu;
 	u8 button       = *(u8 *)(a1 + 0xB4 + subMenu);
-	InputType input = getInputType ();
+	InputType input = diva::getInputType ();
 	if (input != previousInput || previousSubMenu != subMenu) {
 		sprintf (footerName, "footer_button_%02d_%02d", (bool)subMenu + 1, (i32)input);
 		aetLayer footerData (0x525, footerName, 13, AetAction::NONE);
@@ -126,20 +126,20 @@ HOOK (bool, __stdcall, OptionMenuSwitchLoop, 0x1406C2920, u64 a1) {
 }
 
 HOOK (bool, __stdcall, OptionMenuSwitchDestroy, 0x1406C2CE0, void *a1) {
-	StopAet (&optionMenuTopId);
-	StopAet (&menuTxt1Id);
-	StopAet (&menuTxt2Id);
-	StopAet (&menuTxt3Id);
-	StopAet (&menuTxt4Id);
-	StopAet (&menuTxt5Id);
-	StopAet (&menuTxt6Id);
-	StopAet (&footerId);
+	diva::StopAet (&optionMenuTopId);
+	diva::StopAet (&menuTxt1Id);
+	diva::StopAet (&menuTxt2Id);
+	diva::StopAet (&menuTxt3Id);
+	diva::StopAet (&menuTxt4Id);
+	diva::StopAet (&menuTxt5Id);
+	diva::StopAet (&menuTxt6Id);
+	diva::StopAet (&footerId);
 	return originalOptionMenuSwitchDestroy (a1);
 }
 
 void
 init () {
-	topLoopName = appendTheme ("option_top_menu loop");
+	topLoopName = diva::appendTheme ("option_top_menu loop");
 
 	INSTALL_HOOK (OptionMenuSwitchInit);
 	INSTALL_HOOK (OptionMenuSwitchLoop);

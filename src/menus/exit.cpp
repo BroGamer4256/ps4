@@ -1,6 +1,8 @@
 #include "diva.h"
 
 namespace exitMenu {
+using namespace diva;
+
 bool wantsToExit   = false;
 bool hasClicked    = false;
 i32 menuAetId      = 0;
@@ -9,15 +11,11 @@ i32 noButtonAetId  = 0;
 i32 hoveredButton  = 0;
 char *yesButtonName;
 char *noButtonName;
-diva::map<diva::string, void *> compositionData;
+compositionData compositionData;
 Vec3 yesButtonLoc;
 Vec3 noButtonLoc;
 Vec4 yesButtonRect;
 Vec4 noButtonRect;
-
-using diva::AetAction;
-using diva::aetLayer;
-using diva::Button;
 
 void
 moveDown () {
@@ -109,7 +107,7 @@ handleClick (Vec2 clickedPos) {
 HOOK (bool, __thiscall, CsMenuLoop, 0x1401B29D0, u64 This) {
 	if (*(i32 *)(This + 0x68) != 2) return originalCsMenuLoop (This);
 
-	void *inputState = DivaGetInputState (0);
+	void *inputState = diva::GetInputState (0);
 	Vec2 clickedPos  = getClickedPos (inputState);
 
 	if (wantsToExit) {

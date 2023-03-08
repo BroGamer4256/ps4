@@ -1,23 +1,36 @@
 #include "diva.h"
+#include "SigScan.h"
+
+namespace diva {
+SIG_SCAN (sigOperatorNew, 0x1409777D0,
+          "\x40\x53\x48\x83\xEC\x20\x48\x8B\xD9\xEB\x0F\x48\x8B\xCB\xE8\x00\x00\x00\x00\x85\xC0\x74\x13\x48\x8B\xCB\xE8\x00\x00\x00\x00\x48\x85\xC0\x74\xE7\x48\x83\xC4\x20\x5B\xC3\x48\x83\xFB\xFF\x74"
+          "\x06\xE8\x00\x00\x00\x00\xCC\xE8\x00\x00\x00\x00\xCC\x40\x53",
+          "xxxxxxxxxxxxxxx????xxxxxxxx????xxxxxxxxxxxxxxxxxx????xx????xxx");
+SIG_SCAN (sigOperatorDelete, 0x1409B1E90,
+          "\x48\x85\xC9\x74\x37\x53\x48\x83\xEC\x20\x4C\x8B\xC1\x33\xD2\x48\x8B\x0D\x00\x00\x00\x00\xFF\x15\x00\x00\x00\x00\x85\xC0\x75\x17\xE8\x00\x00\x00\x00\x48\x8B\xD8\xFF\x15\x00\x00\x00\x00\x8B"
+          "\xC8\xE8\x00\x00\x00\x00\x89\x03\x48\x83\xC4\x20\x5B\xC3",
+          "xxxxxxxxxxxxxxxxxx????xx????xxxxx????xxxxx????xxx????xxxxxxxx");
 
 FUNCTION_PTR (bool, __thiscall, CmnMenuDestroy, 0x1401AAE50, u64 This);
-FUNCTION_PTR (void *, __stdcall, DivaGetInputState, 0x1402AC970, i32 a1);
-FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB260, void *state, diva::Button button);
-FUNCTION_PTR (void *, __stdcall, CreateAetLayerData, 0x14028D560, diva::aetLayer *data, i32 aetSceneId, const char *layerName, i32 layer, diva::AetAction action);
-FUNCTION_PTR (i32, __stdcall, PlayAetLayer, 0x1402CA220, diva::aetLayer *data, i32 id);
-FUNCTION_PTR (void, __stdcall, GetComposition, 0x1402CA670, diva::map<diva::string, void *> *composition, i32 id);
-FUNCTION_PTR (float *, __stdcall, GetCompositionLayer, 0x1402CA780, diva::map<diva::string, void *> *composition, const char *layerName);
-FUNCTION_PTR (void, __stdcall, ApplyAetLayerLocation, 0x14065FCC0, diva::aetLayer *data, Vec3 *locationData);
+FUNCTION_PTR (void *, __stdcall, GetInputState, 0x1402AC970, i32 a1);
+FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB260, void *state, Button button);
+FUNCTION_PTR (void *, __stdcall, CreateAetLayerData, 0x14028D560, aetLayer *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
+FUNCTION_PTR (i32, __stdcall, PlayAetLayer, 0x1402CA220, aetLayer *data, i32 id);
+FUNCTION_PTR (void, __stdcall, GetComposition, 0x1402CA670, compositionData *composition, i32 id);
+FUNCTION_PTR (float *, __stdcall, GetCompositionLayer, 0x1402CA780, compositionData *composition, const char *layerName);
+FUNCTION_PTR (void, __stdcall, ApplyAetLayerLocation, 0x14065FCC0, aetLayer *data, Vec3 *locationData);
 FUNCTION_PTR (void, __stdcall, PlaySoundEffect, 0x1405AA540, const char *name, float volume);
 FUNCTION_PTR (u64, __stdcall, GetPvLoadData, 0x14040B2A0);
 FUNCTION_PTR (i32, __stdcall, GetCurrentStyle, 0x1401D64F0);
-FUNCTION_PTR (diva::InputType, __stdcall, NormalizeInputType, 0x1402ACAA0, i32 inputType);
-FUNCTION_PTR (diva::string *, __stdcall, StringInit, 0x14014BA50, diva::string *to, const char *from, u64 len);
-FUNCTION_PTR (void, __stdcall, FreeSubLayers, 0x1401AC240, diva::map<diva::string, void *> *sublayerData, diva::map<diva::string, void *> *sublayerData2, void *first_element);
+FUNCTION_PTR (InputType, __stdcall, NormalizeInputType, 0x1402ACAA0, i32 inputType);
+FUNCTION_PTR (string *, __stdcall, StringInit, 0x14014BA50, string *to, const char *from, u64 len);
+FUNCTION_PTR (void, __stdcall, FreeSubLayers, 0x1401AC240, compositionData *sublayerData, compositionData *sublayerData2, void *first_element);
 FUNCTION_PTR (void, __stdcall, StopAet, 0x1402CA330, i32 *id);
+FUNCTION_PTR (void *, __fastcall, operatorNew, sigOperatorNew (), u64);
+FUNCTION_PTR (void *, __fastcall, operatorDelete, sigOperatorDelete (), void *);
 
-diva::list<i32> *pvs                         = (diva::list<i32> *)0x141753808;
-diva::map<i32, diva::PvSpriteIds> *pvSprites = (diva::map<i32, diva::PvSpriteIds> *)0x14CBBACC0;
+list<i32> *pvs                   = (list<i32> *)0x141753808;
+map<i32, PvSpriteIds> *pvSprites = (map<i32, PvSpriteIds> *)0x14CBBACC0;
 
 extern i32 theme;
 void
@@ -39,7 +52,7 @@ appendTheme (const char *name) {
 }
 
 void
-appendStringInPlace (diva::string *str, const char *append) {
+appendStringInPlace (string *str, const char *append) {
 	u64 lengthNeeded = str->length + strlen (append) + 1;
 	if (lengthNeeded > str->capacity) {
 		char *temp = (char *)calloc (lengthNeeded, sizeof (char));
@@ -60,7 +73,7 @@ appendStringInPlace (diva::string *str, const char *append) {
 }
 
 void
-appendThemeInPlaceString (diva::string *name) {
+appendThemeInPlaceString (string *name) {
 	switch (theme) {
 	case 1: appendStringInPlace (name, "_f"); break;
 	case 2: appendStringInPlace (name, "_t"); break;
@@ -68,9 +81,9 @@ appendThemeInPlaceString (diva::string *name) {
 	}
 }
 
-diva::InputType
+InputType
 getInputType () {
-	return NormalizeInputType (*(i32 *)((u64)DivaGetInputState (0) + 0x2E8));
+	return NormalizeInputType (*(i32 *)((u64)GetInputState (0) + 0x2E8));
 }
 
 // Will return false for any songs without an ex chart
@@ -112,10 +125,10 @@ getPlaceholderRect (float *placeholderData, bool centeredAnchor) {
 }
 
 void
-initCompositionData (diva::map<diva::string, void *> *out) {
+initCompositionData (compositionData *out) {
 	if (out->root) FreeSubLayers (out, out, (void *)*(u64 *)((u64)out->root + 8));
 
-	out->root          = (diva::mapElement<diva::string, void *> *)calloc (1, 0xB0);
+	out->root          = (mapElement<string, void *> *)calloc (1, 0xB0);
 	out->root->left    = out->root;
 	out->root->parent  = out->root;
 	out->root->right   = out->root;
@@ -137,13 +150,12 @@ getClickedPos (void *inputState) {
 }
 
 std::optional<Vec4>
-getTouchArea (diva::map<diva::string, void *> compositionData, const char *name, bool centeredAnchor) {
+getTouchArea (compositionData compositionData, const char *name, bool centeredAnchor) {
 	float *placeholderData = GetCompositionLayer (&compositionData, name);
 	if (placeholderData) return std::optional (getPlaceholderRect (placeholderData, centeredAnchor));
 	else return std::nullopt;
 }
 
-namespace diva {
 aetLayer::aetLayer (i32 sceneId, const char *layerName, i32 layer, AetAction action) { this->with_data (sceneId, layerName, layer, action); }
 
 void

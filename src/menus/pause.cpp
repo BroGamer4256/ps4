@@ -40,7 +40,7 @@ HOOK (void, __stdcall, PauseExit, 0x14065B810, u64 a1) {
 }
 
 HOOK (void, __stdcall, PauseDestroy, 0x14065B100, u64 a1) {
-	StopAet (&pauseMenuBackgroundId);
+	diva::StopAet (&pauseMenuBackgroundId);
 	originalPauseDestroy (a1);
 }
 
