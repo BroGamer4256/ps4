@@ -9,15 +9,13 @@ typedef enum Style : i32 {
 } Style;
 
 using diva::AetAction;
+using diva::aetLayer;
 using diva::Button;
 using diva::InputType;
 
 bool loaded           = false;
 bool hasClicked       = false;
 i32 pvId              = 0;
-void *selectorData    = calloc (1, 0x1024);
-void *selectorImgData = calloc (1, 0x1024);
-void *keyHelpData     = calloc (1, 0x1024);
 char *buttonName      = (char *)calloc (16, sizeof (char));
 char *selectorImgName = (char *)calloc (64, sizeof (char));
 i32 selectorId        = 0;
@@ -30,7 +28,6 @@ Vec3 keyHelpLoc = createVec3 (0, 0, 0);
 Vec3 txtLoc     = createVec3 (0, 0, 0);
 
 bool optSelectorInited = false;
-void *optSelectorData  = calloc (1, 0x1024);
 i32 optSelectorId      = 0;
 diva::map<diva::string, void *> optSelectorCompositionData;
 Vec4 topButton;
@@ -58,9 +55,10 @@ updateStyleAets (Style newStyle) {
 	}
 	strncat (selectorImgName, &c, 1);
 	strcat (selectorImgName, ".pic");
-	CreateAetLayerData (selectorImgData, 0x4F8, selectorImgName, 0x12, diva::AetAction::NONE);
-	ApplyLocation (selectorImgData, &txtLoc);
-	selectorImgId = PlayAetLayer (selectorImgData, selectorImgId);
+
+	aetLayer selectorImgData (0x4F8, selectorImgName, 0x12, diva::AetAction::NONE);
+	selectorImgData.setPosition (txtLoc);
+	selectorImgData.play (&selectorImgId);
 }
 
 void
@@ -70,15 +68,16 @@ updateButtonPrompt (InputType input) {
 	const char c = (u8)input | 48;
 	strncat (buttonName, &c, 1);
 	strcat (buttonName, "");
-	CreateAetLayerData (keyHelpData, 0x4F8, buttonName, 0x13, diva::AetAction::NONE);
-	ApplyLocation (keyHelpData, &keyHelpLoc);
-	keyHelpId = PlayAetLayer (keyHelpData, keyHelpId);
+
+	aetLayer keyHelpData (0x4F8, buttonName, 0x13, diva::AetAction::NONE);
+	keyHelpData.setPosition (keyHelpLoc);
+	keyHelpData.play (&keyHelpId);
 }
 
 void
 initStyle (Style style, InputType input) {
-	CreateAetLayerData (selectorData, 0x4F8, "visual_settings", 0x12, diva::AetAction::NONE);
-	selectorId = PlayAetLayer (selectorData, selectorId);
+	aetLayer selectorData (0x4F8, "visual_settings", 0x12, diva::AetAction::NONE);
+	selectorData.play (&selectorId);
 
 	initCompositionData (&compositionData);
 	GetComposition (&compositionData, selectorId);
@@ -106,11 +105,13 @@ updateLocs () {
 	float *buttonTouchAreaData = GetCompositionLayer (&compositionData, "p_visual_settings_touch");
 	if (buttonTouchAreaData) touchArea = getPlaceholderRect (buttonTouchAreaData, false);
 
-	ApplyLocation (keyHelpData, &keyHelpLoc);
-	ApplyLocation (selectorImgData, &txtLoc);
+	aetLayer keyHelpData (0x4F8, buttonName, 0x13, diva::AetAction::NONE);
+	keyHelpData.setPosition (keyHelpLoc);
+	keyHelpData.play (&keyHelpId);
 
-	keyHelpId     = PlayAetLayer (keyHelpData, keyHelpId);
-	selectorImgId = PlayAetLayer (selectorImgData, selectorImgId);
+	aetLayer selectorImgData (0x4F8, selectorImgName, 0x12, diva::AetAction::NONE);
+	selectorImgData.setPosition (txtLoc);
+	selectorImgData.play (&selectorImgId);
 }
 
 Style
@@ -124,8 +125,8 @@ FUNCTION_PTR (void, __stdcall, Test, 0x1402c53d0, void *);
 
 void
 initOptionsSelectTouch () {
-	CreateAetLayerData (optSelectorData, 0x4F8, "conf_set_touch", 0, diva::AetAction::NONE);
-	optSelectorId = PlayAetLayer (optSelectorData, 0);
+	aetLayer optSelectorData (0x4F8, "conf_set_touch", 0, diva::AetAction::NONE);
+	optSelectorData.play (&optSelectorId);
 	initCompositionData (&optSelectorCompositionData);
 	GetComposition (&optSelectorCompositionData, optSelectorId);
 
@@ -361,10 +362,8 @@ init () {
 void
 hide () {
 	if (!loaded) return;
-	Vec3 offscreen = createVec3 (-1920, -1080, 0);
-	ApplyLocation (selectorImgData, &offscreen);
-	ApplyLocation (keyHelpData, &offscreen);
-	PlayAetLayer (selectorImgData, selectorImgId);
-	PlayAetLayer (keyHelpData, keyHelpId);
+
+	StopAet (&keyHelpId);
+	StopAet (&selectorImgId);
 }
 } // namespace pvSel

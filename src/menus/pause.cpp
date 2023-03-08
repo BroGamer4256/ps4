@@ -10,21 +10,21 @@ typedef enum PauseAction : i32 {
 } PauseAction;
 
 using diva::AetAction;
+using diva::aetLayer;
 
-void *pauseMenuBackground = calloc (1, 0x1024);
 i32 pauseMenuBackgroundId = 0;
 bool playedOut            = 0;
 HOOK (void, __stdcall, LoadPauseBackground, 0x1406570E0, u64 a1, bool playOut) {
 	if (playOut && !playedOut) {
 		playedOut = true;
-		CreateAetLayerData (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AetAction::OUT_ONCE);
-		*(u64 *)((u64)pauseMenuBackground + 0x148) = a1 + 0xB0;
-		pauseMenuBackgroundId                      = PlayAetLayer (pauseMenuBackground, pauseMenuBackgroundId);
+		aetLayer pauseMenuBackground (0x51C, "pause_win_add_base", 0x12, AetAction::OUT_ONCE);
+		pauseMenuBackground.frameRateControl = (void *)(a1 + 0xB0);
+		pauseMenuBackground.play (&pauseMenuBackgroundId);
 	} else {
 		playedOut = false;
-		CreateAetLayerData (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AetAction::IN_LOOP);
-		*(u64 *)((u64)pauseMenuBackground + 0x148) = a1 + 0xB0;
-		pauseMenuBackgroundId                      = PlayAetLayer (pauseMenuBackground, pauseMenuBackgroundId);
+		aetLayer pauseMenuBackground (0x51C, "pause_win_add_base", 0x12, AetAction::IN_LOOP);
+		pauseMenuBackground.frameRateControl = (void *)(a1 + 0xB0);
+		pauseMenuBackground.play (&pauseMenuBackgroundId);
 	}
 	originalLoadPauseBackground (a1, playOut);
 }
@@ -32,9 +32,9 @@ HOOK (void, __stdcall, LoadPauseBackground, 0x1406570E0, u64 a1, bool playOut) {
 HOOK (void, __stdcall, PauseExit, 0x14065B810, u64 a1) {
 	if (!playedOut) {
 		playedOut = true;
-		CreateAetLayerData (pauseMenuBackground, 0x51C, "pause_win_add_base", 0x12, AetAction::OUT_ONCE);
-		*(u64 *)((u64)pauseMenuBackground + 0x148) = a1 + 0xB0;
-		pauseMenuBackgroundId                      = PlayAetLayer (pauseMenuBackground, pauseMenuBackgroundId);
+		aetLayer pauseMenuBackground (0x51C, "pause_win_add_base", 0x12, AetAction::OUT_ONCE);
+		pauseMenuBackground.frameRateControl = (void *)(a1 + 0xB0);
+		pauseMenuBackground.play (&pauseMenuBackgroundId);
 	}
 	originalPauseExit (a1);
 }

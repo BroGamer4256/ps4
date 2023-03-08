@@ -1,16 +1,12 @@
 #include "diva.h"
 
 namespace exitMenu {
-bool wantsToExit       = false;
-bool hasClicked        = false;
-void *menuAetData      = calloc (1, 0x1024);
-void *yesButtonAetData = calloc (1, 0x1024);
-void *noButtonAetData  = calloc (1, 0x1024);
-void *testAetData      = calloc (1, 0x1024);
-i32 menuAetId          = 0;
-i32 yesButtonAetId     = 0;
-i32 noButtonAetId      = 0;
-i32 hoveredButton      = 0;
+bool wantsToExit   = false;
+bool hasClicked    = false;
+i32 menuAetId      = 0;
+i32 yesButtonAetId = 0;
+i32 noButtonAetId  = 0;
+i32 hoveredButton  = 0;
 char *yesButtonName;
 char *noButtonName;
 diva::map<diva::string, void *> compositionData;
@@ -20,61 +16,56 @@ Vec4 yesButtonRect;
 Vec4 noButtonRect;
 
 using diva::AetAction;
+using diva::aetLayer;
 using diva::Button;
 
 void
 moveDown () {
+	aetLayer yesButtonAetData (0x4F8, yesButtonName, 0x13, AetAction::IN_ONCE);
+	aetLayer noButtonAetData (0x4F8, noButtonName, 0x13, AetAction::LOOP);
+
+	yesButtonAetData.setPosition (yesButtonLoc);
+	noButtonAetData.setPosition (noButtonLoc);
+
+	yesButtonAetData.play (&yesButtonAetId);
+	noButtonAetData.play (&noButtonAetId);
+
 	hoveredButton = 0;
-	CreateAetLayerData (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AetAction::IN_ONCE);
-	CreateAetLayerData (noButtonAetData, 0x4F8, noButtonName, 0x13, AetAction::LOOP);
-
-	ApplyLocation (yesButtonAetData, &yesButtonLoc);
-	ApplyLocation (noButtonAetData, &noButtonLoc);
-
-	PlayAetLayer (yesButtonAetData, yesButtonAetId);
-	PlayAetLayer (noButtonAetData, noButtonAetId);
 	PlaySoundEffect ("se_ft_sys_select_01", 1.0);
 }
 
 void
 moveUp () {
+	aetLayer yesButtonAetData (0x4F8, yesButtonName, 0x13, AetAction::LOOP);
+	aetLayer noButtonAetData (0x4F8, noButtonName, 0x13, AetAction::IN_ONCE);
+
+	yesButtonAetData.setPosition (yesButtonLoc);
+	noButtonAetData.setPosition (noButtonLoc);
+
+	yesButtonAetData.play (&yesButtonAetId);
+	noButtonAetData.play (&noButtonAetId);
+
 	hoveredButton = 1;
-	CreateAetLayerData (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AetAction::LOOP);
-	CreateAetLayerData (noButtonAetData, 0x4F8, noButtonName, 0x13, AetAction::IN_ONCE);
-
-	ApplyLocation (yesButtonAetData, &yesButtonLoc);
-	ApplyLocation (noButtonAetData, &noButtonLoc);
-
-	PlayAetLayer (yesButtonAetData, yesButtonAetId);
-	PlayAetLayer (noButtonAetData, noButtonAetId);
-
 	PlaySoundEffect ("se_ft_sys_select_01", 1.0);
 }
 
 void
 leaveMenu () {
-	CreateAetLayerData (menuAetData, 0x4F8, "dialog_01", 0x12, AetAction::OUT_ONCE);
+	aetLayer menuAetData (0x4F8, "dialog_01", 0x12, AetAction::OUT_ONCE);
+	menuAetData.play (&menuAetId);
 
-	Vec3 offscreen = createVec3 (-1920, -1080, 0);
-	ApplyLocation (yesButtonAetData, &offscreen);
-	ApplyLocation (noButtonAetData, &offscreen);
-
-	PlayAetLayer (menuAetData, menuAetId);
-	PlayAetLayer (yesButtonAetData, yesButtonAetId);
-	PlayAetLayer (noButtonAetData, noButtonAetId);
+	StopAet (&yesButtonAetId);
+	StopAet (&noButtonAetId);
 
 	PlaySoundEffect ("se_ft_sys_cansel_01", 1.0);
-
 	wantsToExit   = false;
 	hoveredButton = 0;
 }
 
 void
 initMenu () {
-	wantsToExit = true;
-
-	CreateAetLayerData (menuAetData, 0x4F8, "dialog_01", 0x12, AetAction::IN_LOOP);
-	menuAetId = PlayAetLayer (menuAetData, menuAetId);
+	aetLayer menuAetData (0x4F8, "dialog_01", 0x12, AetAction::IN_LOOP);
+	menuAetData.play (&menuAetId);
 
 	initCompositionData (&compositionData);
 	GetComposition (&compositionData, menuAetId);
@@ -90,15 +81,16 @@ initMenu () {
 		noButtonRect = getPlaceholderRect (noButtonPlaceholderData, false);
 	}
 
-	CreateAetLayerData (yesButtonAetData, 0x4F8, yesButtonName, 0x13, AetAction::IN_ONCE);
-	CreateAetLayerData (noButtonAetData, 0x4F8, noButtonName, 0x13, AetAction::LOOP);
+	aetLayer yesButtonAetData (0x4F8, yesButtonName, 0x13, AetAction::IN_ONCE);
+	aetLayer noButtonAetData (0x4F8, noButtonName, 0x13, AetAction::LOOP);
 
-	ApplyLocation (yesButtonAetData, &yesButtonLoc);
-	ApplyLocation (noButtonAetData, &noButtonLoc);
+	yesButtonAetData.setPosition (yesButtonLoc);
+	noButtonAetData.setPosition (noButtonLoc);
 
-	yesButtonAetId = PlayAetLayer (yesButtonAetData, yesButtonAetId);
-	noButtonAetId  = PlayAetLayer (noButtonAetData, noButtonAetId);
+	yesButtonAetData.play (&yesButtonAetId);
+	noButtonAetData.play (&noButtonAetId);
 
+	wantsToExit = true;
 	PlaySoundEffect ("se_ft_sys_enter_01", 1.0);
 }
 

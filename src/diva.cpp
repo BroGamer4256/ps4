@@ -3,11 +3,11 @@
 FUNCTION_PTR (bool, __thiscall, CmnMenuDestroy, 0x1401AAE50, u64 This);
 FUNCTION_PTR (void *, __stdcall, DivaGetInputState, 0x1402AC970, i32 a1);
 FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB260, void *state, diva::Button button);
-FUNCTION_PTR (void *, __stdcall, CreateAetLayerData, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, diva::AetAction action);
-FUNCTION_PTR (i32, __stdcall, PlayAetLayer, 0x1402CA220, void *data, i32 id);
+FUNCTION_PTR (void *, __stdcall, CreateAetLayerData, 0x14028D560, diva::aetLayer *data, i32 aetSceneId, const char *layerName, i32 layer, diva::AetAction action);
+FUNCTION_PTR (i32, __stdcall, PlayAetLayer, 0x1402CA220, diva::aetLayer *data, i32 id);
 FUNCTION_PTR (void, __stdcall, GetComposition, 0x1402CA670, diva::map<diva::string, void *> *composition, i32 id);
 FUNCTION_PTR (float *, __stdcall, GetCompositionLayer, 0x1402CA780, diva::map<diva::string, void *> *composition, const char *layerName);
-FUNCTION_PTR (void, __stdcall, ApplyLocation, 0x14065FCC0, void *data, Vec3 *locationData);
+FUNCTION_PTR (void, __stdcall, ApplyAetLayerLocation, 0x14065FCC0, diva::aetLayer *data, Vec3 *locationData);
 FUNCTION_PTR (void, __stdcall, PlaySoundEffect, 0x1405AA540, const char *name, float volume);
 FUNCTION_PTR (u64, __stdcall, GetPvLoadData, 0x14040B2A0);
 FUNCTION_PTR (i32, __stdcall, GetCurrentStyle, 0x1401D64F0);
@@ -142,3 +142,22 @@ getTouchArea (diva::map<diva::string, void *> compositionData, const char *name,
 	if (placeholderData) return std::optional (getPlaceholderRect (placeholderData, centeredAnchor));
 	else return std::nullopt;
 }
+
+namespace diva {
+aetLayer::aetLayer (i32 sceneId, const char *layerName, i32 layer, AetAction action) { this->with_data (sceneId, layerName, layer, action); }
+
+void
+aetLayer::with_data (i32 sceneId, const char *layerName, i32 layer, AetAction action) {
+	CreateAetLayerData (this, sceneId, layerName, layer, action);
+}
+
+void
+aetLayer::play (i32 *id) {
+	*id = PlayAetLayer (this, *id);
+}
+
+void
+aetLayer::setPosition (Vec3 position) {
+	ApplyAetLayerLocation (this, &position);
+}
+} // namespace diva

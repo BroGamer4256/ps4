@@ -49,9 +49,9 @@ HOOK (bool, __thiscall, CustomizeSelInit, 0x140687D10, u64 This) {
 HOOK (i32 *, __stdcall, GetFtTheme, 0x1401D6540) { return &theme; }
 
 // Fixes gallery photos
-HOOK (void, __stdcall, LoadAndPlayAet, 0x1401AF0E0, u64 data, AetAction action) {
-	CreateAetLayerData ((void *)data, 0x4FE, *(char **)(data + 0x08), *(i32 *)(data + 0x84), action);
-	PlayAetLayer ((void *)data, *(i32 *)(data + 0x15C));
+HOOK (void, __stdcall, LoadAndPlayAet, 0x1401AF0E0, diva::aetLayer *data, AetAction action) {
+	data->with_data (0x4FE, *(char **)((u64)data + 0x08), *(i32 *)((u64)data + 0x84), action);
+	data->play ((i32 *)((u64)data + 0x15C));
 }
 
 // Fixes switching to customize from playlists

@@ -2,29 +2,24 @@
 #include "menus.h"
 
 namespace options {
-void *menuTxt1Data = calloc (1, 0x1024);
-void *menuTxt2Data = calloc (1, 0x1024);
-void *menuTxt3Data = calloc (1, 0x1024);
-void *menuTxt4Data = calloc (1, 0x1024);
-void *menuTxt5Data = calloc (1, 0x1024);
-void *menuTxt6Data = calloc (1, 0x1024);
-void *footerData   = calloc (1, 0x1024);
-i32 menuTxt1Id     = 0;
-i32 menuTxt2Id     = 0;
-i32 menuTxt3Id     = 0;
-i32 menuTxt4Id     = 0;
-i32 menuTxt5Id     = 0;
-i32 menuTxt6Id     = 0;
+i32 menuTxt1Id = 0;
+i32 menuTxt2Id = 0;
+i32 menuTxt3Id = 0;
+i32 menuTxt4Id = 0;
+i32 menuTxt5Id = 0;
+i32 menuTxt6Id = 0;
 i32 footerId;
 char *footerName = (char *)calloc (32, sizeof (char));
 char *topLoopName;
 
 using diva::AetAction;
+using diva::aetLayer;
 using diva::InputType;
 
 void
 playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 	const char *name;
+	aetLayer menuTxtData;
 	switch (button) {
 	case 0:
 		switch (subMenu) {
@@ -34,8 +29,8 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		case 3: name = "option_menu_graphic_txt_graphic"; break;
 		default: name = ""; break;
 		}
-		CreateAetLayerData (menuTxt1Data, 0x525, name, 13, action);
-		menuTxt1Id = PlayAetLayer (menuTxt1Data, menuTxt1Id);
+		menuTxtData.with_data (0x525, name, 13, action);
+		menuTxtData.play (&menuTxt1Id);
 		break;
 	case 1:
 		switch (subMenu) {
@@ -45,8 +40,8 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		case 3: name = "option_menu_graphic_txt_image"; break;
 		default: name = ""; break;
 		}
-		CreateAetLayerData (menuTxt2Data, 0x525, name, 13, action);
-		menuTxt2Id = PlayAetLayer (menuTxt2Data, menuTxt2Id);
+		menuTxtData.with_data (0x525, name, 13, action);
+		menuTxtData.play (&menuTxt2Id);
 		break;
 	case 2:
 		switch (subMenu) {
@@ -56,8 +51,8 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		case 3: name = "option_menu_graphic_txt_aa"; break;
 		default: name = ""; break;
 		}
-		CreateAetLayerData (menuTxt3Data, 0x525, name, 13, action);
-		menuTxt3Id = PlayAetLayer (menuTxt3Data, menuTxt3Id);
+		menuTxtData.with_data (0x525, name, 13, action);
+		menuTxtData.play (&menuTxt3Id);
 		break;
 	case 3:
 		switch (subMenu) {
@@ -66,8 +61,8 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		case 3: name = "option_menu_graphic_txt_shadow"; break;
 		default: name = ""; break;
 		}
-		CreateAetLayerData (menuTxt4Data, 0x525, name, 13, action);
-		menuTxt4Id = PlayAetLayer (menuTxt4Data, menuTxt4Id);
+		menuTxtData.with_data (0x525, name, 13, action);
+		menuTxtData.play (&menuTxt4Id);
 		break;
 	case 4:
 		switch (subMenu) {
@@ -76,16 +71,16 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		case 3: name = "option_menu_graphic_txt_reflection"; break;
 		default: name = ""; break;
 		}
-		CreateAetLayerData (menuTxt5Data, 0x525, name, 13, action);
-		menuTxt5Id = PlayAetLayer (menuTxt5Data, menuTxt5Id);
+		menuTxtData.with_data (0x525, name, 13, action);
+		menuTxtData.play (&menuTxt5Id);
 		break;
 	case 5:
 		switch (subMenu) {
 		case 0: name = "option_top_menu_txt_save"; break;
 		default: name = ""; break;
 		}
-		CreateAetLayerData (menuTxt6Data, 0x525, name, 13, action);
-		menuTxt6Id = PlayAetLayer (menuTxt6Data, menuTxt6Id);
+		menuTxtData.with_data (0x525, name, 13, action);
+		menuTxtData.play (&menuTxt6Id);
 		break;
 	}
 }
@@ -94,14 +89,15 @@ void *optionMenuTopData = calloc (1, 0x1024);
 i32 optionMenuTopId     = 0;
 InputType previousInput = InputType::UNKNOWN;
 HOOK (bool, __stdcall, OptionMenuSwitchInit, 0x1406C3CB0, void *a1) {
-	CreateAetLayerData (optionMenuTopData, 0x525, topLoopName, 7, AetAction::NONE);
-	optionMenuTopId = PlayAetLayer (optionMenuTopData, optionMenuTopId);
+	aetLayer optionMenuTopData (0x525, topLoopName, 7, AetAction::NONE);
+	optionMenuTopData.play (&optionMenuTopId);
 
 	InputType input = getInputType ();
 	previousInput   = input;
 	sprintf (footerName, "footer_button_01_%02d", (i32)input);
-	CreateAetLayerData (footerData, 0x525, footerName, 13, AetAction::NONE);
-	footerId = PlayAetLayer (footerData, footerId);
+
+	aetLayer footerData (0x525, footerName, 13, AetAction::NONE);
+	footerData.play (&footerId);
 
 	playMenuTxt (0, 0, AetAction::IN_LOOP);
 	return originalOptionMenuSwitchInit (a1);
@@ -116,8 +112,8 @@ HOOK (bool, __stdcall, OptionMenuSwitchLoop, 0x1406C2920, u64 a1) {
 	InputType input = getInputType ();
 	if (input != previousInput || previousSubMenu != subMenu) {
 		sprintf (footerName, "footer_button_%02d_%02d", (bool)subMenu + 1, (i32)input);
-		CreateAetLayerData (footerData, 0x525, footerName, 13, AetAction::NONE);
-		footerId      = PlayAetLayer (footerData, footerId);
+		aetLayer footerData (0x525, footerName, 13, AetAction::NONE);
+		footerData.play (&footerId);
 		previousInput = input;
 	}
 	if (button != previousButton || previousSubMenu != subMenu) {

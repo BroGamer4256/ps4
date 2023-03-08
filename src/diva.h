@@ -1,4 +1,5 @@
 namespace diva {
+#pragma pack(push, 8)
 struct string {
 	union {
 		char data[16];
@@ -211,6 +212,48 @@ struct PvSpriteIds {
 	i32 thumbnailIdExtreme;
 };
 
+struct aetLayer {
+	int sceneId;
+	char *layerName;
+	string StartMarker;
+	string EndMarker;
+	string LoopMarker;
+	float start_time;
+	float end_time;
+	int flags;
+	int unk_0x7C;
+	int unk_0x80;
+	int layer;
+	int resolutionMode;
+	Vec3 position;
+	Vec3 rotation;
+	Vec3 scale;
+	Vec3 anchor;
+	float frameSpeed;
+	Vec4 color;
+	map<string, i32> layerSprite;
+	string sound_path;
+	map<string, string> soundReplace;
+	int soundQueueIndex;
+	map<u32, u32> spriteReplace;
+	map<u32, void *> spriteTexture;
+	map<u32, u32> spriteDiscard;
+	void *frameRateControl;
+	bool soundVoice;
+	i32 unk_0x154;
+	i32 unk_0x158;
+	i32 unk_0x15C;
+	void *unk_0x160;
+	Vec3 position_2;
+
+	aetLayer () {}
+	aetLayer (i32 sceneId, const char *layerName, i32 layer, AetAction action);
+	void with_data (i32 sceneId, const char *layerName, i32 layer, AetAction action);
+	void play (i32 *id);
+	void setPosition (Vec3 position);
+};
+#pragma pack(pop)
+
 extern list<i32> *pvs;
 extern map<i32, PvSpriteIds> *pvSprites;
 } // namespace diva
@@ -218,11 +261,8 @@ extern map<i32, PvSpriteIds> *pvSprites;
 FUNCTION_PTR_H (bool, __thiscall, CmnMenuDestroy, u64 This);
 FUNCTION_PTR_H (void *, __stdcall, DivaGetInputState, i32 a1);
 FUNCTION_PTR_H (bool, __stdcall, IsButtonTapped, void *state, diva::Button button);
-FUNCTION_PTR_H (void *, __stdcall, CreateAetLayerData, void *data, i32 aetSceneId, const char *layerName, i32 layer, diva::AetAction action);
-FUNCTION_PTR_H (i32, __stdcall, PlayAetLayer, void *data, i32 id);
 FUNCTION_PTR_H (void, __stdcall, GetComposition, diva::map<diva::string, void *> *composition, i32 id);
 FUNCTION_PTR_H (float *, __stdcall, GetCompositionLayer, diva::map<diva::string, void *> *composition, const char *layerName);
-FUNCTION_PTR_H (void, __stdcall, ApplyLocation, void *data, Vec3 *locationData);
 FUNCTION_PTR_H (void, __stdcall, PlaySoundEffect, const char *name, float volume);
 FUNCTION_PTR_H (u64, __stdcall, GetPvLoadData);
 FUNCTION_PTR_H (i32, __stdcall, GetCurrentStyle);
