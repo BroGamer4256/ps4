@@ -25,8 +25,9 @@ FUNCTION_PTR (i32, __stdcall, GetCurrentStyle, 0x1401D64F0);
 FUNCTION_PTR (InputType, __stdcall, NormalizeInputType, 0x1402ACAA0, i32 inputType);
 FUNCTION_PTR (void, __stdcall, FreeSubLayers, 0x1401AC240, aetComposition *sublayerData, aetComposition *sublayerData2, void *first_element);
 FUNCTION_PTR (void, __stdcall, StopAet, 0x1402CA330, i32 *id);
-FUNCTION_PTR (void *, __fastcall, operatorNew, sigOperatorNew (), u64);
-FUNCTION_PTR (void *, __fastcall, operatorDelete, sigOperatorDelete (), void *);
+FUNCTION_PTR (void *, __stdcall, operatorNew, sigOperatorNew (), u64);
+FUNCTION_PTR (void *, __stdcall, operatorDelete, sigOperatorDelete (), void *);
+FUNCTION_PTR (void, __stdcall, FreeString, 0x14014bcd0, string *);
 
 list<i32> *pvs                   = (list<i32> *)0x141753808;
 map<i32, PvSpriteIds> *pvSprites = (map<i32, PvSpriteIds> *)0x14CBBACC0;

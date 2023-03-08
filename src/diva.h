@@ -110,6 +110,11 @@ struct string {
 		}
 	}
 
+	inline ~string () {
+		FUNCTION_PTR_H (void, __stdcall, FreeString, string *);
+		FreeString (this);
+	}
+
 	inline bool operator== (string &rhs) { return strcmp (this->c_str (), rhs.c_str ()) == 0; }
 	inline bool operator== (const char *rhs) { return strcmp (this->c_str (), rhs) == 0; }
 	inline bool operator== (char *rhs) { return strcmp (this->c_str (), rhs) == 0; }
@@ -180,7 +185,11 @@ struct map {
 		this->length        = 0;
 	}
 
-	~map () { deallocate (this->root); }
+	~map () {
+		for (auto it = this->begin (); it != this->end (); it = it->next ())
+			deallocate (it);
+		deallocate (this->root);
+	}
 
 	mapElement<K, V> *find (K key) {
 		auto ptr = this->root->parent;
@@ -443,6 +452,15 @@ extern list<i32> *pvs;
 extern map<i32, PvSpriteIds> *pvSprites;
 
 using aetComposition = map<string, aetLayerData>;
+template <>
+inline aetComposition::~map () {
+	for (auto it = this->begin (); it != this->end (); it = it->next ()) {
+		it->key.~string ();
+		deallocate (it);
+	}
+
+	deallocate (this->root);
+}
 
 FUNCTION_PTR_H (bool, __thiscall, CmnMenuDestroy, u64 This);
 FUNCTION_PTR_H (void *, __stdcall, GetInputState, i32 a1);
