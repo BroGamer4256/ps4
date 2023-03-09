@@ -293,8 +293,12 @@ HOOK (bool, __thiscall, PVSelLoop, 0x1402033C0, u64 This) {
 	// Disable on playlists
 	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(0x14CC10480)) return originalPVSelLoop (This);
 
-	loaded           = true;
-	bool isMovie     = isMovieOnly (getPvDbEntry (*(i32 *)(This + 0x36A30)));
+	loaded     = true;
+	auto entry = getPvDbEntry (*(i32 *)(This + 0x36A30));
+	bool isMovie;
+	if (entry && *entry) isMovie = isMovieOnly (*entry);
+	else isMovie = false;
+
 	InputType input  = getInputType ();
 	void *inputState = diva::GetInputState (0);
 	u64 pvLoadData   = GetPvLoadData ();

@@ -57,6 +57,8 @@ struct Vec4 {
 
 FUNCTION_PTR_H (void *, __fastcall, operatorNew, u64);
 FUNCTION_PTR_H (void *, __fastcall, operatorDelete, void *);
+struct string;
+FUNCTION_PTR_H (void, __stdcall, FreeString, string *);
 template <typename T>
 T *
 allocate (u64 count) {
@@ -100,7 +102,9 @@ struct string {
 	string (char *cstr) {
 		u64 len = strlen (cstr);
 		if (len > 16) {
-			this->ptr      = cstr;
+			u64 new_len = (len + 1) | 0xF;
+			this->ptr   = allocate<char> (new_len);
+			strcpy (this->ptr, cstr);
 			this->length   = len;
 			this->capacity = len;
 		} else {
@@ -111,8 +115,7 @@ struct string {
 	}
 
 	~string () {
-		FUNCTION_PTR_H (void, __stdcall, FreeString, string *);
-		FreeString (this);
+		if (this->capacity > 15 && this->ptr) FreeString (this);
 	}
 
 	bool operator== (string &rhs) { return strcmp (this->c_str (), rhs.c_str ()) == 0; }
@@ -441,9 +444,103 @@ struct aetLayerData {
 	i32 unk_78;
 	i32 unk_7C;
 };
+
+template <typename T>
+struct pvDbIndexedValue {
+	i32 index;
+	T value;
+};
+
+template <typename T>
+struct pvDbIdValue {
+	i32 index;
+	i32 id;
+	T value;
+};
+
+struct pvDbPlaceholder {};
+
+struct pvDbExInfo {
+	string key;
+	string value;
+};
+
+struct pvDbDifficulty {
+	i32 difficulty;
+	i32 edition;
+	i32 isExtra;
+	// Theres something at +0x10 but I cannot figure it out and I don't need that info right now
+	i32 unk[5];
+	string scriptFile;
+	i32 level; // Stars * 2;
+	string buttonSoundEffect;
+	string successSoundEffect;
+	string slideSoundEffect;
+	string slideChainStartSoundEffect;
+	string slideChainSoundEffect;
+	string slideChainSuccessSoundEffect;
+	string slideChainFailureSoundEffect;
+	string slideTouchSoundEffect;
+	vector<pvDbIdValue<string>> motion[6];
+	vector<pvDbPlaceholder> field;
+	bool exStage;
+	vector<pvDbIndexedValue<string>> items;
+	vector<pvDbIdValue<string>> handItems;
+	vector<pvDbIndexedValue<string>> editEffects;
+	vector<pvDbPlaceholder> unk_240;
+	vector<pvDbPlaceholder> unk_258;
+	vector<pvDbPlaceholder> unk_270;
+	f32 unk_288;
+	f32 unk_28C;
+	string unk_290;
+	string music;
+	string illustrator;
+	string arranger;
+	string manipulator;
+	string editor;
+	string guitar;
+	pvDbExInfo exInfo[4];
+	string unk_470;
+	vector<pvDbIndexedValue<string>> movies;
+	i32 movieSurface;
+	bool isMovieOnly;
+	string effectSoundEffect;
+	vector<string> effectSoundEffectList;
+	i32 version;
+	i32 scriptFormat;
+	i32 highSpeedRate;
+	f32 hiddenTiming;
+	f32 suddenTiming;
+	bool editCharaScale;
+
+	~pvDbDifficulty () = delete;
+};
+
+struct pvDbEntry {
+	i32 id;
+	i32 date;
+	string name;
+	string nameReading;
+	i32 unk_48;
+	i32 bpm;
+	string soundFile;
+	vector<pvDbIndexedValue<string>> lyrics;
+	float sabiStartTime;
+	float sabiPlayTime;
+	u64 unk_90;
+	vector<pvDbPlaceholder> performers;
+	vector<pvDbDifficulty> easy;
+	vector<pvDbDifficulty> normal;
+	vector<pvDbDifficulty> hard;
+	vector<pvDbDifficulty> extreme;
+	vector<pvDbDifficulty> encore;
+	// Theres more stuff here but I do not care
+
+	~pvDbEntry () = delete;
+};
 #pragma pack(pop)
 
-extern list<i32> *pvs;
+extern vector<pvDbEntry *> *pvs;
 extern map<i32, PvSpriteIds> *pvSprites;
 
 using aetComposition = map<string, aetLayerData>;
@@ -465,8 +562,8 @@ char *appendTheme (const char *name);
 void appendStringInPlace (string *str, const char *append);
 void appendThemeInPlaceString (string *name);
 InputType getInputType ();
-bool isMovieOnly (u64 entry);
-u64 getPvDbEntry (i32 id);
+bool isMovieOnly (pvDbEntry *entry);
+std::optional<pvDbEntry *> getPvDbEntry (i32 id);
 Vec4 getPlaceholderRect (aetLayerData layer);
 Vec2 getClickedPos (void *inputState);
 std::optional<Vec4> getTouchArea (aetComposition compositionData, const char *name);

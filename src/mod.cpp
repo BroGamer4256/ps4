@@ -175,7 +175,7 @@ init () {
 	WRITE_MEMORY (0x1406542B4, u8, 0x02);
 
 	// Properly load rights_bg02
-	WRITE_MEMORY (0x15E99F118, u8, 0x04);
+	WRITE_NULL (0x15e99F0A8, 1);
 
 	// Use Left/Right on FX select
 	WRITE_MEMORY (0x14069997F, Button, Button::LEFT);

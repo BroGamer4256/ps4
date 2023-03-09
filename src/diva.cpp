@@ -29,7 +29,7 @@ FUNCTION_PTR (void *, __stdcall, operatorNew, sigOperatorNew (), u64);
 FUNCTION_PTR (void *, __stdcall, operatorDelete, sigOperatorDelete (), void *);
 FUNCTION_PTR (void, __stdcall, FreeString, 0x14014bcd0, string *);
 
-list<i32> *pvs                   = (list<i32> *)0x141753808;
+vector<pvDbEntry *> *pvs         = (vector<pvDbEntry *> *)0x141753818;
 map<i32, PvSpriteIds> *pvSprites = (map<i32, PvSpriteIds> *)0x14CBBACC0;
 
 void
@@ -85,21 +85,22 @@ getInputType () {
 	return NormalizeInputType (*(i32 *)((u64)GetInputState (0) + 0x2E8));
 }
 
-// Will return false for any songs without an ex chart
 bool
-isMovieOnly (u64 entry) {
-	if (entry == 0 || *(u64 *)(entry + 0xF8) == 0) return false;
-	return *(bool *)(*(u64 *)(entry + 0xF8) + 0x4AC);
+isMovieOnly (pvDbEntry *entry) {
+	for (auto edition = entry->extreme.first; edition != entry->extreme.last; edition++)
+		if (edition->isMovieOnly) return true;
+
+	return false;
 }
 
-u64
+std::optional<pvDbEntry *>
 getPvDbEntry (i32 id) {
-	if (id < 0) return 0;
-	for (auto current = pvs->begin (); current != pvs->end (); current = current->next) {
-		if (current->current != id) continue;
-		return (u64)&current->current;
+	if (id < 0) return std::nullopt;
+	for (auto entry = pvs->first; entry != pvs->last; entry++) {
+		if ((*entry)->id != id) continue;
+		return std::optional (*entry);
 	}
-	return 0;
+	return std::nullopt;
 }
 
 Vec4
