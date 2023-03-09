@@ -151,4 +151,14 @@ void
 aetLayerArgs::setPosition (Vec3 position) {
 	ApplyAetLayerLocation (this, &position);
 }
+
+template <>
+aetComposition::~map () {
+	for (auto it = this->begin (); it != this->end (); it = it->next ()) {
+		it->key.~string ();
+		deallocate (it);
+	}
+
+	deallocate (this->root);
+}
 } // namespace diva

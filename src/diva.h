@@ -3,12 +3,12 @@ struct Vec2 {
 	f32 x;
 	f32 y;
 
-	inline Vec2 () {
+	Vec2 () {
 		this->x = 0;
 		this->y = 0;
 	}
 
-	inline Vec2 (f32 x, f32 y) {
+	Vec2 (f32 x, f32 y) {
 		this->x = x;
 		this->y = y;
 	}
@@ -19,13 +19,13 @@ struct Vec3 {
 	f32 y;
 	f32 z;
 
-	inline Vec3 () {
+	Vec3 () {
 		this->x = 0;
 		this->y = 0;
 		this->z = 0;
 	}
 
-	inline Vec3 (f32 x, f32 y, f32 z) {
+	Vec3 (f32 x, f32 y, f32 z) {
 		this->x = x;
 		this->y = y;
 		this->z = z;
@@ -38,21 +38,21 @@ struct Vec4 {
 	f32 z;
 	f32 w;
 
-	inline Vec4 () {
+	Vec4 () {
 		this->x = 0;
 		this->y = 0;
 		this->z = 0;
 		this->w = 0;
 	}
 
-	inline Vec4 (f32 x, f32 y, f32 z, f32 w) {
+	Vec4 (f32 x, f32 y, f32 z, f32 w) {
 		this->x = x;
 		this->y = y;
 		this->z = z;
 		this->w = w;
 	}
 
-	inline bool contains (Vec2 location) { return location.x > this->x && location.x < this->y && location.y > this->z && location.y < this->w; }
+	bool contains (Vec2 location) { return location.x > this->x && location.x < this->y && location.y > this->z && location.y < this->w; }
 };
 
 FUNCTION_PTR_H (void *, __fastcall, operatorNew, u64);
@@ -77,13 +77,13 @@ struct string {
 	u64 length;
 	u64 capacity;
 
-	inline char *c_str () {
+	char *c_str () {
 		if (this->capacity > 16) return this->ptr;
 		else return this->data;
 	}
 
-	inline string () {}
-	inline string (const char *cstr) {
+	string () {}
+	string (const char *cstr) {
 		u64 len = strlen (cstr);
 		if (len > 16) {
 			u64 new_len = (len + 1) | 0xF;
@@ -97,7 +97,7 @@ struct string {
 			this->capacity = 15;
 		}
 	}
-	inline string (char *cstr) {
+	string (char *cstr) {
 		u64 len = strlen (cstr);
 		if (len > 16) {
 			this->ptr      = cstr;
@@ -110,20 +110,15 @@ struct string {
 		}
 	}
 
-	inline ~string () {
+	~string () {
 		FUNCTION_PTR_H (void, __stdcall, FreeString, string *);
 		FreeString (this);
 	}
 
-	inline bool operator== (string &rhs) { return strcmp (this->c_str (), rhs.c_str ()) == 0; }
-	inline bool operator== (const char *rhs) { return strcmp (this->c_str (), rhs) == 0; }
-	inline bool operator== (char *rhs) { return strcmp (this->c_str (), rhs) == 0; }
-	inline std::strong_ordering operator<=> (string &rhs) {
-		auto value = strcmp (this->c_str (), rhs.c_str ());
-		if (value > 0) return std::strong_ordering::greater;
-		else if (value < 0) return std::strong_ordering::less;
-		else return std::strong_ordering::equal;
-	}
+	bool operator== (string &rhs) { return strcmp (this->c_str (), rhs.c_str ()) == 0; }
+	bool operator== (char *rhs) { return strcmp (this->c_str (), rhs) == 0; }
+	auto operator<=> (string &rhs) { return strcmp (this->c_str (), rhs.c_str ()); }
+	auto operator<=> (char *rhs) { return strcmp (this->c_str (), rhs); }
 };
 
 template <typename T>
@@ -425,7 +420,7 @@ struct aetLayerArgs {
 };
 
 struct aetLayerData {
-	struct matrix {
+	struct {
 		Vec4 x;
 		Vec4 y;
 		Vec4 z;
@@ -453,14 +448,7 @@ extern map<i32, PvSpriteIds> *pvSprites;
 
 using aetComposition = map<string, aetLayerData>;
 template <>
-inline aetComposition::~map () {
-	for (auto it = this->begin (); it != this->end (); it = it->next ()) {
-		it->key.~string ();
-		deallocate (it);
-	}
-
-	deallocate (this->root);
-}
+aetComposition::~map ();
 
 FUNCTION_PTR_H (bool, __thiscall, CmnMenuDestroy, u64 This);
 FUNCTION_PTR_H (void *, __stdcall, GetInputState, i32 a1);
