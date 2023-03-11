@@ -67,17 +67,17 @@ initMenu () {
 	f32 yesButtonOpacity = 1.0;
 	f32 noButtonOpacity  = 1.0;
 
-	if (auto opt = compositionData.find_val (string ("p_submenu_03_c"))) {
-		auto yesButtonPlaceholderData = *opt;
-		yesButtonLoc                  = yesButtonPlaceholderData.position;
-		yesButtonRect                 = getPlaceholderRect (yesButtonPlaceholderData);
-		yesButtonOpacity              = yesButtonPlaceholderData.opacity;
+	if (auto opt = compositionData.find (string ("p_submenu_03_c"))) {
+		auto layer       = *opt;
+		yesButtonLoc     = layer->position;
+		yesButtonRect    = getPlaceholderRect (*layer);
+		yesButtonOpacity = layer->opacity;
 	}
-	if (auto opt = compositionData.find_val (string ("p_submenu_04_c"))) {
-		auto noButtonPlaceholderData = *opt;
-		noButtonLoc                  = noButtonPlaceholderData.position;
-		noButtonRect                 = getPlaceholderRect (noButtonPlaceholderData);
-		noButtonOpacity              = noButtonPlaceholderData.opacity;
+	if (auto opt = compositionData.find (string ("p_submenu_04_c"))) {
+		auto layer      = *opt;
+		noButtonLoc     = layer->position;
+		noButtonRect    = getPlaceholderRect (*layer);
+		noButtonOpacity = layer->opacity;
 	}
 
 	aetLayerArgs yesButtonAetData (0x4F8, yesButtonName, 0x13, AetAction::IN_ONCE);
@@ -117,15 +117,11 @@ HOOK (bool, CsMenuLoop, 0x1401B29D0, u64 This) {
 	aetComposition compositionData;
 	GetComposition (&compositionData, menuAetId);
 
-	if (auto layer = compositionData.find_val (string ("p_submenu_03_c"))) {
-		auto aet = diva::aetLayers->find (yesButtonAetId);
-		if (aet != diva::aetLayers->end ()) aet->value.color.w = layer->opacity;
-	}
+	if (auto layer = compositionData.find (string ("p_submenu_03_c")))
+		if (auto aet = diva::aetLayers->find (yesButtonAetId)) aet.value ()->color.w = layer.value ()->opacity;
 
-	if (auto layer = compositionData.find_val (string ("p_submenu_04_c"))) {
-		auto aet = diva::aetLayers->find (noButtonAetId);
-		if (aet != diva::aetLayers->end ()) aet->value.color.w = layer->opacity;
-	}
+	if (auto layer = compositionData.find (string ("p_submenu_04_c")))
+		if (auto aet = diva::aetLayers->find (noButtonAetId)) aet.value ()->color.w = layer.value ()->opacity;
 
 	if (wantsToExit) {
 		if (clickedPos.x > 0 && !hasClicked) {

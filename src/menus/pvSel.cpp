@@ -40,7 +40,6 @@ Vec4 startButtonRight;
 
 void
 updateStyleAets (Style newStyle) {
-	selectorImgName[0] = 0;
 	int i;
 	switch (newStyle) {
 	case STYLE_FT: i = 2; break;
@@ -56,7 +55,6 @@ updateStyleAets (Style newStyle) {
 
 void
 updateButtonPrompt (InputType input) {
-	buttonName[0] = 0;
 	sprintf (buttonName, "visual_key_%02d", (u8)input);
 
 	aetLayerArgs keyHelpData (0x4F8, buttonName, 0x13, diva::AetAction::NONE);
@@ -72,12 +70,9 @@ initStyle (Style style, InputType input) {
 	aetComposition compositionData;
 	GetComposition (&compositionData, selectorId);
 
-	auto buttonPlaceholderData = compositionData.find_val (string ("key_help_lv_tab_01"));
-	if (buttonPlaceholderData) keyHelpLoc = buttonPlaceholderData->position;
-	auto textPlaceholderData = compositionData.find_val (string ("visual_settings_txt"));
-	if (textPlaceholderData) txtLoc = textPlaceholderData->position;
-	auto buttonTouchAreaData = compositionData.find_val (string ("p_visual_settings_touch"));
-	if (buttonTouchAreaData) touchArea = getPlaceholderRect (*buttonTouchAreaData);
+	if (auto buttonPlaceholderData = compositionData.find (string ("key_help_lv_tab_01"))) keyHelpLoc = buttonPlaceholderData.value ()->position;
+	if (auto textPlaceholderData = compositionData.find (string ("visual_settings_txt"))) txtLoc = textPlaceholderData.value ()->position;
+	if (auto buttonTouchAreaData = compositionData.find (string ("p_visual_settings_touch"))) touchArea = getPlaceholderRect (**buttonTouchAreaData);
 
 	updateStyleAets (style);
 	updateButtonPrompt (input);
@@ -88,12 +83,9 @@ updateLocs () {
 	aetComposition compositionData;
 	GetComposition (&compositionData, selectorId);
 
-	auto buttonPlaceholderData = compositionData.find_val (string ("key_help_lv_tab_01"));
-	if (buttonPlaceholderData) keyHelpLoc = buttonPlaceholderData->position;
-	auto textPlaceholderData = compositionData.find_val (string ("visual_settings_txt"));
-	if (textPlaceholderData) txtLoc = textPlaceholderData->position;
-	auto buttonTouchAreaData = compositionData.find_val (string ("p_visual_settings_touch"));
-	if (buttonTouchAreaData) touchArea = getPlaceholderRect (*buttonTouchAreaData);
+	if (auto buttonPlaceholderData = compositionData.find (string ("key_help_lv_tab_01"))) keyHelpLoc = buttonPlaceholderData.value ()->position;
+	if (auto textPlaceholderData = compositionData.find (string ("visual_settings_txt"))) txtLoc = textPlaceholderData.value ()->position;
+	if (auto buttonTouchAreaData = compositionData.find (string ("p_visual_settings_touch"))) touchArea = getPlaceholderRect (**buttonTouchAreaData);
 
 	aetLayerArgs keyHelpData (0x4F8, buttonName, 0x13, diva::AetAction::NONE);
 	keyHelpData.setPosition (keyHelpLoc);

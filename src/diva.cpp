@@ -15,7 +15,7 @@ SIG_SCAN (sigOperatorDelete, 0x1409B1E90,
 FUNCTION_PTR (bool, CmnMenuDestroy, 0x1401AAE50, u64 This);
 FUNCTION_PTR (void *, GetInputState, 0x1402AC970, i32 a1);
 FUNCTION_PTR (bool, IsButtonTapped, 0x1402AB260, void *state, Button button);
-FUNCTION_PTR (void *, CreateAetLayerData, 0x14028D560, aetLayerArgs *args, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
+FUNCTION_PTR (void *, CreateAetLayerData, 0x14028D560, aetLayerArgs *args, i32 aetSceneId, const char *layerName, i32 priority, AetAction action);
 FUNCTION_PTR (i32, PlayAetLayer, 0x1402CA220, aetLayerArgs *args, i32 id);
 FUNCTION_PTR (void, GetComposition, 0x1402CA670, aetComposition *composition, i32 id);
 FUNCTION_PTR (void, ApplyAetLayerLocation, 0x14065FCC0, aetLayerArgs *args, Vec3 *locationData);
@@ -131,16 +131,15 @@ getClickedPos (void *inputState) {
 
 std::optional<Vec4>
 getTouchArea (aetComposition composition, const char *name) {
-	auto placeholderData = composition.find (string (name));
-	if (placeholderData) return std::optional (getPlaceholderRect (placeholderData->value));
+	if (auto placeholderData = composition.find (string (name))) return std::optional (getPlaceholderRect (**placeholderData));
 	else return std::nullopt;
 }
 
-aetLayerArgs::aetLayerArgs (i32 sceneId, const char *layerName, i32 layer, AetAction action) { this->with_data (sceneId, layerName, layer, action); }
+aetLayerArgs::aetLayerArgs (i32 sceneId, const char *layerName, i32 priority, AetAction action) { this->with_data (sceneId, layerName, priority, action); }
 
 void
-aetLayerArgs::with_data (i32 sceneId, const char *layerName, i32 layer, AetAction action) {
-	CreateAetLayerData (this, sceneId, layerName, layer, action);
+aetLayerArgs::with_data (i32 sceneId, const char *layerName, i32 priority, AetAction action) {
+	CreateAetLayerData (this, sceneId, layerName, priority, action);
 }
 
 void

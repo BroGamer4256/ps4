@@ -189,20 +189,14 @@ struct map {
 		deallocate (this->root);
 	}
 
-	mapElement<K, V> *find (K key) {
+	std::optional<V *> find (K key) {
 		auto ptr = this->root->parent;
 		while (!ptr->isNull) {
-			if (key == ptr->key) return ptr;
+			if (key == ptr->key) return std::optional (&ptr->value);
 			if (key > ptr->key) ptr = ptr->right;
 			if (key < ptr->key) ptr = ptr->left;
 		}
-		return this->end ();
-	}
-
-	std::optional<V> find_val (K key) {
-		auto found = this->find (key);
-		if (!found || found == this->end ()) return std::nullopt;
-		return std::optional (found->value);
+		return std::nullopt;
 	}
 
 	mapElement<K, V> *begin () { return this->length ? this->root->left : this->root; }
@@ -392,7 +386,7 @@ struct aetLayerArgs {
 	i32 flags;
 	i32 unk_0x7C;
 	i32 unk_0x80;
-	i32 layer;
+	i32 priority;
 	i32 resolutionMode;
 	Vec3 position;
 	Vec3 rotation;
@@ -416,8 +410,8 @@ struct aetLayerArgs {
 	Vec3 position_2;
 
 	aetLayerArgs () {}
-	aetLayerArgs (i32 sceneId, const char *layerName, i32 layer, AetAction action);
-	void with_data (i32 sceneId, const char *layerName, i32 layer, AetAction action);
+	aetLayerArgs (i32 sceneId, const char *layerName, i32 priority, AetAction action);
+	void with_data (i32 sceneId, const char *layerName, i32 priority, AetAction action);
 	void play (i32 *id);
 	void setPosition (Vec3 position);
 };
