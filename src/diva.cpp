@@ -12,22 +12,22 @@ SIG_SCAN (sigOperatorDelete, 0x1409B1E90,
           "\xC8\xE8\x00\x00\x00\x00\x89\x03\x48\x83\xC4\x20\x5B\xC3",
           "xxxxxxxxxxxxxxxxxx????xx????xxxxx????xxxxx????xxx????xxxxxxxx");
 
-FUNCTION_PTR (bool, __thiscall, CmnMenuDestroy, 0x1401AAE50, u64 This);
-FUNCTION_PTR (void *, __stdcall, GetInputState, 0x1402AC970, i32 a1);
-FUNCTION_PTR (bool, __stdcall, IsButtonTapped, 0x1402AB260, void *state, Button button);
-FUNCTION_PTR (void *, __stdcall, CreateAetLayerData, 0x14028D560, aetLayerArgs *args, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
-FUNCTION_PTR (i32, __stdcall, PlayAetLayer, 0x1402CA220, aetLayerArgs *args, i32 id);
-FUNCTION_PTR (void, __stdcall, GetComposition, 0x1402CA670, aetComposition *composition, i32 id);
-FUNCTION_PTR (void, __stdcall, ApplyAetLayerLocation, 0x14065FCC0, aetLayerArgs *args, Vec3 *locationData);
-FUNCTION_PTR (void, __stdcall, PlaySoundEffect, 0x1405AA540, const char *name, float volume);
-FUNCTION_PTR (u64, __stdcall, GetPvLoadData, 0x14040B2A0);
-FUNCTION_PTR (i32, __stdcall, GetCurrentStyle, 0x1401D64F0);
-FUNCTION_PTR (InputType, __stdcall, NormalizeInputType, 0x1402ACAA0, i32 inputType);
-FUNCTION_PTR (void, __stdcall, FreeSubLayers, 0x1401AC240, aetComposition *sublayerData, aetComposition *sublayerData2, void *first_element);
-FUNCTION_PTR (void, __stdcall, StopAet, 0x1402CA330, i32 *id);
-FUNCTION_PTR (void *, __stdcall, operatorNew, sigOperatorNew (), u64);
-FUNCTION_PTR (void *, __stdcall, operatorDelete, sigOperatorDelete (), void *);
-FUNCTION_PTR (void, __stdcall, FreeString, 0x14014bcd0, string *);
+FUNCTION_PTR (bool, CmnMenuDestroy, 0x1401AAE50, u64 This);
+FUNCTION_PTR (void *, GetInputState, 0x1402AC970, i32 a1);
+FUNCTION_PTR (bool, IsButtonTapped, 0x1402AB260, void *state, Button button);
+FUNCTION_PTR (void *, CreateAetLayerData, 0x14028D560, aetLayerArgs *args, i32 aetSceneId, const char *layerName, i32 layer, AetAction action);
+FUNCTION_PTR (i32, PlayAetLayer, 0x1402CA220, aetLayerArgs *args, i32 id);
+FUNCTION_PTR (void, GetComposition, 0x1402CA670, aetComposition *composition, i32 id);
+FUNCTION_PTR (void, ApplyAetLayerLocation, 0x14065FCC0, aetLayerArgs *args, Vec3 *locationData);
+FUNCTION_PTR (void, PlaySoundEffect, 0x1405AA540, const char *name, float volume);
+FUNCTION_PTR (u64, GetPvLoadData, 0x14040B2A0);
+FUNCTION_PTR (i32, GetCurrentStyle, 0x1401D64F0);
+FUNCTION_PTR (InputType, NormalizeInputType, 0x1402ACAA0, i32 inputType);
+FUNCTION_PTR (void, FreeSubLayers, 0x1401AC240, aetComposition *sublayerData, aetComposition *sublayerData2, void *first_element);
+FUNCTION_PTR (void, StopAet, 0x1402CA330, i32 *id);
+FUNCTION_PTR (void *, operatorNew, sigOperatorNew (), u64);
+FUNCTION_PTR (void *, operatorDelete, sigOperatorDelete (), void *);
+FUNCTION_PTR (void, FreeString, 0x14014bcd0, string *);
 
 vector<pvDbEntry *> *pvs         = (vector<pvDbEntry *> *)0x141753818;
 map<i32, PvSpriteIds> *pvSprites = (map<i32, PvSpriteIds> *)0x14CBBACC0;

@@ -18,7 +18,7 @@ using diva::State;
 using diva::SubState;
 
 bool wantsToSettings = false;
-HOOK (void, __stdcall, ChangeSubGameState, 0x1527E49E0, State state, SubState subState) {
+HOOK (void, ChangeSubGameState, 0x1527E49E0, State state, SubState subState) {
 	if (state == State::MENU_SWITCH) {
 		state = State::CS_MENU;
 	} else if (subState == SubState::CS_OPTION_MENU) {
@@ -40,22 +40,22 @@ HOOK (void, __stdcall, ChangeSubGameState, 0x1527E49E0, State state, SubState su
 }
 
 // Fixes the header/footer being present on customize
-HOOK (bool, __thiscall, CustomizeSelInit, 0x140687D10, u64 This) {
+HOOK (bool, CustomizeSelInit, 0x140687D10, u64 This) {
 	diva::CmnMenuDestroy (0x14114C370);
 	pvSel::hide ();
 	return originalCustomizeSelInit (This);
 }
 
-HOOK (i32 *, __stdcall, GetFtTheme, 0x1401D6540) { return &theme; }
+HOOK (i32 *, GetFtTheme, 0x1401D6540) { return &theme; }
 
 // Fixes gallery photos
-HOOK (void, __stdcall, LoadAndPlayAet, 0x1401AF0E0, diva::aetLayerArgs *data, AetAction action) {
+HOOK (void, LoadAndPlayAet, 0x1401AF0E0, diva::aetLayerArgs *data, AetAction action) {
 	data->with_data (0x4FE, *(char **)((u64)data + 0x08), *(i32 *)((u64)data + 0x84), action);
 	data->play ((i32 *)((u64)data + 0x15C));
 }
 
 // Fixes switching to customize from playlists
-HOOK (bool, __stdcall, CustomizeSelIsLoaded, 0x140687CD0) {
+HOOK (bool, CustomizeSelIsLoaded, 0x140687CD0) {
 	if (*(i32 *)0x14CC6F118 == 1) {
 		if (implOfCustomizeSelInit (0x14CC6F100)) {
 			*(i32 *)0x14CC6F118 = 2;
@@ -97,7 +97,7 @@ std::unordered_set<std::string> themeStrings = {"option_sub_menu_eachsong",
                                                 "setting_menu_bg_arcade_base_down",
                                                 "bg02"};
 
-HOOK (void *, __stdcall, CreateAetH, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action, u64 a6) {
+HOOK (void *, CreateAetH, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action, u64 a6) {
 	if (layerName == 0) return originalCreateAetH (data, aetSceneId, layerName, layer, action, a6);
 	if (themeStrings.find (layerName) != themeStrings.end ()) {
 		const char *theme = diva::appendTheme (layerName);
@@ -106,8 +106,7 @@ HOOK (void *, __stdcall, CreateAetH, 0x14028D560, void *data, i32 aetSceneId, co
 	return originalCreateAetH (data, aetSceneId, layerName, layer, action, a6);
 }
 
-HOOK (void, __stdcall, CreateAet2H, 0x14028DE70, void *data, i32 aetSceneId, const char *layerName, i32 layer, const char *start_marker, const char *end_marker, const char *loop_marker,
-      AetAction action) {
+HOOK (void, CreateAet2H, 0x14028DE70, void *data, i32 aetSceneId, const char *layerName, i32 layer, const char *start_marker, const char *end_marker, const char *loop_marker, AetAction action) {
 	if (layerName == 0) return originalCreateAet2H (data, aetSceneId, layerName, layer, start_marker, end_marker, loop_marker, action);
 	if (themeStrings.find (layerName) != themeStrings.end ()) {
 		const char *theme = diva::appendTheme (layerName);
@@ -116,7 +115,7 @@ HOOK (void, __stdcall, CreateAet2H, 0x14028DE70, void *data, i32 aetSceneId, con
 	return originalCreateAet2H (data, aetSceneId, layerName, layer, start_marker, end_marker, loop_marker, action);
 }
 
-HOOK (void, __stdcall, CreateAet3H, 0x15f9811D0, void *data, diva::string *layerName) {
+HOOK (void, CreateAet3H, 0x15f9811D0, void *data, diva::string *layerName) {
 	if (layerName == 0) return originalCreateAet3H (data, layerName);
 	if (themeStrings.find (layerName->c_str ()) != themeStrings.end ()) {
 		appendThemeInPlaceString (layerName);
@@ -126,7 +125,7 @@ HOOK (void, __stdcall, CreateAet3H, 0x15f9811D0, void *data, diva::string *layer
 	return originalCreateAet3H (data, layerName);
 }
 
-HOOK (void, __stdcall, CreateAetFrameH, 0x1402CA590, void *data, i32 aetSceneId, const char *layerName, AetAction action, i32 layer, char *a6, float frame) {
+HOOK (void, CreateAetFrameH, 0x1402CA590, void *data, i32 aetSceneId, const char *layerName, AetAction action, i32 layer, char *a6, float frame) {
 	if (layerName == 0) return originalCreateAetFrameH (data, aetSceneId, layerName, action, layer, a6, frame);
 	if (themeStrings.find (layerName) != themeStrings.end ()) {
 		const char *theme = diva::appendTheme (layerName);
@@ -137,9 +136,9 @@ HOOK (void, __stdcall, CreateAetFrameH, 0x1402CA590, void *data, i32 aetSceneId,
 
 extern "C" {
 
-FUNCTION_PTR (float, __stdcall, GetLayerFrame, 0x1402CA120, i32 id, char *layer_name);
-FUNCTION_PTR (diva::string *, __stdcall, AppendLayerSuffix, 0x14022D070, void *a1, diva::string *base_layer_name);
-HOOK (void, __stdcall, CmnMenuTouchCheck, 0x14022C590);
+FUNCTION_PTR (float, GetLayerFrame, 0x1402CA120, i32 id, char *layer_name);
+FUNCTION_PTR (diva::string *, AppendLayerSuffix, 0x14022D070, void *a1, diva::string *base_layer_name);
+HOOK (void, CmnMenuTouchCheck, 0x14022C590);
 
 void
 init () {

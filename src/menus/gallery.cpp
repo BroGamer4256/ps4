@@ -43,7 +43,7 @@ playGalleryTxt (i32 button, AetAction action) {
 
 // Fixes gallery not properly exiting and text boxes not working
 i32 previousButton = 5;
-HOOK (bool, __thiscall, CsGalleryLoop, 0x1401AD590, u64 This) {
+HOOK (bool, CsGalleryLoop, 0x1401AD590, u64 This) {
 	i32 state          = *(i32 *)(This + 0x68);
 	i32 selectedButton = *(i32 *)(This + 0x70);
 	if (state == 3 && previousButton != selectedButton) {

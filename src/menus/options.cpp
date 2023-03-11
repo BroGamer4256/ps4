@@ -87,7 +87,7 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 
 i32 optionMenuTopId     = 0;
 InputType previousInput = InputType::UNKNOWN;
-HOOK (bool, __stdcall, OptionMenuSwitchInit, 0x1406C3CB0, void *a1) {
+HOOK (bool, OptionMenuSwitchInit, 0x1406C3CB0, void *a1) {
 	aetLayerArgs optionMenuTopData (0x525, topLoopName, 7, AetAction::NONE);
 	optionMenuTopData.play (&optionMenuTopId);
 
@@ -104,7 +104,7 @@ HOOK (bool, __stdcall, OptionMenuSwitchInit, 0x1406C3CB0, void *a1) {
 
 u8 previousButton  = 0;
 u8 previousSubMenu = 0;
-HOOK (bool, __stdcall, OptionMenuSwitchLoop, 0x1406C2920, u64 a1) {
+HOOK (bool, OptionMenuSwitchLoop, 0x1406C2920, u64 a1) {
 	u8 subMenu      = *(u8 *)(a1 + 0xB3);
 	subMenu         = subMenu > 1 ? subMenu - 1 : subMenu;
 	u8 button       = *(u8 *)(a1 + 0xB4 + subMenu);
@@ -124,7 +124,7 @@ HOOK (bool, __stdcall, OptionMenuSwitchLoop, 0x1406C2920, u64 a1) {
 	return originalOptionMenuSwitchLoop (a1);
 }
 
-HOOK (bool, __stdcall, OptionMenuSwitchDestroy, 0x1406C2CE0, void *a1) {
+HOOK (bool, OptionMenuSwitchDestroy, 0x1406C2CE0, void *a1) {
 	diva::StopAet (&optionMenuTopId);
 	diva::StopAet (&menuTxt1Id);
 	diva::StopAet (&menuTxt2Id);

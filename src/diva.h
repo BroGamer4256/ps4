@@ -55,10 +55,10 @@ struct Vec4 {
 	bool contains (Vec2 location) { return location.x > this->x && location.x < this->y && location.y > this->z && location.y < this->w; }
 };
 
-FUNCTION_PTR_H (void *, __fastcall, operatorNew, u64);
-FUNCTION_PTR_H (void *, __fastcall, operatorDelete, void *);
+FUNCTION_PTR_H (void *, operatorNew, u64);
+FUNCTION_PTR_H (void *, operatorDelete, void *);
 struct string;
-FUNCTION_PTR_H (void, __stdcall, FreeString, string *);
+FUNCTION_PTR_H (void, FreeString, string *);
 template <typename T>
 T *
 allocate (u64 count) {
@@ -589,15 +589,15 @@ using aetComposition = map<string, aetLayerData>;
 template <>
 aetComposition::~map ();
 
-FUNCTION_PTR_H (bool, __thiscall, CmnMenuDestroy, u64 This);
-FUNCTION_PTR_H (void *, __stdcall, GetInputState, i32 a1);
-FUNCTION_PTR_H (bool, __stdcall, IsButtonTapped, void *state, Button button);
-FUNCTION_PTR_H (void, __stdcall, GetComposition, aetComposition *composition, i32 id);
-FUNCTION_PTR_H (void, __stdcall, PlaySoundEffect, const char *name, float volume);
-FUNCTION_PTR_H (u64, __stdcall, GetPvLoadData);
-FUNCTION_PTR_H (i32, __stdcall, GetCurrentStyle);
-FUNCTION_PTR_H (InputType, __stdcall, NormalizeInputType, i32 inputType);
-FUNCTION_PTR_H (void, __stdcall, StopAet, i32 *id);
+FUNCTION_PTR_H (bool, CmnMenuDestroy, u64 This);
+FUNCTION_PTR_H (void *, GetInputState, i32 a1);
+FUNCTION_PTR_H (bool, IsButtonTapped, void *state, Button button);
+FUNCTION_PTR_H (void, GetComposition, aetComposition *composition, i32 id);
+FUNCTION_PTR_H (void, PlaySoundEffect, const char *name, float volume);
+FUNCTION_PTR_H (u64, GetPvLoadData);
+FUNCTION_PTR_H (i32, GetCurrentStyle);
+FUNCTION_PTR_H (InputType, NormalizeInputType, i32 inputType);
+FUNCTION_PTR_H (void, StopAet, i32 *id);
 
 void appendThemeInPlace (char *name);
 char *appendTheme (const char *name);

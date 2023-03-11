@@ -14,7 +14,7 @@ using diva::aetLayerArgs;
 
 i32 pauseMenuBackgroundId = 0;
 bool playedOut            = 0;
-HOOK (void, __stdcall, LoadPauseBackground, 0x1406570E0, u64 a1, bool playOut) {
+HOOK (void, LoadPauseBackground, 0x1406570E0, u64 a1, bool playOut) {
 	if (playOut && !playedOut) {
 		playedOut = true;
 		aetLayerArgs pauseMenuBackground (0x51C, "pause_win_add_base", 0x12, AetAction::OUT_ONCE);
@@ -29,7 +29,7 @@ HOOK (void, __stdcall, LoadPauseBackground, 0x1406570E0, u64 a1, bool playOut) {
 	originalLoadPauseBackground (a1, playOut);
 }
 
-HOOK (void, __stdcall, PauseExit, 0x14065B810, u64 a1) {
+HOOK (void, PauseExit, 0x14065B810, u64 a1) {
 	if (!playedOut) {
 		playedOut = true;
 		aetLayerArgs pauseMenuBackground (0x51C, "pause_win_add_base", 0x12, AetAction::OUT_ONCE);
@@ -39,7 +39,7 @@ HOOK (void, __stdcall, PauseExit, 0x14065B810, u64 a1) {
 	originalPauseExit (a1);
 }
 
-HOOK (void, __stdcall, PauseDestroy, 0x14065B100, u64 a1) {
+HOOK (void, PauseDestroy, 0x14065B100, u64 a1) {
 	diva::StopAet (&pauseMenuBackgroundId);
 	originalPauseDestroy (a1);
 }

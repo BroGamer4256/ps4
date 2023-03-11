@@ -110,8 +110,8 @@ getStyle (i32 currentStyle, bool isMovie) {
 	else return (Style)currentStyle;
 }
 
-FUNCTION_PTR (void, __stdcall, FillRectangle, 0x1402c5520, void *, Vec4 *);
-FUNCTION_PTR (void, __stdcall, Test, 0x1402c53d0, void *);
+FUNCTION_PTR (void, FillRectangle, 0x1402c5520, void *, Vec4 *);
+FUNCTION_PTR (void, Test, 0x1402c53d0, void *);
 
 void
 initOptionsSelectTouch () {
@@ -136,9 +136,9 @@ initOptionsSelectTouch () {
 	StopAet (&optSelectorId);
 }
 
-FUNCTION_PTR (void, __stdcall, PlayButtonOut, 0x14020c010, u64, u8);
-FUNCTION_PTR (void, __stdcall, UpdateButtons, 0x14020b3b0, u64, u8, u8, u8, u8);
-FUNCTION_PTR (void, __stdcall, UpdateSubMenu, 0x140209460, u64, i32, u64, i32, i32, u8, u8, u64, u64, u8, u8);
+FUNCTION_PTR (void, PlayButtonOut, 0x14020c010, u64, u8);
+FUNCTION_PTR (void, UpdateButtons, 0x14020b3b0, u64, u8, u8, u8, u8);
+FUNCTION_PTR (void, UpdateSubMenu, 0x140209460, u64, i32, u64, i32, i32, u8, u8, u64, u64, u8, u8);
 void
 updateSelectedButton (u64 This, i32 selectedButton) {
 	*(i32 *)(This + 0x78) = selectedButton;
@@ -280,7 +280,7 @@ optionsSelectTouch (u64 This) {
 	}
 }
 
-HOOK (bool, __thiscall, PVSelLoop, 0x1402033C0, u64 This) {
+HOOK (bool, PVSelLoop, 0x1402033C0, u64 This) {
 	// Touch
 	if (*(i32 *)(This + 0x68) == 8) optionsSelectTouch (This);
 
@@ -337,7 +337,7 @@ HOOK (bool, __thiscall, PVSelLoop, 0x1402033C0, u64 This) {
 	return originalPVSelLoop (This);
 }
 
-HOOK (bool, __thiscall, PvSelDestroy, 0x140204DA0, u64 This) {
+HOOK (bool, PvSelDestroy, 0x140204DA0, u64 This) {
 	if (*(i32 *)(This + 0x36A08) != 0) return originalPvSelDestroy (This);
 
 	hide ();
