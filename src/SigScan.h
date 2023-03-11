@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <windows.h>
 
 #define SIG_SCAN(name, hint, signature, mask)                       \
 	void *name ();                                                  \

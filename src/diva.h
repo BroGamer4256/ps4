@@ -387,8 +387,8 @@ struct aetLayerArgs {
 	string StartMarker;
 	string EndMarker;
 	string LoopMarker;
-	f32 start_time;
-	float end_time;
+	f32 startTime;
+	f32 endTime;
 	i32 flags;
 	i32 unk_0x7C;
 	i32 unk_0x80;
@@ -433,7 +433,7 @@ struct aetLayerData {
 	Vec3 anchor;
 	f32 width;
 	f32 height;
-	u32 unk_60;
+	f32 opacity;
 	u32 unk_64;
 	i32 resolutionMode;
 	u32 unk_6C;
@@ -443,6 +443,44 @@ struct aetLayerData {
 	u8 trackMatte;
 	i32 unk_78;
 	i32 unk_7C;
+};
+
+struct aetLayer {
+	char *name;
+	f32 startTime;
+	f32 endTime;
+	f32 offsetTime;
+	f32 timeScale;
+	i32 flags;
+	void *unk_0x30;
+	u64 unk_0x38;
+	u32 markerCount;
+	void *markers;
+	void *video;
+};
+
+struct aetData {
+	void *vftable;
+	void *scene;
+	void *composition;
+	aetLayer *layer;
+	f32 startTime;
+	f32 endTime;
+	i32 flags;
+	i32 layerNo;
+	i32 unk_0x30;
+	f32 loopStart;
+	f32 loopEnd;
+	i32 unk_0x3C;
+	i32 unk_0x40;
+	i32 resolutionMode;
+	Vec3 position;
+	Vec3 rotation;
+	Vec3 scale;
+	Vec3 anchor;
+	f32 frameSpeed;
+	Vec4 color;
+	f32 currentFrame;
 };
 
 template <typename T>
@@ -512,6 +550,9 @@ struct pvDbDifficulty {
 	f32 hiddenTiming;
 	f32 suddenTiming;
 	bool editCharaScale;
+	string unk_0x500;
+	u64 unk_0x520;
+	u64 unk_0x528;
 
 	~pvDbDifficulty () = delete;
 };
@@ -542,6 +583,7 @@ struct pvDbEntry {
 
 extern vector<pvDbEntry *> *pvs;
 extern map<i32, PvSpriteIds> *pvSprites;
+extern map<i32, aetData> *aetLayers;
 
 using aetComposition = map<string, aetLayerData>;
 template <>

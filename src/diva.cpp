@@ -31,6 +31,7 @@ FUNCTION_PTR (void, __stdcall, FreeString, 0x14014bcd0, string *);
 
 vector<pvDbEntry *> *pvs         = (vector<pvDbEntry *> *)0x141753818;
 map<i32, PvSpriteIds> *pvSprites = (map<i32, PvSpriteIds> *)0x14CBBACC0;
+map<i32, aetData> *aetLayers     = (map<i32, aetData> *)0x1414AB448;
 
 void
 appendThemeInPlace (char *name) {
@@ -87,8 +88,7 @@ getInputType () {
 
 bool
 isMovieOnly (pvDbEntry *entry) {
-	for (auto edition = entry->extreme.first; edition != entry->extreme.last; edition++)
-		if (edition->isMovieOnly) return true;
+	if (entry->extreme.first->isMovieOnly) return true;
 
 	return false;
 }

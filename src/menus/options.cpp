@@ -85,7 +85,6 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 	}
 }
 
-void *optionMenuTopData = calloc (1, 0x1024);
 i32 optionMenuTopId     = 0;
 InputType previousInput = InputType::UNKNOWN;
 HOOK (bool, __stdcall, OptionMenuSwitchInit, 0x1406C3CB0, void *a1) {

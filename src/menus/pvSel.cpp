@@ -10,14 +10,14 @@ typedef enum Style : i32 {
 
 using namespace diva;
 
-bool loaded           = false;
-bool hasClicked       = false;
-i32 pvId              = 0;
-char *buttonName      = (char *)calloc (16, sizeof (char));
-char *selectorImgName = (char *)calloc (64, sizeof (char));
-i32 selectorId        = 0;
-i32 selectorImgId     = 0;
-i32 keyHelpId         = 0;
+bool loaded     = false;
+bool hasClicked = false;
+i32 pvId        = 0;
+char buttonName[16];
+char selectorImgName[64];
+i32 selectorId    = 0;
+i32 selectorImgId = 0;
+i32 keyHelpId     = 0;
 InputType lastInputType;
 Vec4 touchArea;
 Vec3 keyHelpLoc;
@@ -41,15 +41,13 @@ Vec4 startButtonRight;
 void
 updateStyleAets (Style newStyle) {
 	selectorImgName[0] = 0;
-	strcpy (selectorImgName, "nswgam_songselector_visual_settings_0");
-	char c;
+	int i;
 	switch (newStyle) {
-	case STYLE_FT: c = '2'; break;
-	case STYLE_MM: c = '1'; break;
-	case STYLE_NONE: c = '3'; break;
+	case STYLE_FT: i = 2; break;
+	case STYLE_MM: i = 1; break;
+	case STYLE_NONE: i = 3; break;
 	}
-	strncat (selectorImgName, &c, 1);
-	strcat (selectorImgName, ".pic");
+	sprintf (selectorImgName, "nswgam_songselector_visual_settings_%02d.pic", i);
 
 	aetLayerArgs selectorImgData (0x4F8, selectorImgName, 0x12, diva::AetAction::NONE);
 	selectorImgData.setPosition (txtLoc);
@@ -59,10 +57,7 @@ updateStyleAets (Style newStyle) {
 void
 updateButtonPrompt (InputType input) {
 	buttonName[0] = 0;
-	strcpy (buttonName, "visual_key_0");
-	const char c = (u8)input | 48;
-	strncat (buttonName, &c, 1);
-	strcat (buttonName, "");
+	sprintf (buttonName, "visual_key_%02d", (u8)input);
 
 	aetLayerArgs keyHelpData (0x4F8, buttonName, 0x13, diva::AetAction::NONE);
 	keyHelpData.setPosition (keyHelpLoc);
@@ -293,11 +288,10 @@ HOOK (bool, __thiscall, PVSelLoop, 0x1402033C0, u64 This) {
 	// Disable on playlists
 	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(0x14CC10480)) return originalPVSelLoop (This);
 
-	loaded     = true;
-	auto entry = getPvDbEntry (*(i32 *)(This + 0x36A30));
-	bool isMovie;
+	loaded       = true;
+	auto entry   = getPvDbEntry (*(i32 *)(This + 0x36A30));
+	bool isMovie = false;
 	if (entry && *entry) isMovie = isMovieOnly (*entry);
-	else isMovie = false;
 
 	InputType input  = getInputType ();
 	void *inputState = diva::GetInputState (0);
