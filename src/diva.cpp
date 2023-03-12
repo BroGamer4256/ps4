@@ -88,7 +88,8 @@ getInputType () {
 
 bool
 isMovieOnly (pvDbEntry *entry) {
-	if (entry->extreme.first->isMovieOnly) return true;
+	if (entry && entry->extreme.first)
+		if (entry->extreme.first->isMovieOnly) return true;
 
 	return false;
 }
@@ -127,12 +128,6 @@ getClickedPos (void *inputState) {
 	float y = initialVec.y / (float)rect.bottom * 1080;
 
 	return Vec2 (x, y);
-}
-
-std::optional<Vec4>
-getTouchArea (aetComposition composition, const char *name) {
-	if (auto placeholderData = composition.find (string (name))) return std::optional (getPlaceholderRect (**placeholderData));
-	else return std::nullopt;
 }
 
 aetLayerArgs::aetLayerArgs (i32 sceneId, const char *layerName, i32 priority, AetAction action) { this->with_data (sceneId, layerName, priority, action); }

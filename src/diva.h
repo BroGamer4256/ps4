@@ -80,14 +80,14 @@ struct string {
 	u64 capacity;
 
 	char *c_str () {
-		if (this->capacity > 16) return this->ptr;
+		if (this->capacity > 15) return this->ptr;
 		else return this->data;
 	}
 
 	string () {}
 	string (const char *cstr) {
 		u64 len = strlen (cstr);
-		if (len > 16) {
+		if (len > 15) {
 			u64 new_len = (len + 1) | 0xF;
 			this->ptr   = allocate<char> (new_len);
 			strcpy (this->ptr, cstr);
@@ -101,7 +101,7 @@ struct string {
 	}
 	string (char *cstr) {
 		u64 len = strlen (cstr);
-		if (len > 16) {
+		if (len > 15) {
 			u64 new_len = (len + 1) | 0xF;
 			this->ptr   = allocate<char> (new_len);
 			strcpy (this->ptr, cstr);
@@ -114,9 +114,7 @@ struct string {
 		}
 	}
 
-	~string () {
-		if (this->capacity > 15 && this->ptr) FreeString (this);
-	}
+	~string () { FreeString (this); }
 
 	bool operator== (string &rhs) { return strcmp (this->c_str (), rhs.c_str ()) == 0; }
 	bool operator== (char *rhs) { return strcmp (this->c_str (), rhs) == 0; }
@@ -602,5 +600,4 @@ bool isMovieOnly (pvDbEntry *entry);
 std::optional<pvDbEntry *> getPvDbEntry (i32 id);
 Vec4 getPlaceholderRect (aetLayerData layer);
 Vec2 getClickedPos (void *inputState);
-std::optional<Vec4> getTouchArea (aetComposition compositionData, const char *name);
 } // namespace diva
