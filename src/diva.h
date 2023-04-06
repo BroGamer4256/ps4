@@ -249,22 +249,22 @@ struct vector {
 };
 
 template <typename T>
-struct string_range_base {
+struct _stringRangeBase {
 	T *data;
 	T *end;
 
 	T *c_str () { return data; }
 	size_t length () { return (u64)end - (u64)data; }
 
-	string_range_base (const T *str);
-	string_range_base (const T *str, size_t length) {
+	_stringRangeBase (const T *str);
+	_stringRangeBase (const T *str, size_t length) {
 		data = allocate<T> (length);
 		end  = data + length;
 		memcpy (data, str, length);
 	}
 };
-using string_range  = string_range_base<char>;
-using wstring_range = string_range_base<wchar_t>;
+using stringRange  = _stringRangeBase<char>;
+using wstringRange = _stringRangeBase<wchar_t>;
 
 enum class State : i32 {
 	STARTUP     = 0,
@@ -591,7 +591,7 @@ struct PvDbEntry {
 };
 
 struct AetDbSceneEntry {
-	string_range name;
+	stringRange name;
 	i32 id;
 };
 #pragma pack(pop)
@@ -605,9 +605,9 @@ template <>
 AetComposition::~map ();
 
 template <>
-string_range::string_range_base (const char *str);
+stringRange::_stringRangeBase (const char *str);
 template <>
-wstring_range::string_range_base (const wchar_t *str);
+wstringRange::_stringRangeBase (const wchar_t *str);
 
 FUNCTION_PTR_H (bool, CmnMenuDestroy, u64 This);
 FUNCTION_PTR_H (void *, GetInputState, i32 a1);

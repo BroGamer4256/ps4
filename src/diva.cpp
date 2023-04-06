@@ -166,11 +166,11 @@ AetComposition::~map () {
 }
 
 template <>
-string_range::string_range_base (const char *str) {
-	string_range (str, strlen (str));
+stringRange::_stringRangeBase (const char *str) {
+	stringRange (str, strlen (str));
 }
 template <>
-wstring_range::string_range_base (const wchar_t *str) {
-	wstring_range (str, wcslen (str));
+wstringRange::_stringRangeBase (const wchar_t *str) {
+	wstringRange (str, wcslen (str));
 }
 } // namespace diva
