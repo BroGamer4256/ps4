@@ -1,4 +1,3 @@
-#include <sec_api/string_s.h>
 namespace diva {
 struct Vec2 {
 	f32 x;
