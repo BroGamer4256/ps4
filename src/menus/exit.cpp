@@ -18,8 +18,8 @@ Vec4 noButtonRect;
 
 void
 moveDown () {
-	aetLayerArgs yesButtonAetData ("AET_PS4_MENU_MAIN", yesButtonName, 0x13, AetAction::IN_ONCE);
-	aetLayerArgs noButtonAetData ("AET_PS4_MENU_MAIN", noButtonName, 0x13, AetAction::LOOP);
+	AetLayerArgs yesButtonAetData ("AET_PS4_MENU_MAIN", yesButtonName, 0x13, AetAction::IN_ONCE);
+	AetLayerArgs noButtonAetData ("AET_PS4_MENU_MAIN", noButtonName, 0x13, AetAction::LOOP);
 
 	yesButtonAetData.setPosition (yesButtonLoc);
 	noButtonAetData.setPosition (noButtonLoc);
@@ -33,8 +33,8 @@ moveDown () {
 
 void
 moveUp () {
-	aetLayerArgs yesButtonAetData ("AET_PS4_MENU_MAIN", yesButtonName, 0x13, AetAction::LOOP);
-	aetLayerArgs noButtonAetData ("AET_PS4_MENU_MAIN", noButtonName, 0x13, AetAction::IN_ONCE);
+	AetLayerArgs yesButtonAetData ("AET_PS4_MENU_MAIN", yesButtonName, 0x13, AetAction::LOOP);
+	AetLayerArgs noButtonAetData ("AET_PS4_MENU_MAIN", noButtonName, 0x13, AetAction::IN_ONCE);
 
 	yesButtonAetData.setPosition (yesButtonLoc);
 	noButtonAetData.setPosition (noButtonLoc);
@@ -48,7 +48,7 @@ moveUp () {
 
 void
 leaveMenu () {
-	aetLayerArgs menuAetData ("AET_PS4_MENU_MAIN", "dialog_01", 0x12, AetAction::OUT_ONCE);
+	AetLayerArgs menuAetData ("AET_PS4_MENU_MAIN", "dialog_01", 0x12, AetAction::OUT_ONCE);
 	menuAetData.play (&menuAetId);
 
 	PlaySoundEffect ("se_ft_sys_cansel_01", 1.0);
@@ -58,10 +58,10 @@ leaveMenu () {
 
 void
 initMenu () {
-	aetLayerArgs menuAetData ("AET_PS4_MENU_MAIN", "dialog_01", 0x12, AetAction::IN_LOOP);
+	AetLayerArgs menuAetData ("AET_PS4_MENU_MAIN", "dialog_01", 0x12, AetAction::IN_LOOP);
 	menuAetData.play (&menuAetId);
 
-	aetComposition compositionData;
+	AetComposition compositionData;
 	GetComposition (&compositionData, menuAetId);
 
 	f32 yesButtonOpacity = 1.0;
@@ -80,8 +80,8 @@ initMenu () {
 		noButtonOpacity = layer->opacity;
 	}
 
-	aetLayerArgs yesButtonAetData ("AET_PS4_MENU_MAIN", yesButtonName, 0x13, AetAction::IN_ONCE);
-	aetLayerArgs noButtonAetData ("AET_PS4_MENU_MAIN", noButtonName, 0x13, AetAction::LOOP);
+	AetLayerArgs yesButtonAetData ("AET_PS4_MENU_MAIN", yesButtonName, 0x13, AetAction::IN_ONCE);
+	AetLayerArgs noButtonAetData ("AET_PS4_MENU_MAIN", noButtonName, 0x13, AetAction::LOOP);
 
 	yesButtonAetData.setPosition (yesButtonLoc);
 	noButtonAetData.setPosition (noButtonLoc);
@@ -114,7 +114,7 @@ HOOK (bool, CsMenuLoop, 0x1401B29D0, u64 This) {
 	void *inputState = diva::GetInputState (0);
 	Vec2 clickedPos  = getClickedPos (inputState);
 
-	aetComposition compositionData;
+	AetComposition compositionData;
 	GetComposition (&compositionData, menuAetId);
 
 	if (auto layer = compositionData.find (string ("p_submenu_03_c")))

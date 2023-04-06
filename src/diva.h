@@ -391,7 +391,7 @@ struct PvSpriteIds {
 	i32 thumbnailIdExtreme;
 };
 
-struct aetLayerArgs {
+struct AetLayerArgs {
 	i32 sceneId;
 	char *layerName;
 	string StartMarker;
@@ -425,14 +425,14 @@ struct aetLayerArgs {
 	void *unk_0x160;
 	Vec3 position_2;
 
-	aetLayerArgs () {}
-	aetLayerArgs (const char *sceneName, const char *layerName, i32 priority, AetAction action);
+	AetLayerArgs () {}
+	AetLayerArgs (const char *sceneName, const char *layerName, i32 priority, AetAction action);
 	void create (const char *sceneName, const char *layerName, i32 priority, AetAction action);
 	void play (i32 *id);
 	void setPosition (Vec3 position);
 };
 
-struct aetLayerData {
+struct AetLayerData {
 	struct {
 		Vec4 x;
 		Vec4 y;
@@ -455,7 +455,7 @@ struct aetLayerData {
 	i32 unk_7C;
 };
 
-struct aetLayer {
+struct AetLayer {
 	char *name;
 	f32 startTime;
 	f32 endTime;
@@ -469,11 +469,11 @@ struct aetLayer {
 	void *video;
 };
 
-struct aetData {
+struct AetData {
 	void *vftable;
 	void *scene;
 	void *composition;
-	aetLayer *layer;
+	AetLayer *layer;
 	f32 startTime;
 	f32 endTime;
 	i32 flags;
@@ -494,26 +494,26 @@ struct aetData {
 };
 
 template <typename T>
-struct pvDbIndexedValue {
+struct PvDbIndexedValue {
 	i32 index;
 	T value;
 };
 
 template <typename T>
-struct pvDbIdValue {
+struct PvDbIdValue {
 	i32 index;
 	i32 id;
 	T value;
 };
 
-struct pvDbPlaceholder {};
+struct PvDbPlaceholder {};
 
-struct pvDbExInfo {
+struct PvDbExInfo {
 	string key;
 	string value;
 };
 
-struct pvDbDifficulty {
+struct PvDbDifficulty {
 	i32 difficulty;
 	i32 edition;
 	i32 isExtra;
@@ -529,15 +529,15 @@ struct pvDbDifficulty {
 	string slideChainSuccessSoundEffect;
 	string slideChainFailureSoundEffect;
 	string slideTouchSoundEffect;
-	vector<pvDbIdValue<string>> motion[6];
-	vector<pvDbPlaceholder> field;
+	vector<PvDbIdValue<string>> motion[6];
+	vector<PvDbPlaceholder> field;
 	bool exStage;
-	vector<pvDbIndexedValue<string>> items;
-	vector<pvDbIdValue<string>> handItems;
-	vector<pvDbIndexedValue<string>> editEffects;
-	vector<pvDbPlaceholder> unk_240;
-	vector<pvDbPlaceholder> unk_258;
-	vector<pvDbPlaceholder> unk_270;
+	vector<PvDbIndexedValue<string>> items;
+	vector<PvDbIdValue<string>> handItems;
+	vector<PvDbIndexedValue<string>> editEffects;
+	vector<PvDbPlaceholder> unk_240;
+	vector<PvDbPlaceholder> unk_258;
+	vector<PvDbPlaceholder> unk_270;
 	f32 unk_288;
 	f32 unk_28C;
 	string unk_290;
@@ -547,9 +547,9 @@ struct pvDbDifficulty {
 	string manipulator;
 	string editor;
 	string guitar;
-	pvDbExInfo exInfo[4];
+	PvDbExInfo exInfo[4];
 	string unk_470;
-	vector<pvDbIndexedValue<string>> movies;
+	vector<PvDbIndexedValue<string>> movies;
 	i32 movieSurface;
 	bool isMovieOnly;
 	string effectSoundEffect;
@@ -564,10 +564,10 @@ struct pvDbDifficulty {
 	u64 unk_0x520;
 	u64 unk_0x528;
 
-	~pvDbDifficulty () = delete;
+	~PvDbDifficulty () = delete;
 };
 
-struct pvDbEntry {
+struct PvDbEntry {
 	i32 id;
 	i32 date;
 	string name;
@@ -575,34 +575,34 @@ struct pvDbEntry {
 	i32 unk_48;
 	i32 bpm;
 	string soundFile;
-	vector<pvDbIndexedValue<string>> lyrics;
+	vector<PvDbIndexedValue<string>> lyrics;
 	float sabiStartTime;
 	float sabiPlayTime;
 	u64 unk_90;
-	vector<pvDbPlaceholder> performers;
-	vector<pvDbDifficulty> easy;
-	vector<pvDbDifficulty> normal;
-	vector<pvDbDifficulty> hard;
-	vector<pvDbDifficulty> extreme;
-	vector<pvDbDifficulty> encore;
+	vector<PvDbPlaceholder> performers;
+	vector<PvDbDifficulty> easy;
+	vector<PvDbDifficulty> normal;
+	vector<PvDbDifficulty> hard;
+	vector<PvDbDifficulty> extreme;
+	vector<PvDbDifficulty> encore;
 	// Theres more stuff here but I do not care
 
-	~pvDbEntry () = delete;
+	~PvDbEntry () = delete;
 };
 
-struct aetDbSceneEntry {
+struct AetDbSceneEntry {
 	string_range name;
 	i32 id;
 };
 #pragma pack(pop)
 
-extern vector<pvDbEntry *> *pvs;
+extern vector<PvDbEntry *> *pvs;
 extern map<i32, PvSpriteIds> *pvSprites;
-extern map<i32, aetData> *aets;
+extern map<i32, AetData> *aets;
 
-using aetComposition = map<string, aetLayerData>;
+using AetComposition = map<string, AetLayerData>;
 template <>
-aetComposition::~map ();
+AetComposition::~map ();
 
 template <>
 string_range::string_range_base (const char *str);
@@ -612,7 +612,7 @@ wstring_range::string_range_base (const wchar_t *str);
 FUNCTION_PTR_H (bool, CmnMenuDestroy, u64 This);
 FUNCTION_PTR_H (void *, GetInputState, i32 a1);
 FUNCTION_PTR_H (bool, IsButtonTapped, void *state, Button button);
-FUNCTION_PTR_H (void, GetComposition, aetComposition *composition, i32 id);
+FUNCTION_PTR_H (void, GetComposition, AetComposition *composition, i32 id);
 FUNCTION_PTR_H (void, PlaySoundEffect, const char *name, float volume);
 FUNCTION_PTR_H (u64, GetPvLoadData);
 FUNCTION_PTR_H (i32, GetCurrentStyle);
@@ -624,8 +624,8 @@ char *appendTheme (const char *name);
 void appendStringInPlace (string *str, const char *append);
 void appendThemeInPlaceString (string *name);
 InputType getInputType ();
-bool isMovieOnly (pvDbEntry *entry);
-std::optional<pvDbEntry *> getPvDbEntry (i32 id);
-Vec4 getPlaceholderRect (aetLayerData layer);
+bool isMovieOnly (PvDbEntry *entry);
+std::optional<PvDbEntry *> getPvDbEntry (i32 id);
+Vec4 getPlaceholderRect (AetLayerData layer);
 Vec2 getClickedPos (void *inputState);
 } // namespace diva

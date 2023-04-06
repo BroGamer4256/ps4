@@ -10,11 +10,11 @@ i32 menuTxt5Id    = 0;
 i32 menuTxtBaseId = 0;
 
 using diva::AetAction;
-using diva::aetLayerArgs;
+using diva::AetLayerArgs;
 
 void
 playGalleryTxt (i32 button, AetAction action) {
-	aetLayerArgs menuTxtData;
+	AetLayerArgs menuTxtData;
 	switch (button) {
 	case 0:
 		menuTxtData.create ("AET_PS4_GALLERY_MAIN", "menu_txt_01", 0x12, action);
@@ -37,7 +37,7 @@ playGalleryTxt (i32 button, AetAction action) {
 		menuTxtData.play (&menuTxt5Id);
 		break;
 	}
-	aetLayerArgs menuTxtBaseData ("AET_PS4_GALLERY_MAIN", "menu_txt_base", 0x12, action);
+	AetLayerArgs menuTxtBaseData ("AET_PS4_GALLERY_MAIN", "menu_txt_base", 0x12, action);
 	menuTxtBaseData.play (&menuTxtBaseId);
 }
 

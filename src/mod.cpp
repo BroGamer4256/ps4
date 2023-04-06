@@ -49,7 +49,7 @@ HOOK (bool, CustomizeSelInit, 0x140687D10, u64 This) {
 HOOK (i32 *, GetFtTheme, 0x1401D6540) { return &theme; }
 
 // Fixes gallery photos
-HOOK (void, LoadAndPlayAet, 0x1401AF0E0, diva::aetLayerArgs *args, AetAction action) {
+HOOK (void, LoadAndPlayAet, 0x1401AF0E0, diva::AetLayerArgs *args, AetAction action) {
 	args->create ("AET_PS4_GALLERY_MAIN", args->layerName, args->priority, action);
 	args->play (&args->id);
 }
@@ -97,7 +97,7 @@ std::set<std::string> themeStrings = {"option_sub_menu_eachsong",
                                       "setting_menu_bg_arcade_base_down",
                                       "bg02"};
 
-HOOK (void *, PlayAetLayerH, 0x1402CA220, diva::aetLayerArgs *args, i32 *id) {
+HOOK (void *, PlayAetLayerH, 0x1402CA220, diva::AetLayerArgs *args, i32 *id) {
 	if (args->layerName == 0) return originalPlayAetLayerH (args, id);
 	if (themeStrings.find (args->layerName) != themeStrings.end ()) {
 		args->layerName = diva::appendTheme (args->layerName);

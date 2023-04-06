@@ -48,7 +48,7 @@ updateStyleAets (Style newStyle) {
 	}
 	sprintf (selectorImgName, "nswgam_songselector_visual_settings_%02d.pic", i);
 
-	aetLayerArgs selectorImgData ("AET_PS4_MENU_MAIN", selectorImgName, 0x12, AetAction::NONE);
+	AetLayerArgs selectorImgData ("AET_PS4_MENU_MAIN", selectorImgName, 0x12, AetAction::NONE);
 	selectorImgData.setPosition (txtLoc);
 	selectorImgData.play (&selectorImgId);
 }
@@ -57,17 +57,17 @@ void
 updateButtonPrompt (InputType input) {
 	sprintf (buttonName, "visual_key_%02d", (u8)input);
 
-	aetLayerArgs keyHelpData ("AET_PS4_MENU_MAIN", buttonName, 0x13, AetAction::NONE);
+	AetLayerArgs keyHelpData ("AET_PS4_MENU_MAIN", buttonName, 0x13, AetAction::NONE);
 	keyHelpData.setPosition (keyHelpLoc);
 	keyHelpData.play (&keyHelpId);
 }
 
 void
 initStyle (Style style, InputType input) {
-	aetLayerArgs selectorData ("AET_PS4_MENU_MAIN", "visual_settings", 0x12, AetAction::NONE);
+	AetLayerArgs selectorData ("AET_PS4_MENU_MAIN", "visual_settings", 0x12, AetAction::NONE);
 	selectorData.play (&selectorId);
 
-	aetComposition compositionData;
+	AetComposition compositionData;
 	GetComposition (&compositionData, selectorId);
 
 	if (auto buttonPlaceholderData = compositionData.find (string ("key_help_lv_tab_01"))) keyHelpLoc = buttonPlaceholderData.value ()->position;
@@ -80,18 +80,18 @@ initStyle (Style style, InputType input) {
 
 void
 updateLocs () {
-	aetComposition compositionData;
+	AetComposition compositionData;
 	GetComposition (&compositionData, selectorId);
 
 	if (auto buttonPlaceholderData = compositionData.find (string ("key_help_lv_tab_01"))) keyHelpLoc = buttonPlaceholderData.value ()->position;
 	if (auto textPlaceholderData = compositionData.find (string ("visual_settings_txt"))) txtLoc = textPlaceholderData.value ()->position;
 	if (auto buttonTouchAreaData = compositionData.find (string ("p_visual_settings_touch"))) touchArea = getPlaceholderRect (**buttonTouchAreaData);
 
-	aetLayerArgs keyHelpData ("AET_PS4_MENU_MAIN", buttonName, 0x13, AetAction::NONE);
+	AetLayerArgs keyHelpData ("AET_PS4_MENU_MAIN", buttonName, 0x13, AetAction::NONE);
 	keyHelpData.setPosition (keyHelpLoc);
 	keyHelpData.play (&keyHelpId);
 
-	aetLayerArgs selectorImgData ("AET_PS4_MENU_MAIN", selectorImgName, 0x12, AetAction::NONE);
+	AetLayerArgs selectorImgData ("AET_PS4_MENU_MAIN", selectorImgName, 0x12, AetAction::NONE);
 	selectorImgData.setPosition (txtLoc);
 	selectorImgData.play (&selectorImgId);
 }
@@ -107,9 +107,9 @@ FUNCTION_PTR (void, Test, 0x1402c53d0, void *);
 
 void
 initOptionsSelectTouch () {
-	aetLayerArgs optSelectorData ("AET_PS4_MENU_MAIN", "conf_set_touch", 0, AetAction::NONE);
+	AetLayerArgs optSelectorData ("AET_PS4_MENU_MAIN", "conf_set_touch", 0, AetAction::NONE);
 	optSelectorData.play (&optSelectorId);
-	aetComposition compositionData;
+	AetComposition compositionData;
 	GetComposition (&compositionData, optSelectorId);
 
 	if (auto layer = compositionData.find ("p_conf_set_base01_touch_c")) topButton = getPlaceholderRect (*layer.value ());

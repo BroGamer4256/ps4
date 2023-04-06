@@ -13,13 +13,13 @@ char *footerName = (char *)calloc (32, sizeof (char));
 char *topLoopName;
 
 using diva::AetAction;
-using diva::aetLayerArgs;
+using diva::AetLayerArgs;
 using diva::InputType;
 
 void
 playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 	const char *name;
-	aetLayerArgs menuTxtData;
+	AetLayerArgs menuTxtData;
 	switch (button) {
 	case 0:
 		switch (subMenu) {
@@ -88,14 +88,14 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 i32 optionMenuTopId     = 0;
 InputType previousInput = InputType::UNKNOWN;
 HOOK (bool, OptionMenuSwitchInit, 0x1406C3CB0, void *a1) {
-	aetLayerArgs optionMenuTopData ("AET_NSWGAM_OPTION_MAIN", topLoopName, 7, AetAction::NONE);
+	AetLayerArgs optionMenuTopData ("AET_NSWGAM_OPTION_MAIN", topLoopName, 7, AetAction::NONE);
 	optionMenuTopData.play (&optionMenuTopId);
 
 	InputType input = diva::getInputType ();
 	previousInput   = input;
 	sprintf (footerName, "footer_button_01_%02d", (i32)input);
 
-	aetLayerArgs footerData ("AET_NSWGAM_OPTION_MAIN", footerName, 13, AetAction::NONE);
+	AetLayerArgs footerData ("AET_NSWGAM_OPTION_MAIN", footerName, 13, AetAction::NONE);
 	footerData.play (&footerId);
 
 	playMenuTxt (0, 0, AetAction::IN_LOOP);
@@ -111,7 +111,7 @@ HOOK (bool, OptionMenuSwitchLoop, 0x1406C2920, u64 a1) {
 	InputType input = diva::getInputType ();
 	if (input != previousInput || previousSubMenu != subMenu) {
 		sprintf (footerName, "footer_button_%02d_%02d", (bool)subMenu + 1, (i32)input);
-		aetLayerArgs footerData ("AET_NSWGAM_OPTION_MAIN", footerName, 13, AetAction::NONE);
+		AetLayerArgs footerData ("AET_NSWGAM_OPTION_MAIN", footerName, 13, AetAction::NONE);
 		footerData.play (&footerId);
 		previousInput = input;
 	}
