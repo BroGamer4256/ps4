@@ -49,9 +49,9 @@ HOOK (bool, CustomizeSelInit, 0x140687D10, u64 This) {
 HOOK (i32 *, GetFtTheme, 0x1401D6540) { return &theme; }
 
 // Fixes gallery photos
-HOOK (void, LoadAndPlayAet, 0x1401AF0E0, diva::aetLayerArgs *data, AetAction action) {
-	data->with_data (0x4FE, *(char **)((u64)data + 0x08), *(i32 *)((u64)data + 0x84), action);
-	data->play ((i32 *)((u64)data + 0x15C));
+HOOK (void, LoadAndPlayAet, 0x1401AF0E0, diva::aetLayerArgs *args, AetAction action) {
+	args->create ("AET_PS4_GALLERY_MAIN", args->layerName, args->priority, action);
+	args->play (&args->id);
 }
 
 // Fixes switching to customize from playlists
@@ -97,41 +97,13 @@ std::unordered_set<std::string> themeStrings = {"option_sub_menu_eachsong",
                                                 "setting_menu_bg_arcade_base_down",
                                                 "bg02"};
 
-HOOK (void *, CreateAetH, 0x14028D560, void *data, i32 aetSceneId, const char *layerName, i32 layer, AetAction action, u64 a6) {
-	if (layerName == 0) return originalCreateAetH (data, aetSceneId, layerName, layer, action, a6);
-	if (themeStrings.find (layerName) != themeStrings.end ()) {
-		const char *theme = diva::appendTheme (layerName);
-		return originalCreateAetH (data, aetSceneId, theme, layer, action, a6);
+HOOK (void *, PlayAetLayerH, 0x1402CA220, diva::aetLayerArgs *args, i32 *id) {
+	if (args->layerName == 0) return originalPlayAetLayerH (args, id);
+	if (themeStrings.find (args->layerName) != themeStrings.end ()) {
+		args->layerName = diva::appendTheme (args->layerName);
+		return originalPlayAetLayerH (args, id);
 	}
-	return originalCreateAetH (data, aetSceneId, layerName, layer, action, a6);
-}
-
-HOOK (void, CreateAet2H, 0x14028DE70, void *data, i32 aetSceneId, const char *layerName, i32 layer, const char *start_marker, const char *end_marker, const char *loop_marker, AetAction action) {
-	if (layerName == 0) return originalCreateAet2H (data, aetSceneId, layerName, layer, start_marker, end_marker, loop_marker, action);
-	if (themeStrings.find (layerName) != themeStrings.end ()) {
-		const char *theme = diva::appendTheme (layerName);
-		return originalCreateAet2H (data, aetSceneId, theme, layer, start_marker, end_marker, loop_marker, action);
-	}
-	return originalCreateAet2H (data, aetSceneId, layerName, layer, start_marker, end_marker, loop_marker, action);
-}
-
-HOOK (void, CreateAet3H, 0x15f9811D0, void *data, diva::string *layerName) {
-	if (layerName == 0) return originalCreateAet3H (data, layerName);
-	if (themeStrings.find (layerName->c_str ()) != themeStrings.end ()) {
-		appendThemeInPlaceString (layerName);
-		return originalCreateAet3H (data, layerName);
-	}
-
-	return originalCreateAet3H (data, layerName);
-}
-
-HOOK (void, CreateAetFrameH, 0x1402CA590, void *data, i32 aetSceneId, const char *layerName, AetAction action, i32 layer, char *a6, float frame) {
-	if (layerName == 0) return originalCreateAetFrameH (data, aetSceneId, layerName, action, layer, a6, frame);
-	if (themeStrings.find (layerName) != themeStrings.end ()) {
-		const char *theme = diva::appendTheme (layerName);
-		return originalCreateAetFrameH (data, aetSceneId, theme, action, layer, a6, frame);
-	}
-	return originalCreateAetFrameH (data, aetSceneId, layerName, action, layer, a6, frame);
+	return originalPlayAetLayerH (args, id);
 }
 
 extern "C" {
@@ -152,10 +124,7 @@ init () {
 	INSTALL_HOOK (GetFtTheme);
 	INSTALL_HOOK (LoadAndPlayAet);
 	INSTALL_HOOK (CustomizeSelIsLoaded);
-	INSTALL_HOOK (CreateAetH);
-	INSTALL_HOOK (CreateAet2H);
-	INSTALL_HOOK (CreateAet3H);
-	INSTALL_HOOK (CreateAetFrameH);
+	INSTALL_HOOK (PlayAetLayerH);
 	INSTALL_HOOK (CmnMenuTouchCheck);
 
 	// 1.00 Samyuu, 1.03 BroGamer
@@ -164,17 +133,17 @@ init () {
 	// Stop returning to ADV from main menu
 	WRITE_NOP (0x1401B2ADA, 36);
 
-	// Fix SFX select layering
+	// Fix SFX select priority
 	WRITE_MEMORY (0x140699000, u8, 0x0A);
 
-	// Fix song select ordering
+	// Fix song select sort options
 	WRITE_MEMORY (0x140BE9520, u64, 0x140C85CB0, 0x140C85CE8);
 
 	// Reduce number of loading screens to 3
 	WRITE_MEMORY (0x1406542B4, u8, 0x02);
 
 	// Properly load rights_bg02
-	WRITE_NULL (0x15e99F0A8, 1);
+	WRITE_NULL (0x15E99F0A8, 1);
 
 	// Use Left/Right on FX select
 	WRITE_MEMORY (0x14069997F, Button, Button::LEFT);

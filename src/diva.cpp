@@ -27,11 +27,12 @@ FUNCTION_PTR (void, FreeSubLayers, 0x1401AC240, aetComposition *sublayerData, ae
 FUNCTION_PTR (void, StopAet, 0x1402CA330, i32 *id);
 FUNCTION_PTR (void *, operatorNew, sigOperatorNew (), u64);
 FUNCTION_PTR (void *, operatorDelete, sigOperatorDelete (), void *);
-FUNCTION_PTR (void, FreeString, 0x14014bcd0, string *);
+FUNCTION_PTR (void, FreeString, 0x14014BCD0, string *);
 
-vector<pvDbEntry *> *pvs         = (vector<pvDbEntry *> *)0x141753818;
-map<i32, PvSpriteIds> *pvSprites = (map<i32, PvSpriteIds> *)0x14CBBACC0;
-map<i32, aetData> *aetLayers     = (map<i32, aetData> *)0x1414AB448;
+vector<pvDbEntry *> *pvs             = (vector<pvDbEntry *> *)0x141753818;
+vector<aetDbSceneEntry> *aetDbScenes = (vector<aetDbSceneEntry> *)0x1414AB588;
+map<i32, PvSpriteIds> *pvSprites     = (map<i32, PvSpriteIds> *)0x14CBBACC0;
+map<i32, aetData> *aets              = (map<i32, aetData> *)0x1414AB448;
 
 void
 appendThemeInPlace (char *name) {
@@ -130,10 +131,17 @@ getClickedPos (void *inputState) {
 	return Vec2 (x, y);
 }
 
-aetLayerArgs::aetLayerArgs (i32 sceneId, const char *layerName, i32 priority, AetAction action) { this->with_data (sceneId, layerName, priority, action); }
+aetLayerArgs::aetLayerArgs (const char *sceneName, const char *layerName, i32 priority, AetAction action) { this->create (sceneName, layerName, priority, action); }
 
 void
-aetLayerArgs::with_data (i32 sceneId, const char *layerName, i32 priority, AetAction action) {
+aetLayerArgs::create (const char *sceneName, const char *layerName, i32 priority, AetAction action) {
+	i32 sceneId = -1;
+	for (aetDbSceneEntry *it = aetDbScenes->begin (); it != aetDbScenes->end (); it++) {
+		if (strcmp (it->name.c_str (), sceneName) == 0) {
+			sceneId = it->id;
+			break;
+		}
+	}
 	CreateAetLayerData (this, sceneId, layerName, priority, action);
 }
 
@@ -155,5 +163,14 @@ aetComposition::~map () {
 	}
 
 	deallocate (this->root);
+}
+
+template <>
+string_range::string_range_base (const char *str) {
+	string_range (str, strlen (str));
+}
+template <>
+wstring_range::string_range_base (const wchar_t *str) {
+	wstring_range (str, wcslen (str));
 }
 } // namespace diva

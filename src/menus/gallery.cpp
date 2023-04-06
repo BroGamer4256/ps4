@@ -17,27 +17,27 @@ playGalleryTxt (i32 button, AetAction action) {
 	aetLayerArgs menuTxtData;
 	switch (button) {
 	case 0:
-		menuTxtData.with_data (0x4FE, "menu_txt_01", 0x12, action);
+		menuTxtData.create ("AET_PS4_GALLERY_MAIN", "menu_txt_01", 0x12, action);
 		menuTxtData.play (&menuTxt1Id);
 		break;
 	case 1:
-		menuTxtData.with_data (0x4FE, "menu_txt_02", 0x12, action);
+		menuTxtData.create ("AET_PS4_GALLERY_MAIN", "menu_txt_02", 0x12, action);
 		menuTxtData.play (&menuTxt2Id);
 		break;
 	case 2:
-		menuTxtData.with_data (0x4FE, "menu_txt_03", 0x12, action);
+		menuTxtData.create ("AET_PS4_GALLERY_MAIN", "menu_txt_03", 0x12, action);
 		menuTxtData.play (&menuTxt3Id);
 		break;
 	case 3:
-		menuTxtData.with_data (0x4FE, "menu_txt_04", 0x12, action);
+		menuTxtData.create ("AET_PS4_GALLERY_MAIN", "menu_txt_04", 0x12, action);
 		menuTxtData.play (&menuTxt4Id);
 		break;
 	case 4:
-		menuTxtData.with_data (0x4FE, "menu_txt_05", 0x12, action);
+		menuTxtData.create ("AET_PS4_GALLERY_MAIN", "menu_txt_05", 0x12, action);
 		menuTxtData.play (&menuTxt5Id);
 		break;
 	}
-	aetLayerArgs menuTxtBaseData (0x4FE, "menu_txt_base", 0x12, action);
+	aetLayerArgs menuTxtBaseData ("AET_PS4_GALLERY_MAIN", "menu_txt_base", 0x12, action);
 	menuTxtBaseData.play (&menuTxtBaseId);
 }
 

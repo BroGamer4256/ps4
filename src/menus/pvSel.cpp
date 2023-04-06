@@ -48,7 +48,7 @@ updateStyleAets (Style newStyle) {
 	}
 	sprintf (selectorImgName, "nswgam_songselector_visual_settings_%02d.pic", i);
 
-	aetLayerArgs selectorImgData (0x4F8, selectorImgName, 0x12, AetAction::NONE);
+	aetLayerArgs selectorImgData ("AET_PS4_MENU_MAIN", selectorImgName, 0x12, AetAction::NONE);
 	selectorImgData.setPosition (txtLoc);
 	selectorImgData.play (&selectorImgId);
 }
@@ -57,14 +57,14 @@ void
 updateButtonPrompt (InputType input) {
 	sprintf (buttonName, "visual_key_%02d", (u8)input);
 
-	aetLayerArgs keyHelpData (0x4F8, buttonName, 0x13, AetAction::NONE);
+	aetLayerArgs keyHelpData ("AET_PS4_MENU_MAIN", buttonName, 0x13, AetAction::NONE);
 	keyHelpData.setPosition (keyHelpLoc);
 	keyHelpData.play (&keyHelpId);
 }
 
 void
 initStyle (Style style, InputType input) {
-	aetLayerArgs selectorData (0x4F8, "visual_settings", 0x12, AetAction::NONE);
+	aetLayerArgs selectorData ("AET_PS4_MENU_MAIN", "visual_settings", 0x12, AetAction::NONE);
 	selectorData.play (&selectorId);
 
 	aetComposition compositionData;
@@ -87,11 +87,11 @@ updateLocs () {
 	if (auto textPlaceholderData = compositionData.find (string ("visual_settings_txt"))) txtLoc = textPlaceholderData.value ()->position;
 	if (auto buttonTouchAreaData = compositionData.find (string ("p_visual_settings_touch"))) touchArea = getPlaceholderRect (**buttonTouchAreaData);
 
-	aetLayerArgs keyHelpData (0x4F8, buttonName, 0x13, AetAction::NONE);
+	aetLayerArgs keyHelpData ("AET_PS4_MENU_MAIN", buttonName, 0x13, AetAction::NONE);
 	keyHelpData.setPosition (keyHelpLoc);
 	keyHelpData.play (&keyHelpId);
 
-	aetLayerArgs selectorImgData (0x4F8, selectorImgName, 0x12, AetAction::NONE);
+	aetLayerArgs selectorImgData ("AET_PS4_MENU_MAIN", selectorImgName, 0x12, AetAction::NONE);
 	selectorImgData.setPosition (txtLoc);
 	selectorImgData.play (&selectorImgId);
 }
@@ -107,7 +107,7 @@ FUNCTION_PTR (void, Test, 0x1402c53d0, void *);
 
 void
 initOptionsSelectTouch () {
-	aetLayerArgs optSelectorData (0x4F8, "conf_set_touch", 0, AetAction::NONE);
+	aetLayerArgs optSelectorData ("AET_PS4_MENU_MAIN", "conf_set_touch", 0, AetAction::NONE);
 	optSelectorData.play (&optSelectorId);
 	aetComposition compositionData;
 	GetComposition (&compositionData, optSelectorId);

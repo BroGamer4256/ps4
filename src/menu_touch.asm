@@ -26,16 +26,14 @@ implOfCmnMenuTouchCheck:
 	lea rdx, [rbp - 0x51]
 	mov rcx, rbx
 	mov dword [rcx + 0xAC], 1
-	mov rax, [rel AppendLayerSuffix]
-	call rax
+	call [rel AppendLayerSuffix]
 
 	mov rdx, rax
 	; std::string to char *
 	cmp qword [rdx + 0x18], 0x10
 	cmovnc rdx, [rdx]
 	mov ecx, [rbx + 0x1C]
-	mov rax, [rel GetLayerFrame]
-	call rax
+	call [rel GetLayerFrame]
 	movss [rbx + 0x90], xmm0
 	movss [rbx + 0x94], xmm0
 
@@ -45,8 +43,7 @@ implOfCmnMenuTouchCheck:
 	cmovnc rcx, [rcx]
 	mov eax, __?float32?__(1.0)
 	movd xmm1, eax
-	mov rax, [rel _ZN4diva15PlaySoundEffectE]
-	call rax
+	call [rel _ZN4diva15PlaySoundEffectE]
 
 	pop r15
 	pop r14

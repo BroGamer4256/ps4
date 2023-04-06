@@ -1,3 +1,4 @@
+#include <sec_api/string_s.h>
 namespace diva {
 struct Vec2 {
 	f32 x;
@@ -248,6 +249,24 @@ struct vector {
 	T *end () { return this->last; }
 };
 
+template <typename T>
+struct string_range_base {
+	T *data;
+	T *end;
+
+	T *c_str () { return data; }
+	size_t length () { return (u64)end - (u64)data; }
+
+	string_range_base (const T *str);
+	string_range_base (const T *str, size_t length) {
+		data = allocate<T> (length);
+		end  = data + length;
+		memcpy (data, str, length);
+	}
+};
+using string_range  = string_range_base<char>;
+using wstring_range = string_range_base<wchar_t>;
+
 enum class State : i32 {
 	STARTUP     = 0,
 	ADVERTISE   = 1,
@@ -403,13 +422,13 @@ struct aetLayerArgs {
 	bool soundVoice;
 	i32 unk_0x154;
 	i32 unk_0x158;
-	i32 unk_0x15C;
+	i32 id;
 	void *unk_0x160;
 	Vec3 position_2;
 
 	aetLayerArgs () {}
-	aetLayerArgs (i32 sceneId, const char *layerName, i32 priority, AetAction action);
-	void with_data (i32 sceneId, const char *layerName, i32 priority, AetAction action);
+	aetLayerArgs (const char *sceneName, const char *layerName, i32 priority, AetAction action);
+	void create (const char *sceneName, const char *layerName, i32 priority, AetAction action);
 	void play (i32 *id);
 	void setPosition (Vec3 position);
 };
@@ -571,15 +590,25 @@ struct pvDbEntry {
 
 	~pvDbEntry () = delete;
 };
+
+struct aetDbSceneEntry {
+	string_range name;
+	i32 id;
+};
 #pragma pack(pop)
 
 extern vector<pvDbEntry *> *pvs;
 extern map<i32, PvSpriteIds> *pvSprites;
-extern map<i32, aetData> *aetLayers;
+extern map<i32, aetData> *aets;
 
 using aetComposition = map<string, aetLayerData>;
 template <>
 aetComposition::~map ();
+
+template <>
+string_range::string_range_base (const char *str);
+template <>
+wstring_range::string_range_base (const wchar_t *str);
 
 FUNCTION_PTR_H (bool, CmnMenuDestroy, u64 This);
 FUNCTION_PTR_H (void *, GetInputState, i32 a1);

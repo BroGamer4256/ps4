@@ -17,12 +17,12 @@ bool playedOut            = 0;
 HOOK (void, LoadPauseBackground, 0x1406570E0, u64 a1, bool playOut) {
 	if (playOut && !playedOut) {
 		playedOut = true;
-		aetLayerArgs pauseMenuBackground (0x51C, "pause_win_add_base", 0x12, AetAction::OUT_ONCE);
+		aetLayerArgs pauseMenuBackground ("AET_NSWGAM_GAME_MAIN", "pause_win_add_base", 0x12, AetAction::OUT_ONCE);
 		pauseMenuBackground.frameRateControl = (void *)(a1 + 0xB0);
 		pauseMenuBackground.play (&pauseMenuBackgroundId);
 	} else {
 		playedOut = false;
-		aetLayerArgs pauseMenuBackground (0x51C, "pause_win_add_base", 0x12, AetAction::IN_LOOP);
+		aetLayerArgs pauseMenuBackground ("AET_NSWGAM_GAME_MAIN", "pause_win_add_base", 0x12, AetAction::IN_LOOP);
 		pauseMenuBackground.frameRateControl = (void *)(a1 + 0xB0);
 		pauseMenuBackground.play (&pauseMenuBackgroundId);
 	}
@@ -32,7 +32,7 @@ HOOK (void, LoadPauseBackground, 0x1406570E0, u64 a1, bool playOut) {
 HOOK (void, PauseExit, 0x14065B810, u64 a1) {
 	if (!playedOut) {
 		playedOut = true;
-		aetLayerArgs pauseMenuBackground (0x51C, "pause_win_add_base", 0x12, AetAction::OUT_ONCE);
+		aetLayerArgs pauseMenuBackground ("AET_NSWGAM_GAME_MAIN", "pause_win_add_base", 0x12, AetAction::OUT_ONCE);
 		pauseMenuBackground.frameRateControl = (void *)(a1 + 0xB0);
 		pauseMenuBackground.play (&pauseMenuBackgroundId);
 	}

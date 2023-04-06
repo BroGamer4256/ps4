@@ -18,8 +18,8 @@ Vec4 noButtonRect;
 
 void
 moveDown () {
-	aetLayerArgs yesButtonAetData (0x4F8, yesButtonName, 0x13, AetAction::IN_ONCE);
-	aetLayerArgs noButtonAetData (0x4F8, noButtonName, 0x13, AetAction::LOOP);
+	aetLayerArgs yesButtonAetData ("AET_PS4_MENU_MAIN", yesButtonName, 0x13, AetAction::IN_ONCE);
+	aetLayerArgs noButtonAetData ("AET_PS4_MENU_MAIN", noButtonName, 0x13, AetAction::LOOP);
 
 	yesButtonAetData.setPosition (yesButtonLoc);
 	noButtonAetData.setPosition (noButtonLoc);
@@ -33,8 +33,8 @@ moveDown () {
 
 void
 moveUp () {
-	aetLayerArgs yesButtonAetData (0x4F8, yesButtonName, 0x13, AetAction::LOOP);
-	aetLayerArgs noButtonAetData (0x4F8, noButtonName, 0x13, AetAction::IN_ONCE);
+	aetLayerArgs yesButtonAetData ("AET_PS4_MENU_MAIN", yesButtonName, 0x13, AetAction::LOOP);
+	aetLayerArgs noButtonAetData ("AET_PS4_MENU_MAIN", noButtonName, 0x13, AetAction::IN_ONCE);
 
 	yesButtonAetData.setPosition (yesButtonLoc);
 	noButtonAetData.setPosition (noButtonLoc);
@@ -48,7 +48,7 @@ moveUp () {
 
 void
 leaveMenu () {
-	aetLayerArgs menuAetData (0x4F8, "dialog_01", 0x12, AetAction::OUT_ONCE);
+	aetLayerArgs menuAetData ("AET_PS4_MENU_MAIN", "dialog_01", 0x12, AetAction::OUT_ONCE);
 	menuAetData.play (&menuAetId);
 
 	PlaySoundEffect ("se_ft_sys_cansel_01", 1.0);
@@ -58,7 +58,7 @@ leaveMenu () {
 
 void
 initMenu () {
-	aetLayerArgs menuAetData (0x4F8, "dialog_01", 0x12, AetAction::IN_LOOP);
+	aetLayerArgs menuAetData ("AET_PS4_MENU_MAIN", "dialog_01", 0x12, AetAction::IN_LOOP);
 	menuAetData.play (&menuAetId);
 
 	aetComposition compositionData;
@@ -80,8 +80,8 @@ initMenu () {
 		noButtonOpacity = layer->opacity;
 	}
 
-	aetLayerArgs yesButtonAetData (0x4F8, yesButtonName, 0x13, AetAction::IN_ONCE);
-	aetLayerArgs noButtonAetData (0x4F8, noButtonName, 0x13, AetAction::LOOP);
+	aetLayerArgs yesButtonAetData ("AET_PS4_MENU_MAIN", yesButtonName, 0x13, AetAction::IN_ONCE);
+	aetLayerArgs noButtonAetData ("AET_PS4_MENU_MAIN", noButtonName, 0x13, AetAction::LOOP);
 
 	yesButtonAetData.setPosition (yesButtonLoc);
 	noButtonAetData.setPosition (noButtonLoc);
@@ -118,10 +118,10 @@ HOOK (bool, CsMenuLoop, 0x1401B29D0, u64 This) {
 	GetComposition (&compositionData, menuAetId);
 
 	if (auto layer = compositionData.find (string ("p_submenu_03_c")))
-		if (auto aet = diva::aetLayers->find (yesButtonAetId)) aet.value ()->color.w = layer.value ()->opacity;
+		if (auto aet = aets->find (yesButtonAetId)) aet.value ()->color.w = layer.value ()->opacity;
 
 	if (auto layer = compositionData.find (string ("p_submenu_04_c")))
-		if (auto aet = diva::aetLayers->find (noButtonAetId)) aet.value ()->color.w = layer.value ()->opacity;
+		if (auto aet = aets->find (noButtonAetId)) aet.value ()->color.w = layer.value ()->opacity;
 
 	if (wantsToExit) {
 		if (clickedPos.x > 0 && !hasClicked) {

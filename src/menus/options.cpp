@@ -29,7 +29,7 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		case 3: name = "option_menu_graphic_txt_graphic"; break;
 		default: name = ""; break;
 		}
-		menuTxtData.with_data (0x525, name, 13, action);
+		menuTxtData.create ("AET_NSWGAM_OPTION_MAIN", name, 13, action);
 		menuTxtData.play (&menuTxt1Id);
 		break;
 	case 1:
@@ -40,7 +40,7 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		case 3: name = "option_menu_graphic_txt_image"; break;
 		default: name = ""; break;
 		}
-		menuTxtData.with_data (0x525, name, 13, action);
+		menuTxtData.create ("AET_NSWGAM_OPTION_MAIN", name, 13, action);
 		menuTxtData.play (&menuTxt2Id);
 		break;
 	case 2:
@@ -51,7 +51,7 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		case 3: name = "option_menu_graphic_txt_aa"; break;
 		default: name = ""; break;
 		}
-		menuTxtData.with_data (0x525, name, 13, action);
+		menuTxtData.create ("AET_NSWGAM_OPTION_MAIN", name, 13, action);
 		menuTxtData.play (&menuTxt3Id);
 		break;
 	case 3:
@@ -61,7 +61,7 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		case 3: name = "option_menu_graphic_txt_shadow"; break;
 		default: name = ""; break;
 		}
-		menuTxtData.with_data (0x525, name, 13, action);
+		menuTxtData.create ("AET_NSWGAM_OPTION_MAIN", name, 13, action);
 		menuTxtData.play (&menuTxt4Id);
 		break;
 	case 4:
@@ -71,7 +71,7 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		case 3: name = "option_menu_graphic_txt_reflection"; break;
 		default: name = ""; break;
 		}
-		menuTxtData.with_data (0x525, name, 13, action);
+		menuTxtData.create ("AET_NSWGAM_OPTION_MAIN", name, 13, action);
 		menuTxtData.play (&menuTxt5Id);
 		break;
 	case 5:
@@ -79,7 +79,7 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		case 0: name = "option_top_menu_txt_save"; break;
 		default: name = ""; break;
 		}
-		menuTxtData.with_data (0x525, name, 13, action);
+		menuTxtData.create ("AET_NSWGAM_OPTION_MAIN", name, 13, action);
 		menuTxtData.play (&menuTxt6Id);
 		break;
 	}
@@ -88,14 +88,14 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 i32 optionMenuTopId     = 0;
 InputType previousInput = InputType::UNKNOWN;
 HOOK (bool, OptionMenuSwitchInit, 0x1406C3CB0, void *a1) {
-	aetLayerArgs optionMenuTopData (0x525, topLoopName, 7, AetAction::NONE);
+	aetLayerArgs optionMenuTopData ("AET_NSWGAM_OPTION_MAIN", topLoopName, 7, AetAction::NONE);
 	optionMenuTopData.play (&optionMenuTopId);
 
 	InputType input = diva::getInputType ();
 	previousInput   = input;
 	sprintf (footerName, "footer_button_01_%02d", (i32)input);
 
-	aetLayerArgs footerData (0x525, footerName, 13, AetAction::NONE);
+	aetLayerArgs footerData ("AET_NSWGAM_OPTION_MAIN", footerName, 13, AetAction::NONE);
 	footerData.play (&footerId);
 
 	playMenuTxt (0, 0, AetAction::IN_LOOP);
@@ -111,7 +111,7 @@ HOOK (bool, OptionMenuSwitchLoop, 0x1406C2920, u64 a1) {
 	InputType input = diva::getInputType ();
 	if (input != previousInput || previousSubMenu != subMenu) {
 		sprintf (footerName, "footer_button_%02d_%02d", (bool)subMenu + 1, (i32)input);
-		aetLayerArgs footerData (0x525, footerName, 13, AetAction::NONE);
+		aetLayerArgs footerData ("AET_NSWGAM_OPTION_MAIN", footerName, 13, AetAction::NONE);
 		footerData.play (&footerId);
 		previousInput = input;
 	}
