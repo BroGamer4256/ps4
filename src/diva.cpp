@@ -173,4 +173,34 @@ template <>
 wstringRange::_stringRangeBase (const wchar_t *str) {
 	wstringRange (str, wcslen (str));
 }
+
+std::map<std::string, taskAddition> taskAdditions;
+HOOK (void, RunTask, 0x1402C9AC0, diva::Task *task) {
+	if (task->state != diva::TaskState::RUNNING) originalRunTask (task);
+
+	auto functions = taskAdditions.find (task->name);
+	if (functions != taskAdditions.end ()) {
+		auto funcs = functions->second;
+		std::optional<taskFunction> func;
+		if (task->op == diva::TaskOp::INIT && (func = funcs.init)) {
+			if (func.value () ((u64)task)) return;
+		} else if (task->op == diva::TaskOp::LOOP && (func = funcs.loop)) {
+			if (func.value () ((u64)task)) return;
+		} else if (task->op == diva::TaskOp::DESTROY && (func = funcs.destroy)) {
+			if (func.value () ((u64)task)) return;
+		}
+	}
+
+	originalRunTask (task);
+}
+
+void
+addTaskAddition (const char *name, taskAddition addition) {
+	taskAdditions[name] = addition;
+}
+
+void
+init () {
+	INSTALL_HOOK (RunTask);
+}
 } // namespace diva

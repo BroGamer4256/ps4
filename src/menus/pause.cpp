@@ -39,15 +39,18 @@ HOOK (void, PauseExit, 0x14065B810, u64 a1) {
 	originalPauseExit (a1);
 }
 
-HOOK (void, PauseDestroy, 0x14065B100, u64 a1) {
+bool
+PauseDestroy (u64 task) {
 	diva::StopAet (&pauseMenuBackgroundId);
-	originalPauseDestroy (a1);
+	return false;
 }
 
 void
 init () {
 	INSTALL_HOOK (LoadPauseBackground);
 	INSTALL_HOOK (PauseExit);
-	INSTALL_HOOK (PauseDestroy);
+	diva::taskAddition addition;
+	addition.destroy = PauseDestroy;
+	diva::addTaskAddition ("PAUSE_MENU_SWITCH", addition);
 }
 } // namespace pause

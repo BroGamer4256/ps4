@@ -43,7 +43,8 @@ playGalleryTxt (i32 button, AetAction action) {
 
 // Fixes gallery not properly exiting and text boxes not working
 i32 previousButton = 5;
-HOOK (bool, CsGalleryLoop, 0x1401AD590, u64 This) {
+bool
+CsGalleryLoop (u64 This) {
 	i32 state          = *(i32 *)(This + 0x68);
 	i32 selectedButton = *(i32 *)(This + 0x70);
 	if (state == 3 && previousButton != selectedButton) {
@@ -61,11 +62,13 @@ HOOK (bool, CsGalleryLoop, 0x1401AD590, u64 This) {
 		playGalleryTxt (selectedButton, AetAction::OUT_ONCE);
 	}
 
-	return originalCsGalleryLoop (This);
+	return false;
 }
 
 void
 init () {
-	INSTALL_HOOK (CsGalleryLoop);
+	diva::taskAddition addition;
+	addition.loop = CsGalleryLoop;
+	diva::addTaskAddition ("CS_GALLERY", addition);
 }
 } // namespace gallery

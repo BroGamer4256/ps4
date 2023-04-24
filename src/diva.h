@@ -594,6 +594,60 @@ struct AetDbSceneEntry {
 	stringRange name;
 	i32 id;
 };
+
+class TaskInterface {
+public:
+	virtual ~TaskInterface () {}
+	virtual bool Init ()    = 0;
+	virtual bool Loop ()    = 0;
+	virtual bool Destroy () = 0;
+	virtual bool Display () = 0;
+	virtual bool Basic ()   = 0;
+};
+
+enum class TaskOp : i32 {
+	NONE = 0,
+	INIT,
+	LOOP,
+	DESTROY,
+	MAX,
+};
+
+enum class TaskState : i32 {
+	NONE = 0,
+	RUNNING,
+	SUSPENDED,
+	HIDDEN,
+};
+
+enum class TaskRequest : i32 {
+	NONE = 0,
+	INIT,
+	DESTROY,
+	SUSPEND,
+	HIDE,
+	RUN,
+};
+
+struct Task : public TaskInterface {
+	i32 priority;
+	Task *parent;
+	TaskOp op;
+	TaskState state;
+	TaskRequest request;
+	TaskOp nextOp;
+	TaskState nextState;
+	bool unk;
+	bool isFrameDependent;
+	char name[32];
+};
+
+typedef bool (*taskFunction) (u64 Task);
+struct taskAddition {
+	std::optional<taskFunction> init;
+	std::optional<taskFunction> loop;
+	std::optional<taskFunction> destroy;
+};
 #pragma pack(pop)
 
 extern vector<PvDbEntry *> *pvs;
@@ -628,4 +682,6 @@ bool isMovieOnly (PvDbEntry *entry);
 std::optional<PvDbEntry *> getPvDbEntry (i32 id);
 Vec4 getPlaceholderRect (AetLayerData layer);
 Vec2 getClickedPos (void *inputState);
+void addTaskAddition (const char *name, taskAddition addition);
+void init ();
 } // namespace diva

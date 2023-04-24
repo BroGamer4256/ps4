@@ -108,8 +108,9 @@ handleClick (Vec2 clickedPos) {
 }
 
 // Custom exit menu
-HOOK (bool, CsMenuLoop, 0x1401B29D0, u64 This) {
-	if (*(i32 *)(This + 0x68) != 2) return originalCsMenuLoop (This);
+bool
+CsMenuLoop (u64 This) {
+	if (*(i32 *)(This + 0x68) != 2) return false;
 
 	void *inputState = diva::GetInputState (0);
 	Vec2 clickedPos  = getClickedPos (inputState);
@@ -136,17 +137,19 @@ HOOK (bool, CsMenuLoop, 0x1401B29D0, u64 This) {
 		else if (IsButtonTapped (inputState, Button::ACCEPT) && hoveredButton == 1) *(u8 *)0x1414ABB90 = 1;
 		else if (IsButtonTapped (inputState, Button::UP) && hoveredButton == 0) moveUp ();
 		else if (IsButtonTapped (inputState, Button::DOWN) && hoveredButton == 1) moveDown ();
-		return false;
+		return true;
 	}
 
 	if (IsButtonTapped (inputState, Button::BACK)) initMenu ();
-	return originalCsMenuLoop (This);
+	return false;
 }
 
 void
 init () {
 	yesButtonName = appendTheme ("cmn_menu_yes");
 	noButtonName  = appendTheme ("cmn_menu_no");
-	INSTALL_HOOK (CsMenuLoop);
+	taskAddition addition;
+	addition.loop = CsMenuLoop;
+	addTaskAddition ("CS_MENU", addition);
 }
 } // namespace exitMenu

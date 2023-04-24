@@ -1,5 +1,6 @@
 #include "diva.h"
 #include "menus.h"
+#include <optional>
 
 namespace customize {
 using namespace diva;
@@ -42,7 +43,8 @@ HOOK (bool, CustomizeSelIsLoaded, 0x140687CD0) {
 	return originalCustomizeSelIsLoaded ();
 }
 
-HOOK (bool, CustomizeSelLoop, 0x140687D70, void *a1) {
+bool
+CustomizeSelLoop (u64 task) {
 	InputType input = diva::getInputType ();
 	if (currentMenu != -1 && input != previousInputType) {
 		previousInputType = input;
@@ -51,13 +53,14 @@ HOOK (bool, CustomizeSelLoop, 0x140687D70, void *a1) {
 		diva::AetLayerArgs layer ("AET_NSWGAM_CUSTOM_MAIN", buf, 0x11, AetAction::NONE);
 		layer.play (&footerButtonId);
 	}
-	return originalCustomizeSelLoop (a1);
+	return false;
 }
 
-HOOK (bool, CustomizeSelDestroy, 0x15FA75580, void *a1) {
+bool
+CustomizeSelDestroy (u64 task) {
 	StopAet (&footerButtonId);
 	currentMenu = -1;
-	return originalCustomizeSelDestroy (a1);
+	return false;
 }
 
 HOOK (void, PlayCustomizeSelFooter, 0x15F9811D0, void *a1, PlayCustomizeSelFooterArgs *args) {
@@ -154,11 +157,14 @@ void
 init () {
 	INSTALL_HOOK (CustomizeSelInit);
 	INSTALL_HOOK (CustomizeSelIsLoaded);
-	INSTALL_HOOK (CustomizeSelLoop);
-	INSTALL_HOOK (CustomizeSelDestroy);
 	INSTALL_HOOK (PlayCustomizeSelFooter);
 	INSTALL_HOOK (GameOptionsLoop);
 	INSTALL_HOOK (ButtonFxListIn);
 	INSTALL_HOOK (ButtonFxUnload);
+
+	taskAddition addition;
+	addition.loop    = CustomizeSelLoop;
+	addition.destroy = CustomizeSelDestroy;
+	addTaskAddition ("CustomizeSel", addition);
 }
 } // namespace customize

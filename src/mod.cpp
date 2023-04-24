@@ -132,6 +132,7 @@ init () {
 	WRITE_MEMORY (0x140654505, AetAction, AetAction::IN_LOOP);
 	WRITE_MEMORY (0x1401A9CF8, AetAction, AetAction::IN_LOOP);
 
+	diva::init ();
 	exitMenu::init ();
 	pvSel::init ();
 	gallery::init ();

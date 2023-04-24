@@ -272,13 +272,14 @@ optionsSelectTouch (u64 This) {
 	}
 }
 
-HOOK (bool, PVSelLoop, 0x1402033C0, u64 This) {
+bool
+PVSelLoop (u64 This) {
 	// Touch
 	if (*(i32 *)(This + 0x68) == 8) optionsSelectTouch (This);
 
 	// Allow swapping of visual style on song select
 	// Disable on playlists
-	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(0x14CC10480)) return originalPVSelLoop (This);
+	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(0x14CC10480)) return false;
 
 	loaded       = true;
 	auto entry   = getPvDbEntry (*(i32 *)(This + 0x36A30));
@@ -326,21 +327,22 @@ HOOK (bool, PVSelLoop, 0x1402033C0, u64 This) {
 	updateLocs ();
 	*(i32 *)(pvLoadData + 0x1D08) = style;
 
-	return originalPVSelLoop (This);
+	return false;
 }
 
-HOOK (bool, PvSelDestroy, 0x140204DA0, u64 This) {
-	if (*(i32 *)(This + 0x36A08) != 0) return originalPvSelDestroy (This);
-
+bool
+PvSelDestroy (u64 This) {
+	if (*(i32 *)(This + 0x36A08) != 0) return false;
 	hide ();
-
-	return originalPvSelDestroy (This);
+	return false;
 }
 
 void
 init () {
-	INSTALL_HOOK (PVSelLoop);
-	INSTALL_HOOK (PvSelDestroy);
+	taskAddition addition;
+	addition.loop    = PVSelLoop;
+	addition.destroy = PvSelDestroy;
+	addTaskAddition ("PVsel", addition);
 }
 
 void
