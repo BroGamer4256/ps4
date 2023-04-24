@@ -98,6 +98,27 @@ HOOK (void, LoadAetFrameH, 0x1402CA590, void *data, i32 aetSceneId, const char *
 	return originalLoadAetFrameH (data, aetSceneId, layerName, action, layer, a6, frame);
 }
 
+diva::AetLayerArgs **cmnbgArgs = (diva::AetLayerArgs **)0x14CC5EEA0;
+i32 bgId                       = 0;
+bool decorationInited          = false;
+bool
+DecorationLoop (u64 a1) {
+	if (!decorationInited) {
+		diva::StopAet (&(*cmnbgArgs)->id2);
+		diva::AetLayerArgs bgArgs ("AET_NSWGAM_DECORATION_MAIN", "bg", 1, AetAction::NONE);
+		bgArgs.play (&bgId);
+		decorationInited = true;
+	}
+	return false;
+}
+
+bool
+DecorationDestroy (u64 a1) {
+	diva::StopAet (&bgId);
+	(*cmnbgArgs)->play (&(*cmnbgArgs)->id2);
+	return false;
+}
+
 extern "C" {
 
 FUNCTION_PTR (float, GetLayerFrame, 0x1402CA120, i32 id, char *layer_name);
@@ -151,6 +172,11 @@ init () {
 	options::init ();
 	pause::init ();
 	customize::init ();
+
+	diva::taskAddition addition;
+	addition.loop    = DecorationLoop;
+	addition.destroy = DecorationDestroy;
+	diva::addTaskAddition ("DECO", addition);
 }
 
 void

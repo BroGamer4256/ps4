@@ -179,9 +179,9 @@ HOOK (void, RunTask, 0x1402C9AC0, diva::Task *task) {
 	if (task->state != diva::TaskState::RUNNING) originalRunTask (task);
 
 	auto functions = taskAdditions.find (task->name);
+	std::optional<taskFunction> func;
 	if (functions != taskAdditions.end ()) {
 		auto funcs = functions->second;
-		std::optional<taskFunction> func;
 		if (task->op == diva::TaskOp::INIT && (func = funcs.init)) {
 			if (func.value () ((u64)task)) return;
 		} else if (task->op == diva::TaskOp::LOOP && (func = funcs.loop)) {
@@ -191,7 +191,9 @@ HOOK (void, RunTask, 0x1402C9AC0, diva::Task *task) {
 		}
 	}
 
+	auto op = task->op;
 	originalRunTask (task);
+	if (op == TaskOp::LOOP && task->nextState == TaskState::NONE && functions != taskAdditions.end () && (func = functions->second.destroy)) func.value () ((u64)task);
 }
 
 void

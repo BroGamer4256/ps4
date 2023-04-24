@@ -351,6 +351,7 @@ hide () {
 
 	StopAet (&keyHelpId);
 	StopAet (&selectorImgId);
+	StopAet (&selectorId);
 	loaded = false;
 }
 } // namespace pvSel

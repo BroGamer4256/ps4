@@ -422,7 +422,8 @@ struct AetLayerArgs {
 	i32 unk_0x154;
 	i32 unk_0x158;
 	i32 id;
-	void *unk_0x160;
+	i32 id2;
+	i32 unk_0x164;
 	Vec3 position_2;
 
 	AetLayerArgs () {}
