@@ -87,6 +87,17 @@ HOOK (void *, PlayAetLayerH, 0x1402CA220, diva::AetLayerArgs *args, i32 *id) {
 	return originalPlayAetLayerH (args, id);
 }
 
+HOOK (void, LoadAetFrameH, 0x1402CA590, void *data, i32 aetSceneId, const char *layerName, AetAction action, i32 layer, char *a6, float frame) {
+	if (layerName == 0) return originalLoadAetFrameH (data, aetSceneId, layerName, action, layer, a6, frame);
+	for (auto str : themeStrings) {
+		if (strcmp (str.c_str (), layerName) == 0) {
+			const char *theme = diva::appendTheme (layerName);
+			return originalLoadAetFrameH (data, aetSceneId, theme, action, layer, a6, frame);
+		}
+	}
+	return originalLoadAetFrameH (data, aetSceneId, layerName, action, layer, a6, frame);
+}
+
 extern "C" {
 
 FUNCTION_PTR (float, GetLayerFrame, 0x1402CA120, i32 id, char *layer_name);
@@ -104,6 +115,7 @@ init () {
 	INSTALL_HOOK (GetFtTheme);
 	INSTALL_HOOK (LoadAndPlayAet);
 	INSTALL_HOOK (PlayAetLayerH);
+	INSTALL_HOOK (LoadAetFrameH);
 	INSTALL_HOOK (CmnMenuTouchCheck);
 
 	// 1.00 Samyuu, 1.03 BroGamer
