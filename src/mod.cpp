@@ -39,31 +39,12 @@ HOOK (void, ChangeSubGameState, 0x1527E49E0, State state, SubState subState) {
 	return originalChangeSubGameState (state, subState);
 }
 
-// Fixes the header/footer being present on customize
-HOOK (bool, CustomizeSelInit, 0x140687D10, u64 This) {
-	diva::CmnMenuDestroy (0x14114C370);
-	pvSel::hide ();
-	return originalCustomizeSelInit (This);
-}
-
 HOOK (i32 *, GetFtTheme, 0x1401D6540) { return &theme; }
 
 // Fixes gallery photos
 HOOK (void, LoadAndPlayAet, 0x1401AF0E0, diva::AetLayerArgs *args, AetAction action) {
 	args->create ("AET_PS4_GALLERY_MAIN", args->layerName, args->priority, action);
 	args->play (&args->id);
-}
-
-// Fixes switching to customize from playlists
-HOOK (bool, CustomizeSelIsLoaded, 0x140687CD0) {
-	if (*(i32 *)0x14CC6F118 == 1) {
-		if (implOfCustomizeSelInit (0x14CC6F100)) {
-			*(i32 *)0x14CC6F118 = 2;
-			*(i32 *)0x14CC6F124 = 2;
-		}
-	}
-
-	return originalCustomizeSelIsLoaded ();
 }
 
 std::set<std::string> themeStrings = {"option_sub_menu_eachsong",
@@ -120,10 +101,8 @@ init () {
 	theme       = config["theme"].value_or (0);
 
 	INSTALL_HOOK (ChangeSubGameState);
-	INSTALL_HOOK (CustomizeSelInit);
 	INSTALL_HOOK (GetFtTheme);
 	INSTALL_HOOK (LoadAndPlayAet);
-	INSTALL_HOOK (CustomizeSelIsLoaded);
 	INSTALL_HOOK (PlayAetLayerH);
 	INSTALL_HOOK (CmnMenuTouchCheck);
 
@@ -158,6 +137,7 @@ init () {
 	gallery::init ();
 	options::init ();
 	pause::init ();
+	customize::init ();
 }
 
 void

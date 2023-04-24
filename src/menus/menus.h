@@ -14,3 +14,6 @@ void init ();
 namespace pause {
 void init ();
 } // namespace pause
+namespace customize {
+void init ();
+}

@@ -100,7 +100,7 @@ void
 handleClick (Vec2 clickedPos) {
 	if (yesButtonRect.contains (clickedPos)) {
 		if (hoveredButton == 0) moveUp ();
-		else ExitProcess (0);
+		else *(u8 *)0x1414ABB90 = 1;
 	} else if (noButtonRect.contains (clickedPos)) {
 		if (hoveredButton == 1) moveDown ();
 		else leaveMenu ();
@@ -133,7 +133,7 @@ HOOK (bool, CsMenuLoop, 0x1401B29D0, u64 This) {
 
 		if (IsButtonTapped (inputState, Button::BACK)) leaveMenu ();
 		else if (IsButtonTapped (inputState, Button::ACCEPT) && hoveredButton == 0) leaveMenu ();
-		else if (IsButtonTapped (inputState, Button::ACCEPT) && hoveredButton == 1) ExitProcess (0);
+		else if (IsButtonTapped (inputState, Button::ACCEPT) && hoveredButton == 1) *(u8 *)0x1414ABB90 = 1;
 		else if (IsButtonTapped (inputState, Button::UP) && hoveredButton == 0) moveUp ();
 		else if (IsButtonTapped (inputState, Button::DOWN) && hoveredButton == 1) moveDown ();
 		return false;
