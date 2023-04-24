@@ -55,6 +55,7 @@ HOOK (bool, CustomizeSelLoop, 0x140687D70, void *a1) {
 }
 
 HOOK (bool, CustomizeSelDestroy, 0x15FA75580, void *a1) {
+	StopAet (&footerButtonId);
 	currentMenu = -1;
 	return originalCustomizeSelDestroy (a1);
 }
@@ -117,7 +118,6 @@ playOptionText (i32 option, AetAction action) {
 
 HOOK (void *, GameOptionsLoop, 0x14066E0E0, u64 a1, i32 a2, bool a3) {
 	if (a2 == 0) {
-		StopAet (&footerButtonId);
 		StopAet (&optionTxt0Id);
 		StopAet (&optionTxt1Id);
 		StopAet (&optionTxt2Id);
@@ -145,9 +145,9 @@ HOOK (void, ButtonFxListIn, 0x1406985B0, u64 a1) {
 	originalButtonFxListIn (a1);
 }
 
-HOOK (void, ButtonFxThing, 0x1406996C0, u64 a1) {
-	if (*(bool *)((*(u64 *)(a1 + 0x8)) + 0x10)) StopAet (&soundListInId);
-	originalButtonFxThing (a1);
+HOOK (void, ButtonFxUnload, 0x1406996C0, u64 a1) {
+	StopAet (&soundListInId);
+	originalButtonFxUnload (a1);
 }
 
 void
@@ -159,6 +159,6 @@ init () {
 	INSTALL_HOOK (PlayCustomizeSelFooter);
 	INSTALL_HOOK (GameOptionsLoop);
 	INSTALL_HOOK (ButtonFxListIn);
-	INSTALL_HOOK (ButtonFxThing);
+	INSTALL_HOOK (ButtonFxUnload);
 }
 } // namespace customize
