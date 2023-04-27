@@ -116,6 +116,7 @@ bool
 DecorationDestroy (u64 a1) {
 	diva::StopAet (&bgId);
 	(*cmnbgArgs)->play (&(*cmnbgArgs)->id2);
+	decorationInited = false;
 	return false;
 }
 

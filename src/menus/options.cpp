@@ -20,7 +20,7 @@ u8 previousSubMenu      = 0;
 void
 playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 	const char *name;
-	AetLayerArgs menuTxtData;
+	i32 *id;
 	switch (button) {
 	case 0:
 		switch (subMenu) {
@@ -30,8 +30,7 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		case 3: name = "option_menu_graphic_txt_graphic"; break;
 		default: name = ""; break;
 		}
-		menuTxtData.create ("AET_NSWGAM_OPTION_MAIN", name, 13, action);
-		menuTxtData.play (&menuTxt1Id);
+		id = &menuTxt1Id;
 		break;
 	case 1:
 		switch (subMenu) {
@@ -41,8 +40,7 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		case 3: name = "option_menu_graphic_txt_image"; break;
 		default: name = ""; break;
 		}
-		menuTxtData.create ("AET_NSWGAM_OPTION_MAIN", name, 13, action);
-		menuTxtData.play (&menuTxt2Id);
+		id = &menuTxt2Id;
 		break;
 	case 2:
 		switch (subMenu) {
@@ -52,8 +50,7 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		case 3: name = "option_menu_graphic_txt_aa"; break;
 		default: name = ""; break;
 		}
-		menuTxtData.create ("AET_NSWGAM_OPTION_MAIN", name, 13, action);
-		menuTxtData.play (&menuTxt3Id);
+		id = &menuTxt3Id;
 		break;
 	case 3:
 		switch (subMenu) {
@@ -62,8 +59,7 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		case 3: name = "option_menu_graphic_txt_shadow"; break;
 		default: name = ""; break;
 		}
-		menuTxtData.create ("AET_NSWGAM_OPTION_MAIN", name, 13, action);
-		menuTxtData.play (&menuTxt4Id);
+		id = &menuTxt4Id;
 		break;
 	case 4:
 		switch (subMenu) {
@@ -72,18 +68,18 @@ playMenuTxt (u8 button, u8 subMenu, AetAction action) {
 		case 3: name = "option_menu_graphic_txt_reflection"; break;
 		default: name = ""; break;
 		}
-		menuTxtData.create ("AET_NSWGAM_OPTION_MAIN", name, 13, action);
-		menuTxtData.play (&menuTxt5Id);
+		id = &menuTxt5Id;
 		break;
 	case 5:
 		switch (subMenu) {
 		case 0: name = "option_top_menu_txt_save"; break;
 		default: name = ""; break;
 		}
-		menuTxtData.create ("AET_NSWGAM_OPTION_MAIN", name, 13, action);
-		menuTxtData.play (&menuTxt6Id);
+		id = &menuTxt6Id;
 		break;
 	}
+	AetLayerArgs menuTxtData ("AET_NSWGAM_OPTION_MAIN", name, 13, action);
+	menuTxtData.play (id);
 }
 
 bool
@@ -102,8 +98,13 @@ OptionMenuSwitchInit (u64 task) {
 	return false;
 }
 
+bool inited = false;
 bool
 OptionMenuSwitchLoop (u64 task) {
+	if (*(u8 *)(task + 0xB0) != 0 && !inited) {
+		OptionMenuSwitchInit (task);
+		inited = true;
+	}
 	u8 subMenu      = *(u8 *)(task + 0xB3);
 	subMenu         = subMenu > 1 ? subMenu - 1 : subMenu;
 	u8 button       = *(u8 *)(task + 0xB4 + subMenu);
@@ -133,6 +134,7 @@ OptionMenuSwitchDestroy (u64 task) {
 	diva::StopAet (&menuTxt5Id);
 	diva::StopAet (&menuTxt6Id);
 	diva::StopAet (&footerId);
+	inited = false;
 	return false;
 }
 
