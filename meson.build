@@ -33,17 +33,17 @@ add_project_link_arguments(
 
 cmake = import('cmake')
 minhook = cmake.subproject('minhook')
-subproject('tomlplusplus')
+tomlc99 = subproject('tomlc99')
 
 library(
 	'ps4',
 	include_directories: [
 		'src',
-		'subprojects/tomlplusplus/'
 	],
 	cpp_pch : 'src/helpers.h',
 	dependencies : [
 		minhook.get_variable('minhook_dep'),
+		tomlc99.get_variable('tomlc99_dep'),
 	],
 	sources : [
 		'src/mod.cpp',

@@ -130,8 +130,16 @@ void
 init () {
 	// freopen ("CONOUT$", "w", stdout);
 
-	auto config = toml::parse_file ("config.toml");
-	theme       = config["theme"].value_or (0);
+	auto file   = fopen ("config.toml", "r");
+	auto config = toml_parse_file (file, NULL, 0);
+	fclose (file);
+	if (!config) {
+		theme = 0;
+	} else {
+		auto data = toml_int_in (config, "theme");
+		if (!data.ok) theme = 0;
+		else theme = data.u.i;
+	}
 
 	INSTALL_HOOK (ChangeSubGameState);
 	INSTALL_HOOK (GetFtTheme);

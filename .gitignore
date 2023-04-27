@@ -3,4 +3,4 @@ compile_commands.json
 .cache
 subprojects/minhook
 subprojects/packagecache
-subprojects/tomlplusplus
+subprojects/tomlc99

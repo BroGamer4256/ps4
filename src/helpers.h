@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <toml.hpp>
+#include <toml.h>
 #include <windows.h>
 
 typedef int8_t i8;
