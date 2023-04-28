@@ -105,7 +105,7 @@ bool
 DecorationLoop (u64 a1) {
 	if (!decorationInited) {
 		diva::StopAet (&(*cmnbgArgs)->id2);
-		diva::AetLayerArgs bgArgs ("AET_NSWGAM_DECORATION_MAIN", "bg", 1, AetAction::NONE);
+		diva::AetLayerArgs bgArgs ("AET_NSWGAM_DECORATION_MAIN", "bg", 5, AetAction::NONE);
 		bgArgs.play (&bgId);
 		decorationInited = true;
 	}
