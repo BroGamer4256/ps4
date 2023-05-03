@@ -120,6 +120,10 @@ DecorationDestroy (u64 a1) {
 	return false;
 }
 
+HOOK (u64, GetStageResultSwitch, 0x14064BF50) { return 0x1412C1F00; }
+HOOK (bool, StageResultSwitchFinished, 0x14064C0D0, u64 task) { return *(i32 *)(task + 0x68) == 0x5A; }
+HOOK (bool, StageResultSwitchLoaded, 0x1401E8060) { return *(i32 *)(implOfGetStageResultSwitch () + 0x68) != 0; }
+
 extern "C" {
 
 FUNCTION_PTR (float, GetLayerFrame, 0x1402CA120, i32 id, char *layer_name);
@@ -146,6 +150,9 @@ init () {
 	INSTALL_HOOK (LoadAndPlayAet);
 	INSTALL_HOOK (PlayAetLayerH);
 	INSTALL_HOOK (LoadAetFrameH);
+	INSTALL_HOOK (GetStageResultSwitch);
+	INSTALL_HOOK (StageResultSwitchFinished);
+	INSTALL_HOOK (StageResultSwitchLoaded);
 	INSTALL_HOOK (CmnMenuTouchCheck);
 
 	// 1.00 Samyuu, 1.03 BroGamer
