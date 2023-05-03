@@ -253,9 +253,13 @@ struct _stringRangeBase {
 	T *data;
 	T *end;
 
+	// Technically incorrect but always seems to work
 	T *c_str () { return data; }
-	size_t length () { return (u64)end - (u64)data; }
 
+	_stringRangeBase () {
+		data = 0;
+		end  = 0;
+	}
 	_stringRangeBase (const T *str);
 	_stringRangeBase (const T *str, size_t length) {
 		data = allocate<T> (length);
@@ -368,27 +372,6 @@ enum class Button : i32 {
 	R2       = 14,
 	L3       = 15,
 	R3       = 16,
-};
-
-struct PvSpriteIds {
-	void *unk;
-	i32 setId;
-	i32 bgIdEasy;
-	i32 bgIdNormal;
-	i32 bgIdHard;
-	i32 bgIdExtreme;
-	i32 jkIdEasy;
-	i32 jkIdNormal;
-	i32 jkIdHard;
-	i32 jkIdExtreme;
-	i32 logoIdEasy;
-	i32 logoIdNormal;
-	i32 logoIdHard;
-	i32 logoIdExtreme;
-	i32 thumbnailIdEasy;
-	i32 thumbnailIdNormal;
-	i32 thumbnailIdHard;
-	i32 thumbnailIdExtreme;
 };
 
 struct AetLayerArgs {
@@ -652,7 +635,6 @@ struct taskAddition {
 #pragma pack(pop)
 
 extern vector<PvDbEntry *> *pvs;
-extern map<i32, PvSpriteIds> *pvSprites;
 extern map<i32, AetData> *aets;
 
 using AetComposition = map<string, AetLayerData>;

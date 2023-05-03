@@ -31,7 +31,6 @@ FUNCTION_PTR (void, FreeString, 0x14014BCD0, string *);
 
 vector<PvDbEntry *> *pvs             = (vector<PvDbEntry *> *)0x141753818;
 vector<AetDbSceneEntry> *aetDbScenes = (vector<AetDbSceneEntry> *)0x1414AB588;
-map<i32, PvSpriteIds> *pvSprites     = (map<i32, PvSpriteIds> *)0x14CBBACC0;
 map<i32, AetData> *aets              = (map<i32, AetData> *)0x1414AB448;
 
 void

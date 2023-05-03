@@ -182,10 +182,10 @@ init () {
 	pause::init ();
 	customize::init ();
 
-	diva::taskAddition addition;
-	addition.loop    = DecorationLoop;
-	addition.destroy = DecorationDestroy;
-	diva::addTaskAddition ("DECO", addition);
+	diva::taskAddition decoAddition;
+	decoAddition.loop    = DecorationLoop;
+	decoAddition.destroy = DecorationDestroy;
+	diva::addTaskAddition ("DECO", decoAddition);
 }
 
 void
