@@ -17,3 +17,6 @@ void init ();
 namespace customize {
 void init ();
 }
+namespace result {
+void init ();
+}

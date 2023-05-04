@@ -28,6 +28,7 @@ FUNCTION_PTR (void, StopAet, 0x1402CA330, i32 *id);
 FUNCTION_PTR (void *, operatorNew, sigOperatorNew (), u64);
 FUNCTION_PTR (void *, operatorDelete, sigOperatorDelete (), void *);
 FUNCTION_PTR (void, FreeString, 0x14014BCD0, string *);
+FUNCTION_PTR (void, GetFSCTRankData, 0x1401E7C60, i32 *fsRank, i32 *ctRank, i32 *fsPoints, i32 *ctPoints);
 
 vector<PvDbEntry *> *pvs             = (vector<PvDbEntry *> *)0x141753818;
 vector<AetDbSceneEntry> *aetDbScenes = (vector<AetDbSceneEntry> *)0x1414AB588;

@@ -56,7 +56,8 @@ library(
 		'src/menus/options.cpp',
 		'src/menus/pause.cpp',
 		'src/menus/pvSel.cpp',
-		'src/menus/customize.cpp'
+		'src/menus/customize.cpp',
+		'src/menus/result.cpp'
 	],
 	name_prefix: ''
 )
