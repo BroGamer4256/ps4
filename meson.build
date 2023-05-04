@@ -13,6 +13,7 @@ add_project_arguments(
 		# GCC
 		'-D_WIN32_WINNT=_WIN32_WINNT_WIN10',
 		'-std=c++20',
+		'-masm=intel',
 		# MSVC
 		'/std:c++20',
 	),
