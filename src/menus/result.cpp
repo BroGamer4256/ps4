@@ -14,7 +14,7 @@ HOOK (bool, StageResultSwitchLoaded, 0x1401E8060) { return *(i32 *)(implOfGetSta
 
 bool
 GameResultLoop (u64 task) {
-	if (*(bool *)0x140DAB380 && *(i32 *)0x140DAB388 == 0 && *(i32 *)(task + 0x68) < 8) {
+	if (IsSurvival () && (LifeGauge () == 0 || SurvivalCleared ()) && *(i32 *)(task + 0x68) < 8) {
 		*(i32 *)(task + 0x68) = 8;
 		*(i32 *)(task + 0x88) = 1;
 	}

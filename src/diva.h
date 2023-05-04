@@ -656,6 +656,9 @@ FUNCTION_PTR_H (i32, GetCurrentStyle);
 FUNCTION_PTR_H (InputType, NormalizeInputType, i32 inputType);
 FUNCTION_PTR_H (void, StopAet, i32 *id);
 FUNCTION_PTR_H (void, GetFSCTRankData, i32 *fsRank, i32 *ctRank, i32 *fsPoints, i32 *ctPoints);
+FUNCTION_PTR_H (bool, IsSurvival);
+FUNCTION_PTR_H (bool, SurvivalCleared);
+FUNCTION_PTR_H (i32, LifeGauge);
 
 void appendThemeInPlace (char *name);
 char *appendTheme (const char *name);
