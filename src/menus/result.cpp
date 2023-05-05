@@ -44,12 +44,12 @@ HOOK (i32 *, GetRankData, 0x1401E7C50) {
 
 	i32 *data = originalGetRankData ();
 
-	data[0]  = *(i32 *)0x14CC08DD0; // Gained points
-	data[1]  = points;
-	data[2]  = rank;
-	data[4]  = pointsRequired[rank - 1];
-	data[5]  = pointsRequired[rank];
-	data[14] = 1;
+	data[0]  = *(i32 *)0x14CC08DD0;      // Gained points
+	data[1]  = points;                   // Current points
+	data[2]  = rank;                     // Current rank
+	data[4]  = pointsRequired[rank - 1]; // Points required for current rank
+	data[5]  = pointsRequired[rank];     // Points required for next rank
+	data[14] = 1;                        // Has gained points
 
 	return data;
 }
