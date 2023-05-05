@@ -29,6 +29,12 @@ HOOK (void, LoadPauseBackground, 0x1406570E0, u64 a1, bool playOut) {
 	originalLoadPauseBackground (a1, playOut);
 }
 
+HOOK (i32 *, GetPauseTouched, 0x140659100, u64 a1, u64 a2, u64 a3) {
+	i32 *val = originalGetPauseTouched (a1, a2, a3);
+	if (diva::IsSurvival () && val[1] == 1 && val[0] == 1) val[1] = 0;
+	return val;
+}
+
 HOOK (void, PauseExit, 0x14065B810, u64 a1) {
 	if (!playedOut) {
 		playedOut = true;
@@ -48,7 +54,9 @@ PauseDestroy (u64 task) {
 void
 init () {
 	INSTALL_HOOK (LoadPauseBackground);
+	INSTALL_HOOK (GetPauseTouched);
 	INSTALL_HOOK (PauseExit);
+
 	diva::taskAddition addition;
 	addition.destroy = PauseDestroy;
 	diva::addTaskAddition ("PAUSE_MENU_SWITCH", addition);

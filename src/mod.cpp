@@ -81,6 +81,10 @@ std::set<std::string> themeStrings = {"option_sub_menu_eachsong",
 HOOK (void *, PlayAetLayerH, 0x1402CA220, diva::AetLayerArgs *args, i32 *id) {
 	if (args->layerName == 0) return originalPlayAetLayerH (args, id);
 	if (themeStrings.find (args->layerName) != themeStrings.end ()) {
+		if (strcmp (args->layerName, "gam_btn_retry") == 0 && diva::IsSurvival ()) {
+			args->StartMarker = diva::string ("st_sp_02");
+			args->EndMarker   = diva::string ("ed_sp_02");
+		}
 		args->layerName = diva::appendTheme (args->layerName);
 		return originalPlayAetLayerH (args, id);
 	}
@@ -174,6 +178,9 @@ init () {
 	// Use Left/Right on FX select
 	WRITE_MEMORY (0x14069997F, Button, Button::LEFT);
 	WRITE_MEMORY (0x1406999A6, Button, Button::RIGHT);
+
+	// Load survival_attention from aet_nswgam_game in the pause menu
+	WRITE_MEMORY (0x140657012, i32, 0x51C);
 
 	WRITE_MEMORY (0x14066451D, AetAction, AetAction::IN_LOOP);
 	WRITE_MEMORY (0x140654505, AetAction, AetAction::IN_LOOP);
