@@ -1,3 +1,4 @@
+#pragma once
 namespace diva {
 struct Vec2 {
 	f32 x;
@@ -404,8 +405,8 @@ struct AetLayerArgs {
 	bool soundVoice;
 	i32 unk_0x154;
 	i32 unk_0x158;
+	i32 unk_0x15C;
 	i32 id;
-	i32 id2;
 	i32 unk_0x164;
 	Vec3 position_2;
 
@@ -631,6 +632,7 @@ struct taskAddition {
 	std::optional<taskFunction> init;
 	std::optional<taskFunction> loop;
 	std::optional<taskFunction> destroy;
+	std::optional<taskFunction> display;
 };
 #pragma pack(pop)
 

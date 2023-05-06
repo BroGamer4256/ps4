@@ -76,7 +76,9 @@ std::set<std::string> themeStrings = {"option_sub_menu_eachsong",
                                       "setting_menu_bg_arcade_base_in",
                                       "setting_menu_bg_arcade_base_up",
                                       "setting_menu_bg_arcade_base_down",
-                                      "bg02"};
+                                      "bg02",
+                                      "footer_02",
+                                      "footer_03"};
 
 HOOK (void *, PlayAetLayerH, 0x1402CA220, diva::AetLayerArgs *args, i32 *id) {
 	if (args->layerName == 0) return originalPlayAetLayerH (args, id);
@@ -102,36 +104,14 @@ HOOK (void, LoadAetFrameH, 0x1402CA590, void *data, i32 aetSceneId, const char *
 	return originalLoadAetFrameH (data, aetSceneId, layerName, action, layer, a6, frame);
 }
 
-diva::AetLayerArgs **cmnbgArgs = (diva::AetLayerArgs **)0x14CC5EEA0;
-i32 bgId                       = 0;
-bool decorationInited          = false;
-bool
-DecorationLoop (u64 a1) {
-	if (!decorationInited) {
-		diva::StopAet (&(*cmnbgArgs)->id2);
-		diva::AetLayerArgs bgArgs ("AET_NSWGAM_DECORATION_MAIN", "bg", 5, AetAction::NONE);
-		bgArgs.play (&bgId);
-		decorationInited = true;
-	}
-	return false;
-}
-
-bool
-DecorationDestroy (u64 a1) {
-	diva::StopAet (&bgId);
-	(*cmnbgArgs)->play (&(*cmnbgArgs)->id2);
-	decorationInited = false;
-	return false;
-}
-
 extern "C" {
 
 FUNCTION_PTR (float, GetLayerFrame, 0x1402CA120, i32 id, char *layer_name);
 FUNCTION_PTR (diva::string *, AppendLayerSuffix, 0x14022D070, void *a1, diva::string *base_layer_name);
 HOOK (void, CmnMenuTouchCheck, 0x14022C590);
+HOOK (void, DecoPlaceholderApply, 0x1401FB724);
 
-void
-init () {
+__declspec (dllexport) void init () {
 	// freopen ("CONOUT$", "w", stdout);
 
 	auto file   = fopen ("config.toml", "r");
@@ -151,11 +131,7 @@ init () {
 	INSTALL_HOOK (PlayAetLayerH);
 	INSTALL_HOOK (LoadAetFrameH);
 	INSTALL_HOOK (CmnMenuTouchCheck);
-
-	diva::taskAddition decoAddition;
-	decoAddition.loop    = DecorationLoop;
-	decoAddition.destroy = DecorationDestroy;
-	diva::addTaskAddition ("DECO", decoAddition);
+	INSTALL_HOOK (DecoPlaceholderApply);
 
 	// 1.00 Samyuu, 1.03 BroGamer
 	WRITE_MEMORY (0x1414AB9E3, u8, 1);
@@ -194,10 +170,10 @@ init () {
 	pause::init ();
 	customize::init ();
 	result::init ();
+	decoration::init ();
 }
 
-void
-preInit () {
+__declspec (dllexport) void preInit () {
 	WRITE_NULL (sigPvDbSwitch (), 1);
 	WRITE_NULL (sigMenuTxt1 (), 1);
 	WRITE_NULL (sigMenuTxt2 (), 1);

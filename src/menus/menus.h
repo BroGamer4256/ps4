@@ -1,3 +1,4 @@
+#include "diva.h"
 namespace exitMenu {
 void init ();
 } // namespace exitMenu
@@ -16,7 +17,11 @@ void init ();
 } // namespace pause
 namespace customize {
 void init ();
-}
+} // namespace customize
 namespace result {
 void init ();
-}
+} // namespace result
+namespace decoration {
+void init ();
+void placeholderApply (diva::AetLayerArgs *layer, diva::AetLayerData *placeholder);
+} // namespace decoration

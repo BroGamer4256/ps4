@@ -50,14 +50,15 @@ library(
 		'src/mod.cpp',
 		'src/SigScan.cpp',
 		'src/diva.cpp',
-		'src/menu_touch.asm',
+		'src/hooks.asm',
 		'src/menus/exit.cpp',
 		'src/menus/gallery.cpp',
 		'src/menus/options.cpp',
 		'src/menus/pause.cpp',
 		'src/menus/pvSel.cpp',
 		'src/menus/customize.cpp',
-		'src/menus/result.cpp'
+		'src/menus/result.cpp',
+		'src/menus/decoration.cpp'
 	],
 	name_prefix: ''
 )
