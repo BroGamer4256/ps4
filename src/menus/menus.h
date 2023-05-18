@@ -23,5 +23,4 @@ void init ();
 } // namespace result
 namespace decoration {
 void init ();
-void placeholderApply (diva::AetLayerArgs *layer, diva::AetLayerData *placeholder);
 } // namespace decoration

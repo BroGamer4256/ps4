@@ -2,18 +2,12 @@
 #include "menus.h"
 
 namespace pause {
-typedef enum PauseAction : i32 {
-	Load         = 0,
-	Unload       = 1,
-	ButtonChange = 2,
-	ButtonSelect = 3,
-} PauseAction;
-
 using diva::AetAction;
 using diva::AetLayerArgs;
 
 i32 pauseMenuBackgroundId = 0;
 bool playedOut            = 0;
+
 HOOK (void, LoadPauseBackground, 0x1406570E0, u64 a1, bool playOut) {
 	if (playOut && !playedOut) {
 		playedOut = true;

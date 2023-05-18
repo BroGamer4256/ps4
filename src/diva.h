@@ -417,7 +417,7 @@ struct AetLayerArgs {
 	void setPosition (Vec3 position);
 };
 
-struct AetLayerData {
+struct AetLayoutData {
 	struct {
 		Vec4 x;
 		Vec4 y;
@@ -632,14 +632,14 @@ struct taskAddition {
 	std::optional<taskFunction> init;
 	std::optional<taskFunction> loop;
 	std::optional<taskFunction> destroy;
-	std::optional<taskFunction> display;
 };
+
 #pragma pack(pop)
 
 extern vector<PvDbEntry *> *pvs;
 extern map<i32, AetData> *aets;
 
-using AetComposition = map<string, AetLayerData>;
+using AetComposition = map<string, AetLayoutData>;
 template <>
 AetComposition::~map ();
 
@@ -669,7 +669,7 @@ void appendThemeInPlaceString (string *name);
 InputType getInputType ();
 bool isMovieOnly (PvDbEntry *entry);
 std::optional<PvDbEntry *> getPvDbEntry (i32 id);
-Vec4 getPlaceholderRect (AetLayerData layer);
+Vec4 getPlaceholderRect (AetLayoutData layer);
 Vec2 getClickedPos (void *inputState);
 void addTaskAddition (const char *name, taskAddition addition);
 void init ();

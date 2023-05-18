@@ -109,7 +109,6 @@ extern "C" {
 FUNCTION_PTR (float, GetLayerFrame, 0x1402CA120, i32 id, char *layer_name);
 FUNCTION_PTR (diva::string *, AppendLayerSuffix, 0x14022D070, void *a1, diva::string *base_layer_name);
 HOOK (void, CmnMenuTouchCheck, 0x14022C590);
-HOOK (void, DecoPlaceholderApply, 0x1401FB724);
 
 __declspec (dllexport) void init () {
 	// freopen ("CONOUT$", "w", stdout);
@@ -131,7 +130,6 @@ __declspec (dllexport) void init () {
 	INSTALL_HOOK (PlayAetLayerH);
 	INSTALL_HOOK (LoadAetFrameH);
 	INSTALL_HOOK (CmnMenuTouchCheck);
-	INSTALL_HOOK (DecoPlaceholderApply);
 
 	// 1.00 Samyuu, 1.03 BroGamer
 	WRITE_MEMORY (0x1414AB9E3, u8, 1);

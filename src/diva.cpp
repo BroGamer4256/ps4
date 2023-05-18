@@ -109,7 +109,7 @@ getPvDbEntry (i32 id) {
 }
 
 Vec4
-getPlaceholderRect (AetLayerData layer) {
+getPlaceholderRect (AetLayoutData layer) {
 	float xDiff = layer.width / 2;
 	float yDiff = layer.height / 2;
 
