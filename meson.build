@@ -32,8 +32,7 @@ add_project_link_arguments(
 	language: 'cpp',
 )
 
-cmake = import('cmake')
-minhook = cmake.subproject('minhook')
+minhook = subproject('minhook')
 tomlc99 = subproject('tomlc99')
 
 library(
