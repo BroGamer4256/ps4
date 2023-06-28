@@ -164,6 +164,7 @@ __declspec (dllexport) void init () {
 	customize::init ();
 	result::init ();
 	decoration::init ();
+	pvWatch::init ();
 	pvGame::init ();
 }
 

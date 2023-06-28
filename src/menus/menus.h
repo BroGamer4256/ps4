@@ -24,6 +24,9 @@ void init ();
 namespace decoration {
 void init ();
 } // namespace decoration
+namespace pvWatch {
+void init ();
+} // namespace pvWatch
 namespace pvGame {
 void init ();
 } // namespace pvGame

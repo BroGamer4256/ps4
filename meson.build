@@ -58,6 +58,7 @@ library(
 		'src/menus/customize.cpp',
 		'src/menus/result.cpp',
 		'src/menus/decoration.cpp',
+		'src/menus/pvWatch.cpp',
 		'src/menus/pvGame.cpp',
 	],
 	name_prefix: ''
