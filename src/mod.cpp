@@ -41,12 +41,6 @@ HOOK (void, ChangeSubGameState, 0x1527E49E0, State state, SubState subState) {
 
 HOOK (i32 *, GetFtTheme, 0x1401D6540) { return &theme; }
 
-// Fixes gallery photos
-HOOK (void, LoadAndPlayAet, 0x1401AF0E0, diva::AetLayerArgs *args, AetAction action) {
-	args->create ("AET_PS4_GALLERY_MAIN", args->layerName, args->priority, action);
-	args->play (&args->id);
-}
-
 std::set<std::string> themeStrings = {"option_sub_menu_eachsong",
                                       "option_sub_menu_allsong",
                                       "timing",
@@ -126,7 +120,6 @@ __declspec (dllexport) void init () {
 
 	INSTALL_HOOK (ChangeSubGameState);
 	INSTALL_HOOK (GetFtTheme);
-	INSTALL_HOOK (LoadAndPlayAet);
 	INSTALL_HOOK (PlayAetLayerH);
 	INSTALL_HOOK (LoadAetFrameH);
 	INSTALL_HOOK (CmnMenuTouchCheck);

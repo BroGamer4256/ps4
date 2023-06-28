@@ -65,10 +65,18 @@ CsGalleryLoop (u64 This) {
 	return false;
 }
 
+// Fixes gallery photos
+HOOK (void, LoadAndPlayAet, 0x1401AF0E0, diva::AetLayerArgs *args, AetAction action) {
+	args->create ("AET_PS4_GALLERY_MAIN", args->layerName, args->priority, action);
+	args->play (&args->unk_0x15C);
+}
+
 void
 init () {
 	diva::taskAddition addition;
 	addition.loop = CsGalleryLoop;
 	diva::addTaskAddition ("CS_GALLERY", addition);
+
+	INSTALL_HOOK (LoadAndPlayAet);
 }
 } // namespace gallery
