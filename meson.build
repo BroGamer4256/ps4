@@ -57,7 +57,8 @@ library(
 		'src/menus/pvSel.cpp',
 		'src/menus/customize.cpp',
 		'src/menus/result.cpp',
-		'src/menus/decoration.cpp'
+		'src/menus/decoration.cpp',
+		'src/menus/pvGame.cpp',
 	],
 	name_prefix: ''
 )

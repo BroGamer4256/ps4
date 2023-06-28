@@ -72,7 +72,9 @@ std::set<std::string> themeStrings = {"option_sub_menu_eachsong",
                                       "setting_menu_bg_arcade_base_down",
                                       "bg02",
                                       "footer_02",
-                                      "footer_03"};
+                                      "footer_03",
+                                      "nswgam_tshirtsedit_colorselector_bg",
+                                      "nswgam_tshirtsedit_keyhelp_bg"};
 
 HOOK (void *, PlayAetLayerH, 0x1402CA220, diva::AetLayerArgs *args, i32 *id) {
 	if (args->layerName == 0) return originalPlayAetLayerH (args, id);
@@ -162,6 +164,7 @@ __declspec (dllexport) void init () {
 	customize::init ();
 	result::init ();
 	decoration::init ();
+	pvGame::init ();
 }
 
 __declspec (dllexport) void preInit () {
