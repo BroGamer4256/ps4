@@ -152,6 +152,8 @@ HOOK (void, ButtonFxUnload, 0x1406996C0, u64 a1) {
 	originalButtonFxUnload (a1);
 }
 
+HOOK (void, SetCursorColor, 0x14065E060, void *a1, u32 rgbaColor) { originalSetCursorColor (a1, rgbaColor | 0x000000FF); }
+
 void
 init () {
 	INSTALL_HOOK (CustomizeSelInit);
@@ -160,6 +162,7 @@ init () {
 	INSTALL_HOOK (GameOptionsLoop);
 	INSTALL_HOOK (ButtonFxListIn);
 	INSTALL_HOOK (ButtonFxUnload);
+	INSTALL_HOOK (SetCursorColor);
 
 	taskAddition addition;
 	addition.loop    = CustomizeSelLoop;
