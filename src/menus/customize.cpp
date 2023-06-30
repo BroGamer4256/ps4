@@ -72,6 +72,22 @@ HOOK (void, PlayCustomizeSelFooter, 0x15F9811D0, void *a1, PlayCustomizeSelFoote
 	originalPlayCustomizeSelFooter (a1, args);
 }
 
+HOOK (void, PlayTshirtEditFooter, 0x140710680, void *a1, i32 index) {
+	i32 realIndex = 0;
+	if (index == 0) realIndex = 3;
+	else if (index == 1) realIndex = 4;
+	else if (index == 2) realIndex = 7;
+
+	char buf[128];
+	sprintf (buf, "footer_button_%02d_%02d", realIndex + 1, (i32)diva::getInputType ());
+	diva::AetLayerArgs layer ("AET_NSWGAM_CUSTOM_MAIN", buf, 0x11, AetAction::NONE);
+	layer.play (&footerButtonId);
+	currentMenu       = realIndex;
+	previousInputType = diva::getInputType ();
+
+	originalPlayTshirtEditFooter (a1, index);
+}
+
 void
 playOptionText (i32 option, AetAction action) {
 	const char *txtLayer = "";
@@ -152,13 +168,18 @@ HOOK (void, ButtonFxUnload, 0x1406996C0, u64 a1) {
 	originalButtonFxUnload (a1);
 }
 
-HOOK (void, SetCursorColor, 0x14065E060, void *a1, u32 rgbaColor) { originalSetCursorColor (a1, rgbaColor | 0x000000FF); }
+HOOK (u32 *, SetCursorColor, 0x14065E410, void *a1, u32 *rgbaColor) {
+	originalSetCursorColor (a1, rgbaColor);
+	*rgbaColor |= 0xFF;
+	return rgbaColor;
+}
 
 void
 init () {
 	INSTALL_HOOK (CustomizeSelInit);
 	INSTALL_HOOK (CustomizeSelIsLoaded);
 	INSTALL_HOOK (PlayCustomizeSelFooter);
+	INSTALL_HOOK (PlayTshirtEditFooter);
 	INSTALL_HOOK (GameOptionsLoop);
 	INSTALL_HOOK (ButtonFxListIn);
 	INSTALL_HOOK (ButtonFxUnload);
