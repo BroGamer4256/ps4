@@ -30,3 +30,6 @@ void init ();
 namespace pvGame {
 void init ();
 } // namespace pvGame
+namespace genericDialog {
+void init ();
+}

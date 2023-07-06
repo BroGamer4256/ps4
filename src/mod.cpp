@@ -167,6 +167,7 @@ __declspec (dllexport) void init () {
 	decoration::init ();
 	pvWatch::init ();
 	pvGame::init ();
+	genericDialog::init ();
 }
 
 __declspec (dllexport) void preInit () {
