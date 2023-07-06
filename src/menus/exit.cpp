@@ -115,15 +115,6 @@ CsMenuLoop (u64 This) {
 	void *inputState = diva::GetInputState (0);
 	Vec2 clickedPos  = getClickedPos (inputState);
 
-	AetComposition compositionData;
-	GetComposition (&compositionData, menuAetId);
-
-	if (auto layer = compositionData.find (string ("p_submenu_03_c")))
-		if (auto aet = aets->find (yesButtonAetId)) aet.value ()->color.w = layer.value ()->opacity;
-
-	if (auto layer = compositionData.find (string ("p_submenu_04_c")))
-		if (auto aet = aets->find (noButtonAetId)) aet.value ()->color.w = layer.value ()->opacity;
-
 	if (wantsToExit) {
 		if (clickedPos.x > 0 && !hasClicked) {
 			handleClick (clickedPos);
@@ -145,11 +136,24 @@ CsMenuLoop (u64 This) {
 }
 
 void
+CsMenuDisplay (u64 This) {
+	AetComposition compositionData;
+	GetComposition (&compositionData, menuAetId);
+
+	if (auto layer = compositionData.find (string ("p_submenu_03_c")))
+		if (auto aet = aets->find (yesButtonAetId)) aet.value ()->color.w = layer.value ()->opacity;
+
+	if (auto layer = compositionData.find (string ("p_submenu_04_c")))
+		if (auto aet = aets->find (noButtonAetId)) aet.value ()->color.w = layer.value ()->opacity;
+}
+
+void
 init () {
 	yesButtonName = appendTheme ("cmn_menu_yes");
 	noButtonName  = appendTheme ("cmn_menu_no");
 	taskAddition addition;
-	addition.loop = CsMenuLoop;
+	addition.loop    = CsMenuLoop;
+	addition.display = CsMenuDisplay;
 	addTaskAddition ("CS_MENU", addition);
 }
 } // namespace exitMenu

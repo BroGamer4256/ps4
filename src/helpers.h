@@ -48,14 +48,6 @@ typedef double f64;
 		VirtualProtect ((void *)(location), sizeof (data), oldProtect, &oldProtect);             \
 	}
 
-#define WRITE_MEMORY_STRING(location, data, length)                                       \
-	{                                                                                     \
-		DWORD oldProtect;                                                                 \
-		VirtualProtect ((void *)(location), length, PAGE_EXECUTE_READWRITE, &oldProtect); \
-		memcpy ((void *)(location), data, length);                                        \
-		VirtualProtect ((void *)(location), length, oldProtect, &oldProtect);             \
-	}
-
 #define WRITE_NOP(location, count)                                                                 \
 	{                                                                                              \
 		DWORD oldProtect;                                                                          \

@@ -440,6 +440,26 @@ struct AetLayoutData {
 	i32 unk_7C;
 };
 
+struct FCurve {
+	u32 length;
+	f32 *points;
+};
+
+struct AetLayerVideo {
+	u8 blendMode;
+	u8 flag;
+	u8 matte;
+	FCurve anchorX;
+	FCurve anchorY;
+	FCurve posX;
+	FCurve posY;
+	FCurve rotZ;
+	FCurve scaleX;
+	FCurve scaleY;
+	FCurve opacity;
+	void *_3d;
+};
+
 struct AetLayer {
 	char *name;
 	f32 startTime;
@@ -447,11 +467,12 @@ struct AetLayer {
 	f32 offsetTime;
 	f32 timeScale;
 	i32 flags;
-	void *unk_0x30;
-	u64 unk_0x38;
+	void *unk_0x20;
+	u64 unk_0x28;
 	u32 markerCount;
 	void *markers;
-	void *video;
+	AetLayerVideo *video;
+	u64 unk_0x48;
 };
 
 struct AetData {
@@ -628,10 +649,12 @@ struct Task : public TaskInterface {
 };
 
 typedef bool (*taskFunction) (u64 Task);
+typedef void (*displayFunction) (u64 Task);
 struct taskAddition {
 	std::optional<taskFunction> init;
 	std::optional<taskFunction> loop;
 	std::optional<taskFunction> destroy;
+	std::optional<displayFunction> display;
 };
 
 #pragma pack(pop)

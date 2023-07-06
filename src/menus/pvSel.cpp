@@ -78,24 +78,6 @@ initStyle (Style style, InputType input) {
 	updateButtonPrompt (input);
 }
 
-void
-updateLocs () {
-	AetComposition compositionData;
-	GetComposition (&compositionData, selectorId);
-
-	if (auto buttonPlaceholderData = compositionData.find (string ("key_help_lv_tab_01"))) keyHelpLoc = buttonPlaceholderData.value ()->position;
-	if (auto textPlaceholderData = compositionData.find (string ("visual_settings_txt"))) txtLoc = textPlaceholderData.value ()->position;
-	if (auto buttonTouchAreaData = compositionData.find (string ("p_visual_settings_touch"))) touchArea = getPlaceholderRect (**buttonTouchAreaData);
-
-	AetLayerArgs keyHelpData ("AET_PS4_MENU_MAIN", buttonName, 0x13, AetAction::NONE);
-	keyHelpData.setPosition (keyHelpLoc);
-	keyHelpData.play (&keyHelpId);
-
-	AetLayerArgs selectorImgData ("AET_PS4_MENU_MAIN", selectorImgName, 0x12, AetAction::NONE);
-	selectorImgData.setPosition (txtLoc);
-	selectorImgData.play (&selectorImgId);
-}
-
 Style
 getStyle (i32 currentStyle, bool isMovie) {
 	if (isMovie) return STYLE_NONE;
@@ -324,7 +306,6 @@ PVSelLoop (u64 This) {
 		}
 	} else if (clickedPos.x == 0) hasClicked = false;
 
-	updateLocs ();
 	*(i32 *)(pvLoadData + 0x1D08) = style;
 
 	return false;
@@ -338,10 +319,29 @@ PvSelDestroy (u64 This) {
 }
 
 void
+PvSelDisplay (u64 This) {
+	AetComposition compositionData;
+	GetComposition (&compositionData, selectorId);
+
+	if (auto buttonPlaceholderData = compositionData.find (string ("key_help_lv_tab_01"))) keyHelpLoc = buttonPlaceholderData.value ()->position;
+	if (auto textPlaceholderData = compositionData.find (string ("visual_settings_txt"))) txtLoc = textPlaceholderData.value ()->position;
+	if (auto buttonTouchAreaData = compositionData.find (string ("p_visual_settings_touch"))) touchArea = getPlaceholderRect (**buttonTouchAreaData);
+
+	AetLayerArgs keyHelpData ("AET_PS4_MENU_MAIN", buttonName, 0x13, AetAction::NONE);
+	keyHelpData.setPosition (keyHelpLoc);
+	keyHelpData.play (&keyHelpId);
+
+	AetLayerArgs selectorImgData ("AET_PS4_MENU_MAIN", selectorImgName, 0x12, AetAction::NONE);
+	selectorImgData.setPosition (txtLoc);
+	selectorImgData.play (&selectorImgId);
+}
+
+void
 init () {
 	taskAddition addition;
 	addition.loop    = PVSelLoop;
 	addition.destroy = PvSelDestroy;
+	addition.display = PvSelDisplay;
 	addTaskAddition ("PVsel", addition);
 }
 

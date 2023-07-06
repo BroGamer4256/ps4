@@ -199,6 +199,15 @@ HOOK (void, RunTask, 0x1402C9AC0, Task *task) {
 	if (op == TaskOp::LOOP && task->nextState == TaskState::NONE && functions != taskAdditions.end () && (func = functions->second.destroy)) func.value () ((u64)task);
 }
 
+HOOK (void, RunTaskDisp, 0x1402C9B70, Task *task) {
+	auto functions = taskAdditions.find (task->name);
+	if (functions != taskAdditions.end ()) {
+		if (auto func = functions->second.display) func.value () ((u64)task);
+	}
+
+	originalRunTaskDisp (task);
+}
+
 void
 addTaskAddition (const char *name, taskAddition addition) {
 	taskAdditions[name] = addition;
@@ -207,5 +216,6 @@ addTaskAddition (const char *name, taskAddition addition) {
 void
 init () {
 	INSTALL_HOOK (RunTask);
+	INSTALL_HOOK (RunTaskDisp);
 }
 } // namespace diva

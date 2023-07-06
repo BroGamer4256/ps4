@@ -74,7 +74,8 @@ std::set<std::string> themeStrings = {"option_sub_menu_eachsong",
                                       "footer_02",
                                       "footer_03",
                                       "nswgam_tshirtsedit_colorselector_bg",
-                                      "nswgam_tshirtsedit_keyhelp_bg"};
+                                      "nswgam_tshirtsedit_keyhelp_bg",
+                                      "cmn_win_help"};
 
 HOOK (void *, PlayAetLayerH, 0x1402CA220, diva::AetLayerArgs *args, i32 *id) {
 	if (args->layerName == 0) return originalPlayAetLayerH (args, id);
@@ -176,5 +177,10 @@ __declspec (dllexport) void preInit () {
 	WRITE_NULL (sigMenuTxt4 (), 1);
 	WRITE_NULL (sigMenuTxt5 (), 1);
 	WRITE_NULL (sigMenuTxtBase (), 1);
+
+	WRITE_MEMORY (0x140CC2800, char, "cmn_win_help");
+	WRITE_MEMORY (0x140CC2848, char, "cmn_win_help");
+	WRITE_MEMORY (0x140CC2A78, char, "cmn_win_help");
+	WRITE_MEMORY (0x140CC2B90, char, "cmn_win_help");
 }
 }
