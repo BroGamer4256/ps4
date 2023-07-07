@@ -14,11 +14,10 @@ GenericDialogDisplay (u64 This) {
 	auto compositionData    = (AetComposition *)(This + 0x468);
 
 	compositionData->~AetComposition ();
-	auto buf  = new u8[sizeof (AetComposition)];
+	u8 buf[sizeof (AetComposition)];
 	auto comp = new (buf) AetComposition;
 	GetComposition (comp, dialogAetLayerArgs->id);
 	*compositionData = *comp;
-	delete[] buf;
 
 	if (auto layer = compositionData->find (string ("p_help_img_01_c")))
 		if (auto aet = aets->find (imgAetLayerArgs->id)) aet.value ()->position = layer.value ()->position;
