@@ -320,6 +320,9 @@ PvSelDestroy (u64 This) {
 
 void
 PvSelDisplay (u64 This) {
+	// Disable on playlist
+	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(0x14CC10480)) return;
+
 	AetComposition compositionData;
 	GetComposition (&compositionData, selectorId);
 
