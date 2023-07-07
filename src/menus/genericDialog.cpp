@@ -11,10 +11,16 @@ GenericDialogDisplay (u64 This) {
 	auto dialogAetLayerArgs = (AetLayerArgs *)(This + 0x78);
 	auto pageNo             = *(u8 *)(This + 0x479);
 	auto imgAetLayerArgs    = (AetLayerArgs *)(*(u64 *)(This + 0x498) + (0x1F8 * pageNo));
+	auto compositionData    = (AetComposition *)(This + 0x468);
 
-	AetComposition compositionData;
-	GetComposition (&compositionData, dialogAetLayerArgs->id);
-	if (auto layer = compositionData.find (string ("p_help_img_01_c")))
+	compositionData->~AetComposition ();
+	auto buf  = new u8[sizeof (AetComposition)];
+	auto comp = new (buf) AetComposition;
+	GetComposition (comp, dialogAetLayerArgs->id);
+	*compositionData = *comp;
+	delete[] buf;
+
+	if (auto layer = compositionData->find (string ("p_help_img_01_c")))
 		if (auto aet = aets->find (imgAetLayerArgs->id)) aet.value ()->position = layer.value ()->position;
 }
 
