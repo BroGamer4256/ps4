@@ -177,13 +177,13 @@ wstringRange::_stringRangeBase (const wchar_t *str) {
 	wstringRange (str, wcslen (str));
 }
 
-std::map<std::string, taskAddition> taskAdditions;
+std::multimap<std::string, taskAddition> taskAdditions;
 HOOK (void, RunTask, 0x1402C9AC0, Task *task) {
 	if (task->state != TaskState::RUNNING) originalRunTask (task);
 
-	auto functions = taskAdditions.find (task->name);
+	auto it = taskAdditions.equal_range (task->name);
 	std::optional<taskFunction> func;
-	if (functions != taskAdditions.end ()) {
+	for (auto functions = it.first; functions != it.second; functions++) {
 		auto funcs = functions->second;
 		if (task->op == TaskOp::INIT && (func = funcs.init)) {
 			if (func.value () ((u64)task)) return;
@@ -196,7 +196,12 @@ HOOK (void, RunTask, 0x1402C9AC0, Task *task) {
 
 	auto op = task->op;
 	originalRunTask (task);
-	if (op == TaskOp::LOOP && task->nextState == TaskState::NONE && functions != taskAdditions.end () && (func = functions->second.destroy)) func.value () ((u64)task);
+	if (op == TaskOp::LOOP && task->nextState == TaskState::NONE) {
+		for (auto functions = it.first; functions != it.second; functions++) {
+			auto funcs = functions->second;
+			if (auto func = funcs.destroy) func.value () ((u64)task);
+		}
+	}
 }
 
 HOOK (void, RunTaskDisp, 0x1402C9B70, Task *task) {
@@ -210,7 +215,7 @@ HOOK (void, RunTaskDisp, 0x1402C9B70, Task *task) {
 
 void
 addTaskAddition (const char *name, taskAddition addition) {
-	taskAdditions[name] = addition;
+	taskAdditions.insert (std::pair (name, addition));
 }
 
 void
