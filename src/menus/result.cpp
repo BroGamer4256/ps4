@@ -49,7 +49,7 @@ HOOK (i32 *, GetRankData, 0x1401E7C50) {
 	data[2]  = rank;                     // Current rank
 	data[4]  = pointsRequired[rank - 1]; // Points required for current rank
 	data[5]  = pointsRequired[rank];     // Points required for next rank
-	data[14] = 1;                        // Has gained points
+	data[14] = data[0] > 0;              // Has gained points
 
 	return data;
 }
