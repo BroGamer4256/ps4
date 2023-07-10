@@ -66,6 +66,6 @@ init () {
 	INSTALL_HOOK (GenericDialogPlay);
 	INSTALL_HOOK (DestroyGenericDialog);
 
-	WRITE_MEMORY (0x1401DEFB9, u8, 0x0F, 0xB6, 0xC0, 0x90, 0x90); // MOVAX EAX, AL
+	WRITE_MEMORY (0x1401DEFB9, u8, 0x0F, 0xB6, 0xC0, 0x90, 0x90); // MOVZX EAX, AL
 }
 } // namespace genericDialog
