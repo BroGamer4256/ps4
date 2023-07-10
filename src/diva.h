@@ -643,18 +643,17 @@ struct Task : public TaskInterface {
 	TaskRequest request;
 	TaskOp nextOp;
 	TaskState nextState;
-	bool unk;
+	bool resetOnDestroy;
 	bool isFrameDependent;
 	char name[32];
 };
 
 typedef bool (*taskFunction) (u64 Task);
-typedef void (*displayFunction) (u64 Task);
 struct taskAddition {
 	std::optional<taskFunction> init;
 	std::optional<taskFunction> loop;
 	std::optional<taskFunction> destroy;
-	std::optional<displayFunction> display;
+	std::optional<taskFunction> display;
 };
 
 #pragma pack(pop)

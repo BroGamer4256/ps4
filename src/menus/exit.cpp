@@ -135,7 +135,7 @@ CsMenuLoop (u64 This) {
 	return false;
 }
 
-void
+bool
 CsMenuDisplay (u64 This) {
 	AetComposition compositionData;
 	GetComposition (&compositionData, menuAetId);
@@ -145,6 +145,8 @@ CsMenuDisplay (u64 This) {
 
 	if (auto layer = compositionData.find (string ("p_submenu_04_c")))
 		if (auto aet = aets->find (noButtonAetId)) aet.value ()->color.w = layer.value ()->opacity;
+
+	return false;
 }
 
 void

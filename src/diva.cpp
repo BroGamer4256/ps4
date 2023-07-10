@@ -207,7 +207,8 @@ HOOK (void, RunTask, 0x1402C9AC0, Task *task) {
 HOOK (void, RunTaskDisp, 0x1402C9B70, Task *task) {
 	auto functions = taskAdditions.find (task->name);
 	if (functions != taskAdditions.end ()) {
-		if (auto func = functions->second.display) func.value () ((u64)task);
+		if (auto func = functions->second.display)
+			if (func.value () ((u64)task)) return;
 	}
 
 	originalRunTaskDisp (task);

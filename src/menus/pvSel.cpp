@@ -318,10 +318,10 @@ PvSelDestroy (u64 This) {
 	return false;
 }
 
-void
+bool
 PvSelDisplay (u64 This) {
 	// Disable on playlist
-	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(0x14CC10480)) return;
+	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(0x14CC10480)) return false;
 
 	AetComposition compositionData;
 	GetComposition (&compositionData, selectorId);
@@ -337,6 +337,8 @@ PvSelDisplay (u64 This) {
 	AetLayerArgs selectorImgData ("AET_PS4_MENU_MAIN", selectorImgName, 0x12, AetAction::NONE);
 	selectorImgData.setPosition (txtLoc);
 	selectorImgData.play (&selectorImgId);
+
+	return false;
 }
 
 void
