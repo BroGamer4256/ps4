@@ -67,5 +67,6 @@ init () {
 	INSTALL_HOOK (DestroyGenericDialog);
 
 	WRITE_MEMORY (0x1401DEFB9, u8, 0x0F, 0xB6, 0xC0, 0x90, 0x90); // MOVZX EAX, AL
+	WRITE_MEMORY (0x1406624AA, u8, 0x01);                         // Customization menus to 1 instead of
 }
 } // namespace genericDialog
