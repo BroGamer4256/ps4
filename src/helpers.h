@@ -19,6 +19,8 @@ typedef uint64_t u64;
 typedef float f32;
 typedef double f64;
 
+#define INSERT_PADDING(length) u8 pad##__LINE__[length]
+
 #define FUNCTION_PTR(returnType, function, location, ...) returnType (*function) (__VA_ARGS__) = (returnType (*) (__VA_ARGS__)) (location)
 #define FUNCTION_PTR_H(returnType, function, ...)         extern returnType (*function) (__VA_ARGS__)
 

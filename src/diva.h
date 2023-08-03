@@ -582,8 +582,8 @@ struct PvDbEntry {
 	i32 bpm;
 	string soundFile;
 	vector<PvDbIndexedValue<string>> lyrics;
-	float sabiStartTime;
-	float sabiPlayTime;
+	f32 sabiStartTime;
+	f32 sabiPlayTime;
 	u64 unk_90;
 	vector<PvDbPlaceholder> performers;
 	vector<PvDbDifficulty> easy;
@@ -591,7 +591,8 @@ struct PvDbEntry {
 	vector<PvDbDifficulty> hard;
 	vector<PvDbDifficulty> extreme;
 	vector<PvDbDifficulty> encore;
-	// Theres more stuff here but I do not care
+	INSERT_PADDING (0x288);
+	i32 pack;
 
 	~PvDbEntry () = delete;
 };
@@ -674,7 +675,7 @@ FUNCTION_PTR_H (bool, CmnMenuDestroy, u64 This);
 FUNCTION_PTR_H (void *, GetInputState, i32 a1);
 FUNCTION_PTR_H (bool, IsButtonTapped, void *state, Button button);
 FUNCTION_PTR_H (void, GetComposition, AetComposition *composition, i32 id);
-FUNCTION_PTR_H (void, PlaySoundEffect, const char *name, float volume);
+FUNCTION_PTR_H (void, PlaySoundEffect, const char *name, f32 volume);
 FUNCTION_PTR_H (u64, GetPvLoadData);
 FUNCTION_PTR_H (i32, GetCurrentStyle);
 FUNCTION_PTR_H (InputType, NormalizeInputType, i32 inputType);
