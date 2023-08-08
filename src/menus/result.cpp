@@ -28,8 +28,13 @@ PVGameInit (u64 task) {
 }
 
 HOOK (i32 *, GetRankData, 0x1401E7C50) {
-	bool isFutureSound;
-	asm ("mov %0, byte ptr [rbx + 0x1FF]" : "=g"(isFutureSound));
+	PvDbEntry **pvData;
+	asm ("mov %0, qword ptr [rbx + 0x100]" : "=g"(pvData));
+	i32 ps4DlcType = (*pvData)->pack;
+
+	bool isFutureSound = ps4DlcType == 1;
+	bool isPs4Dlc      = ps4DlcType != 0;
+
 	i32 rank;
 	i32 points;
 	i32 *pointsRequired = (i32 *)0x1412B6828;
@@ -44,21 +49,47 @@ HOOK (i32 *, GetRankData, 0x1401E7C50) {
 
 	i32 *data = originalGetRankData ();
 
-	data[0]  = *(i32 *)0x14CC08DD0;      // Gained points
-	data[1]  = points;                   // Current points
-	data[2]  = rank;                     // Current rank
-	data[4]  = pointsRequired[rank - 1]; // Points required for current rank
-	data[5]  = pointsRequired[rank];     // Points required for next rank
-	data[14] = data[0] > 0;              // Has gained points
+	if (isPs4Dlc) {
+		data[0]  = *(i32 *)0x14CC08DD0;      // Gained points
+		data[1]  = points;                   // Current points
+		data[2]  = rank;                     // Current rank
+		data[4]  = pointsRequired[rank - 1]; // Points required for current rank
+		data[5]  = pointsRequired[rank];     // Points required for next rank
+		data[14] = data[0] > 0;              // Has gained points
+	} else {
+		data[0]  = 0;
+		data[1]  = 0;
+		data[2]  = 0;
+		data[4]  = 0;
+		data[5]  = 1;
+		data[14] = 0;
+	}
 
 	return data;
 }
+
+HOOK (void, PlayRankGauge, 0x1402377E0, u64 a1) {
+	auto pvData = **(PvDbEntry ***)(a1 + 0x100);
+	if (pvData->pack == 0) return;
+
+	originalPlayRankGauge (a1);
+}
+
+HOOK (void, PlayRankGaugeLoop, 0x140236F80, u64 a1) {
+	auto pvData = **(PvDbEntry ***)(a1 + 0x100);
+	if (pvData->pack == 0) return;
+
+	originalPlayRankGaugeLoop (a1);
+}
+
 void
 init () {
 	INSTALL_HOOK (GetStageResultSwitch);
 	INSTALL_HOOK (StageResultSwitchFinished);
 	INSTALL_HOOK (StageResultSwitchLoaded);
 	INSTALL_HOOK (GetRankData);
+	INSTALL_HOOK (PlayRankGauge);
+	INSTALL_HOOK (PlayRankGaugeLoop);
 
 	diva::taskAddition gameResultAddition;
 	gameResultAddition.loop = GameResultLoop;
