@@ -7,6 +7,7 @@ i32 fsRank;
 i32 ctRank;
 i32 fsPoints;
 i32 ctPoints;
+i32 gainedPoints;
 
 HOOK (u64, GetStageResultSwitch, 0x14064BF50) { return 0x1412C1F00; }
 HOOK (bool, StageResultSwitchFinished, 0x14064C0D0, u64 task) { return *(i32 *)(task + 0x68) == 0x5A; }
@@ -25,6 +26,11 @@ bool
 PVGameInit (u64 task) {
 	GetFSCTRankData (&fsRank, &ctRank, &fsPoints, &ctPoints);
 	return false;
+}
+
+HOOK (i32, GetPoints, 0x15DE80210, i32 a1, i32 a2, i32 a3) {
+	gainedPoints = originalGetPoints (a1, a2, a3);
+	return gainedPoints;
 }
 
 HOOK (i32 *, GetRankData, 0x1401E7C50) {
@@ -50,7 +56,7 @@ HOOK (i32 *, GetRankData, 0x1401E7C50) {
 	i32 *data = originalGetRankData ();
 
 	if (isPs4Dlc) {
-		data[0]  = *(i32 *)0x14CC08DD0;      // Gained points
+		data[0]  = gainedPoints;             // Gained points
 		data[1]  = points;                   // Current points
 		data[2]  = rank;                     // Current rank
 		data[4]  = pointsRequired[rank - 1]; // Points required for current rank
@@ -87,6 +93,7 @@ init () {
 	INSTALL_HOOK (GetStageResultSwitch);
 	INSTALL_HOOK (StageResultSwitchFinished);
 	INSTALL_HOOK (StageResultSwitchLoaded);
+	INSTALL_HOOK (GetPoints);
 	INSTALL_HOOK (GetRankData);
 	INSTALL_HOOK (PlayRankGauge);
 	INSTALL_HOOK (PlayRankGaugeLoop);
