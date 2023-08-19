@@ -75,7 +75,10 @@ std::set<std::string> themeStrings = {"option_sub_menu_eachsong",
                                       "footer_03",
                                       "nswgam_tshirtsedit_colorselector_bg",
                                       "nswgam_tshirtsedit_keyhelp_bg",
-                                      "cmn_win_help"};
+                                      "cmn_win_help",
+                                      "btn_close",
+                                      "savedata_warning_dialog",
+                                      "cmn_win_m"};
 
 HOOK (void *, PlayAetLayerH, 0x1402CA220, diva::AetLayerArgs *args, i32 *id) {
 	if (args->layerName == 0) return originalPlayAetLayerH (args, id);

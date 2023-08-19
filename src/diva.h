@@ -31,6 +31,8 @@ struct Vec3 {
 		this->y = y;
 		this->z = z;
 	}
+
+	Vec3 operator+ (Vec3 other) { return Vec3 (this->x + other.x, this->y + other.y, this->z + other.z); }
 };
 
 struct Vec4 {
@@ -657,6 +659,38 @@ struct taskAddition {
 	std::optional<taskFunction> display;
 };
 
+struct UpdateKeyAnmData {
+	Vec3 position;
+	Vec3 scale;
+	f32 opacity;
+	u32 layer;
+	i32 kbBgL; // 59872
+	i32 kbBgC; // 59871
+	i32 kbBgR; // 59873
+	Vec2 offset1;
+	u32 xbSpriteId;
+	u32 psSpriteId;
+	u32 swSpriteId;
+	u32 stSpriteId;
+	vector<Button> keycodes;
+	i32 unk60;
+	Vec2 offset2;
+	f32 width;
+
+	UpdateKeyAnmData () {
+		this->kbBgL    = 59872;
+		this->kbBgC    = 59871;
+		this->kbBgR    = 59873;
+		this->unk60    = -1;
+		this->opacity  = 1.0;
+		this->scale.x  = 1.0;
+		this->scale.y  = 1.0;
+		this->scale.z  = 1.0;
+		this->layer    = 0x1A;
+		this->keycodes = vector<Button> (5);
+	}
+};
+
 #pragma pack(pop)
 
 extern vector<PvDbEntry *> *pvs;
@@ -684,6 +718,7 @@ FUNCTION_PTR_H (void, GetFSCTRankData, i32 *fsRank, i32 *ctRank, i32 *fsPoints, 
 FUNCTION_PTR_H (bool, IsSurvival);
 FUNCTION_PTR_H (bool, SurvivalCleared);
 FUNCTION_PTR_H (i32, LifeGauge);
+FUNCTION_PTR_H (Vec2 *, UpdateKeyAnm, Vec2 *a1, UpdateKeyAnmData *a2);
 
 void appendThemeInPlace (char *name);
 char *appendTheme (const char *name);

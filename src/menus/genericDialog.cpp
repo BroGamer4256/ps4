@@ -6,6 +6,21 @@ using namespace diva;
 i32 helpBaseId     = 0;
 u64 *GenericDialog = (u64 *)0x14CC103A0;
 bool playedOut     = false;
+UpdateKeyAnmData *keyicon2Data;
+UpdateKeyAnmData *keyicon3Data;
+const char *keyStr = 0;
+
+HOOK (string *, GetKeyStr, 0x1402B0F80, string *buf, u64 keyId) {
+	if (keyStr) {
+		buf->capacity = 15;
+		buf->length   = strlen (keyStr);
+		buf->ptr      = 0;
+		strcpy (buf->data, keyStr);
+		keyStr = 0;
+		return buf;
+	}
+	return originalGetKeyStr (buf, keyId);
+}
 
 bool
 GenericDialogDisplay (u64 This) {
@@ -13,6 +28,7 @@ GenericDialogDisplay (u64 This) {
 	auto pageNo             = *(u8 *)(This + 0x479);
 	auto imgAetLayerArgs    = (AetLayerArgs *)(*(u64 *)(This + 0x498) + (0x1F8 * pageNo));
 	auto compositionData    = (AetComposition *)(This + 0x468);
+	auto dialogId           = *(i32 *)(This + 0x6C);
 
 	compositionData->~AetComposition ();
 	u8 buf[sizeof (AetComposition)];
@@ -20,10 +36,31 @@ GenericDialogDisplay (u64 This) {
 	GetComposition (comp, dialogAetLayerArgs->id);
 	*compositionData = *comp;
 
-	if (auto layer = compositionData->find (string ("p_help_img_01_c"))) {
-		if (auto aet = aets->find (imgAetLayerArgs->id)) {
-			aet.value ()->position = layer.value ()->position;
-			aet.value ()->color.w  = layer.value ()->opacity;
+	auto helpImgLayer = compositionData->find (string ("p_help_img_01_c"));
+	if (!helpImgLayer) return false;
+	if (auto aet = aets->find (imgAetLayerArgs->id)) {
+		aet.value ()->position = helpImgLayer.value ()->position;
+		aet.value ()->color.w  = helpImgLayer.value ()->opacity;
+	}
+
+	if (dialogId == 0x1E && pageNo == 1) {
+		AetComposition imgAetLayerComp;
+		GetComposition (&imgAetLayerComp, imgAetLayerArgs->id);
+		if (auto layer = imgAetLayerComp.find (string ("helpwin_keyicon_02"))) {
+			keyicon2Data->position = layer.value ()->position + helpImgLayer.value ()->position;
+			keyicon2Data->opacity  = helpImgLayer.value ()->opacity;
+
+			keyStr = "1";
+			Vec2 a1;
+			UpdateKeyAnm (&a1, keyicon2Data);
+		}
+		if (auto layer = imgAetLayerComp.find (string ("helpwin_keyicon_03"))) {
+			keyicon3Data->position = layer.value ()->position + helpImgLayer.value ()->position;
+			keyicon3Data->opacity  = helpImgLayer.value ()->opacity;
+
+			keyStr = "3";
+			Vec2 a1;
+			UpdateKeyAnm (&a1, keyicon3Data);
 		}
 	}
 
@@ -59,6 +96,20 @@ HOOK (bool, DestroyGenericDialog, 0x1401B0480) {
 
 void
 init () {
+	keyicon2Data = new UpdateKeyAnmData ();
+	keyicon2Data->keycodes.push_back (Button::L2);
+	keyicon2Data->xbSpriteId = 59958;
+	keyicon2Data->psSpriteId = 59907;
+	keyicon2Data->swSpriteId = 59945;
+	keyicon2Data->stSpriteId = 59932;
+
+	keyicon3Data = new UpdateKeyAnmData ();
+	keyicon3Data->keycodes.push_back (Button::R2);
+	keyicon3Data->xbSpriteId = 59960;
+	keyicon3Data->psSpriteId = 59909;
+	keyicon3Data->swSpriteId = 59947;
+	keyicon3Data->stSpriteId = 59934;
+
 	taskAddition addition;
 	addition.display = GenericDialogDisplay;
 	addTaskAddition ("GENERIC_DIALOG_SWITCH", addition);
@@ -67,6 +118,9 @@ init () {
 	INSTALL_HOOK (DestroyGenericDialog);
 
 	WRITE_MEMORY (0x1401DEFB9, u8, 0x0F, 0xB6, 0xC0, 0x90, 0x90); // MOVZX EAX, AL
-	WRITE_MEMORY (0x1406624AA, u8, 0x01);                         // Customization menus to 1 instead of
+	WRITE_MEMORY (0x1406624AA, u8, 0x01);                         // Customization menus to 1 instead of 2
+	WRITE_MEMORY (0x1406657FB, u8, 0x02);                         // helpwin_song_start menus to 2 instead of 3
+
+	INSTALL_HOOK (GetKeyStr);
 }
 } // namespace genericDialog
