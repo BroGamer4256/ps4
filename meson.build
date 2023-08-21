@@ -61,6 +61,7 @@ library(
 		'src/menus/pvWatch.cpp',
 		'src/menus/pvGame.cpp',
 		'src/menus/genericDialog.cpp',
+		'src/menus/commonUi.cpp',
 	],
 	name_prefix: ''
 )

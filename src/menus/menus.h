@@ -32,4 +32,7 @@ void init ();
 } // namespace pvGame
 namespace genericDialog {
 void init ();
-}
+} // namespace genericDialog
+namespace commonUi {
+void init ();
+} // namespace commonUi
