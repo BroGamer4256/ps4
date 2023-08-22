@@ -187,5 +187,8 @@ __declspec (dllexport) void preInit () {
 	WRITE_MEMORY (0x140CC2848, char, "cmn_win_help");
 	WRITE_MEMORY (0x140CC2A78, char, "cmn_win_help");
 	WRITE_MEMORY (0x140CC2B90, char, "cmn_win_help");
+
+	WRITE_MEMORY (0x140CC2950, char, "cmn_win_m");
+	WRITE_MEMORY (0x140CC2978, char, "cmn_win_m");
 }
 }
