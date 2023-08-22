@@ -159,6 +159,12 @@ __declspec (dllexport) void init () {
 	WRITE_MEMORY (0x140654505, AetAction, AetAction::IN_LOOP);
 	WRITE_MEMORY (0x1401A9CF8, AetAction, AetAction::IN_LOOP);
 
+	// Autosave messages
+	WRITE_MEMORY (0x140663883, AetAction, AetAction::IN_LOOP);
+	WRITE_MEMORY (0x140666383, AetAction, AetAction::IN_LOOP);
+	WRITE_MEMORY (0x140661E13, AetAction, AetAction::IN_LOOP);
+	WRITE_MEMORY (0x140661813, AetAction, AetAction::IN_LOOP);
+
 	diva::init ();
 	exitMenu::init ();
 	pvSel::init ();
