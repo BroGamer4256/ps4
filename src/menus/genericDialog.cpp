@@ -94,16 +94,12 @@ HOOK (bool, DestroyGenericDialog, 0x1401B0480) {
 	return true;
 }
 
-i32 unk = 0;
 HOOK (void, GenericDialogPlaySongSlect, 0x140664BD0, u64 This) {
 	originalGenericDialogPlaySongSlect (This);
 	if (IsSurvival ()) {
-		auto comp = (AetComposition *)(This + 0x400);
-
-		*(u8 *)(This + 0x410)   = 1; // Number of pages
-		*(u8 *)(This + 0x428)   = 0;
-		*(i32 **)(This + 0x448) = &unk;
-		auto args               = *(AetLayerArgs **)(This + 0x430);
+		auto comp             = (AetComposition *)(This + 0x400);
+		*(u8 *)(This + 0x410) = 1; // Number of pages
+		auto args             = *(AetLayerArgs **)(This + 0x430);
 		StopAet (&args->id);
 		StopAet (&((AetLayerArgs *)((u64)args + 0x1F8))->id);
 
@@ -111,8 +107,6 @@ HOOK (void, GenericDialogPlaySongSlect, 0x140664BD0, u64 This) {
 		if (auto helpImgLayer = comp->find (string ("p_help_img_01_c"))) args->position = helpImgLayer.value ()->position;
 		args->flags |= 8; // Hidden
 		args->play (&args->id);
-
-		*(u64 *)(This + 0x468) = *(u64 *)(This + 0x460);
 	}
 }
 
@@ -143,7 +137,6 @@ init () {
 	WRITE_MEMORY (0x1401DEFB9, u8, 0x0F, 0xB6, 0xC0, 0x90, 0x90); // MOVZX EAX, AL
 	WRITE_MEMORY (0x1406624AA, u8, 0x01);                         // Customization menus to 1 instead of 2
 	WRITE_MEMORY (0x1406657FB, u8, 0x02);                         // helpwin_song_start menus to 2 instead of 3
-	WRITE_NOP (0x140165868, 2);                                   // Prevent crashing
 
 	INSTALL_HOOK (GetKeyStr);
 }
