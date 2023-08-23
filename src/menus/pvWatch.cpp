@@ -1,5 +1,4 @@
 #include "diva.h"
-#include "menus.h"
 
 namespace pvWatch {
 using namespace diva;

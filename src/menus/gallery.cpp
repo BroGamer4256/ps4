@@ -1,5 +1,4 @@
 #include "diva.h"
-#include "menus.h"
 
 namespace gallery {
 i32 menuTxt1Id    = 0;

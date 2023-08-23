@@ -1,5 +1,4 @@
 #include "diva.h"
-#include "menus.h"
 
 namespace pvSel {
 typedef enum Style : i32 {
@@ -311,6 +310,16 @@ PVSelLoop (u64 This) {
 	return false;
 }
 
+void
+hide () {
+	if (!loaded) return;
+
+	StopAet (&keyHelpId);
+	StopAet (&selectorImgId);
+	StopAet (&selectorId);
+	loaded = false;
+}
+
 bool
 PvSelDestroy (u64 This) {
 	if (*(i32 *)(This + 0x36A08) != 0) return false;
@@ -348,15 +357,5 @@ init () {
 	addition.destroy = PvSelDestroy;
 	addition.display = PvSelDisplay;
 	addTaskAddition ("PVsel", addition);
-}
-
-void
-hide () {
-	if (!loaded) return;
-
-	StopAet (&keyHelpId);
-	StopAet (&selectorImgId);
-	StopAet (&selectorId);
-	loaded = false;
 }
 } // namespace pvSel
