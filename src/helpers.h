@@ -1,5 +1,6 @@
 #include <MinHook.h>
 #include <bits/stdc++.h>
+#include <shellapi.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>

@@ -2,14 +2,6 @@
 #include "diva.h"
 #include "menus/menus.h"
 
-SIG_SCAN_STRING (sigPvDbSwitch, "pv_db_switch.txt");
-SIG_SCAN_STRING (sigMenuTxt1, "menu_txt_01");
-SIG_SCAN_STRING (sigMenuTxt2, "menu_txt_02");
-SIG_SCAN_STRING (sigMenuTxt3, "menu_txt_03");
-SIG_SCAN_STRING (sigMenuTxt4, "menu_txt_04");
-SIG_SCAN_STRING (sigMenuTxt5, "menu_txt_05");
-SIG_SCAN_STRING (sigMenuTxtBase, "menu_txt_base");
-
 i32 theme;
 
 using diva::AetAction;
@@ -181,6 +173,20 @@ __declspec (dllexport) void init () {
 	commonMenu::init ();
 }
 
+SIG_SCAN_STRING (sigPvDbSwitch, "pv_db_switch.txt");
+SIG_SCAN_STRING (sigMenuTxt1, "menu_txt_01");
+SIG_SCAN_STRING (sigMenuTxt2, "menu_txt_02");
+SIG_SCAN_STRING (sigMenuTxt3, "menu_txt_03");
+SIG_SCAN_STRING (sigMenuTxt4, "menu_txt_04");
+SIG_SCAN_STRING (sigMenuTxt5, "menu_txt_05");
+SIG_SCAN_STRING (sigMenuTxtBase, "menu_txt_base");
+SIG_SCAN_STRING (sigCmnWinHelpG, "cmn_win_help_g_inout");
+SIG_SCAN_STRING (sigCmnWinHelpP, "cmn_win_help_p_inout");
+SIG_SCAN_STRING (sigCmnWinHelpR, "cmn_win_help_r_inout");
+SIG_SCAN_STRING (sigCmnWinHelpY, "cmn_win_help_y_inout");
+SIG_SCAN_STRING (sigCmnWinG, "cmn_win_g");
+SIG_SCAN_STRING (sigCmnWinP, "cmn_win_p");
+
 __declspec (dllexport) void preInit () {
 	WRITE_NULL (sigPvDbSwitch (), 1);
 	WRITE_NULL (sigMenuTxt1 (), 1);
@@ -190,12 +196,12 @@ __declspec (dllexport) void preInit () {
 	WRITE_NULL (sigMenuTxt5 (), 1);
 	WRITE_NULL (sigMenuTxtBase (), 1);
 
-	WRITE_MEMORY (0x140CC2800, char, "cmn_win_help");
-	WRITE_MEMORY (0x140CC2848, char, "cmn_win_help");
-	WRITE_MEMORY (0x140CC2A78, char, "cmn_win_help");
-	WRITE_MEMORY (0x140CC2B90, char, "cmn_win_help");
+	WRITE_MEMORY (sigCmnWinHelpG (), char, "cmn_win_help");
+	WRITE_MEMORY (sigCmnWinHelpP (), char, "cmn_win_help");
+	WRITE_MEMORY (sigCmnWinHelpR (), char, "cmn_win_help");
+	WRITE_MEMORY (sigCmnWinHelpY (), char, "cmn_win_help");
 
-	WRITE_MEMORY (0x140CC2950, char, "cmn_win_m");
-	WRITE_MEMORY (0x140CC2978, char, "cmn_win_m");
+	WRITE_MEMORY (sigCmnWinG (), char, "cmn_win_m");
+	WRITE_MEMORY (sigCmnWinP (), char, "cmn_win_m");
 }
 }
