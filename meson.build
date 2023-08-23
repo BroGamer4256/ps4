@@ -63,6 +63,7 @@ library(
 		'src/menus/genericDialog.cpp',
 		'src/menus/commonUi.cpp',
 		'src/menus/commonUi.asm',
+		'src/menus/commonMenu.cpp',
 	],
 	name_prefix: ''
 )
