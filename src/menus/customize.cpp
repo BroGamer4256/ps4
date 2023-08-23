@@ -72,6 +72,11 @@ HOOK (void, PlayCustomizeSelFooter, 0x15F9811D0, void *a1, PlayCustomizeSelFoote
 	originalPlayCustomizeSelFooter (a1, args);
 }
 
+HOOK (void, StopCustomizeSelFooter, 0x140684A00, void *a1) {
+	StopAet (&footerButtonId);
+	originalStopCustomizeSelFooter (a1);
+}
+
 HOOK (void, PlayTshirtEditFooter, 0x140710680, void *a1, i32 index) {
 	i32 realIndex = 0;
 	if (index == 0) realIndex = 3;
@@ -179,6 +184,7 @@ init () {
 	INSTALL_HOOK (CustomizeSelInit);
 	INSTALL_HOOK (CustomizeSelIsLoaded);
 	INSTALL_HOOK (PlayCustomizeSelFooter);
+	INSTALL_HOOK (StopCustomizeSelFooter);
 	INSTALL_HOOK (PlayTshirtEditFooter);
 	INSTALL_HOOK (GameOptionsLoop);
 	INSTALL_HOOK (ButtonFxListIn);
