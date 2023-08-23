@@ -96,6 +96,9 @@ HOOK (void, LoadAetFrameH, 0x1402CA590, void *data, i32 aetSceneId, const char *
 	return originalLoadAetFrameH (data, aetSceneId, layerName, action, layer, a6, frame);
 }
 
+HOOK (void, OpenNpCommerce, 0x1401DEA30) { ShellExecuteA (NULL, "open", "https://gamebanana.com/games/16522", NULL, NULL, SW_SHOWNORMAL); }
+HOOK (void, OpenCredits, 0x1401DEA00) { ShellExecuteA (NULL, "open", "https://gamebanana.com/games/16522", NULL, NULL, SW_SHOWNORMAL); }
+
 extern "C" {
 
 FUNCTION_PTR (float, GetLayerFrame, 0x1402CA120, i32 id, char *layer_name);
@@ -120,9 +123,11 @@ __declspec (dllexport) void init () {
 	INSTALL_HOOK (GetFtTheme);
 	INSTALL_HOOK (PlayAetLayerH);
 	INSTALL_HOOK (LoadAetFrameH);
+	INSTALL_HOOK (OpenNpCommerce);
+	INSTALL_HOOK (OpenCredits);
 	INSTALL_HOOK (CmnMenuTouchCheck);
 
-	// 1.00 Samyuu, 1.03 BroGamer
+	// Turn on FT mode 1.00 Samyuu, 1.03 BroGamer
 	WRITE_MEMORY (0x1414AB9E3, u8, 1);
 
 	// Stop returning to ADV from main menu
