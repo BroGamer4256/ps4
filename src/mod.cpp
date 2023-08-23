@@ -178,6 +178,7 @@ __declspec (dllexport) void init () {
 	pvGame::init ();
 	genericDialog::init ();
 	commonUi::init ();
+	commonMenu::init ();
 }
 
 __declspec (dllexport) void preInit () {

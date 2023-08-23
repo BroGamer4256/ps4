@@ -36,3 +36,6 @@ void init ();
 namespace commonUi {
 void init ();
 } // namespace commonUi
+namespace commonMenu {
+void init ();
+} // namespace commonMenu

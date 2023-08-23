@@ -136,6 +136,7 @@ getClickedPos (void *inputState) {
 }
 
 AetLayerArgs::AetLayerArgs (const char *sceneName, const char *layerName, i32 priority, AetAction action) { this->create (sceneName, layerName, priority, action); }
+AetLayerArgs::AetLayerArgs (i32 sceneId, const char *layerName, i32 priority, AetAction action) { this->create (sceneId, layerName, priority, action); }
 
 void
 AetLayerArgs::create (const char *sceneName, const char *layerName, i32 priority, AetAction action) {
@@ -146,6 +147,11 @@ AetLayerArgs::create (const char *sceneName, const char *layerName, i32 priority
 			break;
 		}
 	}
+	CreateAetLayerData (this, sceneId, layerName, priority, action);
+}
+
+void
+AetLayerArgs::create (i32 sceneId, const char *layerName, i32 priority, AetAction action) {
 	CreateAetLayerData (this, sceneId, layerName, priority, action);
 }
 

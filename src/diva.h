@@ -414,7 +414,9 @@ struct AetLayerArgs {
 
 	AetLayerArgs () {}
 	AetLayerArgs (const char *sceneName, const char *layerName, i32 priority, AetAction action);
+	AetLayerArgs (i32 sceneId, const char *layerName, i32 priority, AetAction action);
 	void create (const char *sceneName, const char *layerName, i32 priority, AetAction action);
+	void create (i32 sceneId, const char *layerName, i32 priority, AetAction action);
 	void play (i32 *id);
 	void setPosition (Vec3 position);
 };
