@@ -12,14 +12,20 @@ i32 anmId                = 0;
 i32 sideArrowsId         = 0;
 
 bool
-DecorationLoop (u64 a1) {
+DecorationLoop (u64 This) {
 	if (!decorationInited) {
 		StopAet (&(*cmnbgArgs)->id);
 		AetLayerArgs bgArgs ("AET_NSWGAM_DECORATION_MAIN", "bg", 5, AetAction::NONE);
 		bgArgs.play (&bgId);
 		decorationInited = true;
 	}
-	u8 screen = *(u8 *)(a1 + 0x6B);
+
+	return false;
+}
+
+bool
+DecorationDisplay (u64 This) {
+	u8 screen = *(u8 *)(This + 0x6B);
 	if (screen != currScreen) {
 		currScreen = screen;
 
@@ -31,18 +37,36 @@ DecorationLoop (u64 a1) {
 
 		if (currScreen == 1) {
 			AetLayerArgs sideArrowsArgs ("AET_NSWGAM_DECORATION_MAIN", "slide_side_arrows", 19, AetAction::LOOP);
-			sideArrowsArgs.frameRateControl = (void *)(a1 + 0x9108);
+			sideArrowsArgs.frameRateControl = (void *)(This + 0x9108);
 			sideArrowsArgs.play (&sideArrowsId);
 		} else if (sideArrowsId != 0) {
 			StopAet (&sideArrowsId);
 			sideArrowsId = 0;
 		}
 	}
+
+	auto args       = (AetLayerArgs *)(This + 0x8AD8);
+	auto btnNoArgs  = (AetLayerArgs *)(This + 0x8CD8);
+	auto btnYesArgs = (AetLayerArgs *)(This + 0x8ED0);
+
+	AetComposition comp;
+	GetComposition (&comp, args->id);
+	if (btnNoArgs->id != 0) {
+		if (auto layer = aets->find (btnNoArgs->id)) {
+			if (auto layout = comp.find (string ("p_popup_delete_no"))) layer.value ()->color.w = layout.value ()->opacity;
+		}
+	}
+	if (btnYesArgs->id != 0) {
+		if (auto layer = aets->find (btnYesArgs->id)) {
+			if (auto layout = comp.find (string ("p_popup_delete_yes"))) layer.value ()->color.w = layout.value ()->opacity;
+		}
+	}
+
 	return false;
 }
 
 bool
-DecorationDestroy (u64 a1) {
+DecorationDestroy (u64 This) {
 	decorationInited = false;
 	StopAet (&bgId);
 	StopAet (&footerButtonId);
@@ -67,9 +91,13 @@ void
 init () {
 	taskAddition decoAddition;
 	decoAddition.loop    = DecorationLoop;
+	decoAddition.display = DecorationDisplay;
 	decoAddition.destroy = DecorationDestroy;
 	addTaskAddition ("DECO", decoAddition);
 	INSTALL_HOOK (UpdateSlideAnm);
+
+	WRITE_MEMORY (0x1401FA42A, i8, 21);
+	WRITE_MEMORY (0x1401FA97D, i32, 22);
 }
 
 } // namespace decoration
