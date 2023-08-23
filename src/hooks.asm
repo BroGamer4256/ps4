@@ -1,3 +1,5 @@
+%include "cmn.asm"
+
 extern implOfCmnMenuTouchCheck
 extern AppendLayerSuffix
 extern GetLayerFrame
@@ -10,18 +12,7 @@ implOfCmnMenuTouchCheck:
 	jz implOfCmnMenuTouchCheckExit
 	mov [rbx], edi
 
-	push rax
-	push rcx
-	push rdx
-	push rsi
-	push r8
-	push r9
-	push r10
-	push r11
-	push r12
-	push r13
-	push r14
-	push r15
+	pushaq
 
 	lea rdx, [rbp - 0x51]
 	mov rcx, rbx
@@ -45,18 +36,7 @@ implOfCmnMenuTouchCheck:
 	movd xmm1, eax
 	call [rel _ZN4diva15PlaySoundEffectE]
 
-	pop r15
-	pop r14
-	pop r13
-	pop r12
-	pop r11
-	pop r10
-	pop r9
-	pop r8
-	pop rsi
-	pop rdx
-	pop rcx
-	pop rax
+	popaq
 implOfCmnMenuTouchCheckExit:
 	mov edx, eax
 	mov rax, [rel whereCmnMenuTouchCheck]

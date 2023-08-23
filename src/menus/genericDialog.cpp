@@ -110,6 +110,16 @@ HOOK (void, GenericDialogPlaySongSlect, 0x140664BD0, u64 This) {
 	}
 }
 
+extern "C" {
+HOOK (void, SetKeyAnmOpacity, 0x14066705B);
+f32
+realSetKeyAnmOpacity (u64 This) {
+	auto comp = (AetComposition *)(This + 0x400);
+	if (auto layer = comp->find (string ("p_help_img_01_c"))) return layer.value ()->opacity;
+	else return 1.0;
+}
+}
+
 void
 init () {
 	keyicon2Data = new UpdateKeyAnmData ();
@@ -139,5 +149,11 @@ init () {
 	WRITE_MEMORY (0x1406657FB, u8, 0x02);                         // helpwin_song_start menus to 2 instead of 3
 
 	INSTALL_HOOK (GetKeyStr);
+	INSTALL_HOOK (SetKeyAnmOpacity);
+
+	WRITE_MEMORY (0x14060AB29, u8, 0x8B, 0x4C, 0x24, 0x78, 0x89, 0x8D, 0xF0, 0x00, 0x00, 0x00);
+	WRITE_NOP (0x14060ACE5, 9);
+
+	WRITE_MEMORY (0x140667303, f32, 0.5);
 }
 } // namespace genericDialog

@@ -62,6 +62,7 @@ library(
 		'src/menus/pvGame.cpp',
 		'src/menus/genericDialog.cpp',
 		'src/menus/commonUi.cpp',
+		'src/menus/commonUi.asm',
 	],
 	name_prefix: ''
 )
