@@ -95,6 +95,7 @@ init () {
 	addTaskAddition ("DECO", decoAddition);
 	INSTALL_HOOK (UpdateSlideAnm);
 
+	// Display messages above everything else
 	WRITE_MEMORY (0x1401FA42A, i8, 21);
 	WRITE_MEMORY (0x1401FA97D, i32, 22);
 }

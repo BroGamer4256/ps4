@@ -17,6 +17,8 @@ i32 soundListInId  = 0;
 i32 currentMenu    = -1;
 i32 previousOption = -1;
 InputType previousInputType;
+i32 gameOptionsArrowsUpId   = 0;
+i32 gameOptionsArrowsDownId = 0;
 
 struct PlayCustomizeSelFooterArgs {
 	diva::string footerName;
@@ -150,13 +152,43 @@ HOOK (void *, GameOptionsLoop, 0x14066E0E0, u64 a1, i32 a2, bool a3) {
 		StopAet (&optionTxt6Id);
 		StopAet (&optionTxt7Id);
 		StopAet (&optionTxt8Id);
+		StopAet (&gameOptionsArrowsUpId);
+		StopAet (&gameOptionsArrowsDownId);
 		previousOption = -1;
+	} else if (a2 == 1) {
+		diva::AetLayerArgs args ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_up", 0x10, AetAction::IN_LOOP);
+		args.play (&gameOptionsArrowsUpId);
+		diva::AetLayerArgs bottomArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_down", 0x10, AetAction::IN_LOOP);
+		bottomArgs.play (&gameOptionsArrowsDownId);
 	} else {
 		i32 selectedOption = *(i32 *)(a1 + 0x60);
 		if (selectedOption != previousOption) {
 			if (previousOption != -1) playOptionText (previousOption, AetAction::OUT_ONCE);
 			playOptionText (selectedOption, AetAction::IN_LOOP);
 			previousOption = selectedOption;
+
+			if (previousOption != -1) {
+				if (selectedOption == 0) {
+					if (auto layer = aets->find (gameOptionsArrowsUpId)) {
+						diva::AetLayerArgs topArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_up", 0x10, AetAction::IN_ONCE);
+						topArgs.play (&gameOptionsArrowsUpId);
+						diva::AetLayerArgs bottomArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_down", 0x10, AetAction::SPECIAL_LOOP);
+						bottomArgs.play (&gameOptionsArrowsDownId);
+					}
+				} else if (selectedOption == 8) {
+					if (auto layer = aets->find (gameOptionsArrowsDownId)) {
+						diva::AetLayerArgs topArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_up", 0x10, AetAction::SPECIAL_LOOP);
+						topArgs.play (&gameOptionsArrowsUpId);
+						diva::AetLayerArgs bottomArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_down", 0x10, AetAction::IN_ONCE);
+						bottomArgs.play (&gameOptionsArrowsDownId);
+					}
+				} else {
+					diva::AetLayerArgs topArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_up", 0x10, AetAction::SPECIAL_LOOP);
+					topArgs.play (&gameOptionsArrowsUpId);
+					diva::AetLayerArgs bottomArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_down", 0x10, AetAction::SPECIAL_LOOP);
+					bottomArgs.play (&gameOptionsArrowsDownId);
+				}
+			}
 		}
 	}
 	return originalGameOptionsLoop (a1, a2, a3);

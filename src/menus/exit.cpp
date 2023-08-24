@@ -100,7 +100,7 @@ void
 handleClick (Vec2 clickedPos) {
 	if (yesButtonRect.contains (clickedPos)) {
 		if (hoveredButton == 0) moveUp ();
-		else *(u8 *)0x1414ABB90 = 1;
+		else *(u8 *)0x1414ABB90 = 1; // Quit game
 	} else if (noButtonRect.contains (clickedPos)) {
 		if (hoveredButton == 1) moveDown ();
 		else leaveMenu ();
