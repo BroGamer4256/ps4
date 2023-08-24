@@ -221,7 +221,7 @@ struct vector {
 
 	std::optional<T *> at (u64 index) {
 		if (index >= this->length ()) return std::nullopt;
-		std::optional (&this->first[index]);
+		return std::optional (&this->first[index]);
 	}
 
 	void push_back (T value) {
