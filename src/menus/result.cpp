@@ -104,5 +104,7 @@ init () {
 	diva::taskAddition pvGameAddition;
 	pvGameAddition.init = PVGameInit;
 	diva::addTaskAddition ("PVGAME", pvGameAddition);
+
+	WRITE_NOP (0x140244554, 6); // Fix tutorial not ending
 }
 } // namespace result
