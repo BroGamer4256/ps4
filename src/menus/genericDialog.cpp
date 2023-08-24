@@ -117,6 +117,19 @@ realSetKeyAnmOpacity (u64 This) {
 	if (auto layer = comp->find (string ("p_help_img_01_c"))) return layer.value ()->opacity;
 	else return 1.0;
 }
+HOOK (void, PlayGenericDialogOut, 0x14066650B);
+bool
+realPlayGenericDialogOut (u64 This) {
+	auto dialogId = *(i32 *)(This + 0x4);
+	if (dialogId == 0xE || dialogId == 0x21) {
+		auto args = (AetLayerArgs *)(This + 0x208);
+		args->create ("AET_NSWGAM_CMN_MAIN", "cmn_msg_autosave", 0, AetAction::OUT_ONCE);
+		args->flags |= 8;
+		args->play (&args->id);
+		return false;
+	}
+	return true;
+}
 }
 
 void
@@ -149,6 +162,7 @@ init () {
 
 	INSTALL_HOOK (GetKeyStr);
 	INSTALL_HOOK (SetKeyAnmOpacity);
+	INSTALL_HOOK (PlayGenericDialogOut);
 
 	WRITE_MEMORY (0x14060AB29, u8, 0x8B, 0x4C, 0x24, 0x78, 0x89, 0x8D, 0xF0, 0x00, 0x00, 0x00);
 	WRITE_NOP (0x14060ACE5, 9);
