@@ -227,5 +227,16 @@ init () {
 	addition.loop    = CustomizeSelLoop;
 	addition.destroy = CustomizeSelDestroy;
 	addTaskAddition ("CustomizeSel", addition);
+
+	// Use the right font
+	// Module select
+	WRITE_MEMORY (0x140692A3A, i8, 0x00);
+	WRITE_MEMORY (0x140692A3D, i8, 0x10);
+	// Hairstyle
+	WRITE_MEMORY (0x140689C45, i8, 0x00);
+	WRITE_MEMORY (0x140689C48, i8, 0x10);
+	// Accessories
+	WRITE_MEMORY (0x14068DC1A, i8, 0x00);
+	WRITE_MEMORY (0x14068DC1D, i8, 0x10);
 }
 } // namespace customize
