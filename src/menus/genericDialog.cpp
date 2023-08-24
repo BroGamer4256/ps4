@@ -35,6 +35,8 @@ GenericDialogDisplay (u64 This) {
 	GetComposition (comp, dialogAetLayerArgs->id);
 	*compositionData = *comp;
 
+	if (dialogId == 0xC) return false;
+
 	auto helpImgLayer = compositionData->find (string ("p_help_img_01_c"));
 	if (!helpImgLayer) return false;
 	if (auto aet = aets->find (imgAetLayerArgs->id)) {
