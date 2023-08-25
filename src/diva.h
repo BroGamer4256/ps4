@@ -622,6 +622,17 @@ struct ModuleData {
 	ModuleAttr attr;
 };
 
+struct CustomizeItemData {
+	i32 id;
+	i32 obj_id;
+	i32 sort_index;
+	string name;
+	i32 chara;
+	i32 parts;
+	INSERT_PADDING (0x24);
+	i32 bind_module;
+};
+
 struct AetDbSceneEntry {
 	stringRange name;
 	i32 id;
