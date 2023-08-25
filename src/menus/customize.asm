@@ -4,9 +4,6 @@ extern implOfLoadChoiceList
 extern whereLoadChoiceList
 extern realLoadChoiceList
 
-extern implOfFinishLoadChoiceList
-extern whereFinishLoadChoiceList
-extern realFinishLoadChoiceList
 
 section .text
 implOfLoadChoiceList:
