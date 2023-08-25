@@ -8,9 +8,17 @@ extern implOfLoadHairstyleChoiceList
 extern whereLoadHairstyleChoiceList
 extern realLoadHairstyleChoiceList
 
-extern strlen
-
 section .text
+strlen:
+	mov r8d, -1
+	dec rax
+.loop:
+	inc r8d
+	inc rax
+	cmp byte [rax], 0
+	jne .loop
+	ret
+
 implOfLoadModuleChoiceList:
 	push rax
 	push rbx
@@ -28,10 +36,7 @@ implOfLoadModuleChoiceList:
 	mov r8, rbx
 	call realLoadModuleChoiceList
 	mov rdx, rax
-
-	mov rcx, rax
 	call strlen
-	mov r8, rax
 
 	add rsp, 0x200
 	pop r15
@@ -68,10 +73,7 @@ implOfLoadHairstyleChoiceList:
 	mov r8, rbx
 	call realLoadHairstyleChoiceList
 	mov rdx, rax
-
-	mov rcx, rax
 	call strlen
-	mov r8, rax
 
 	add rsp, 0x200
 	pop r15
