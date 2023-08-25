@@ -9,7 +9,7 @@ extern whereCmnMenuTouchCheck
 section .text
 implOfCmnMenuTouchCheck:
 	cmp edi, eax
-	jz implOfCmnMenuTouchCheckExit
+	jz .exit
 	mov [rbx], edi
 
 	pushaq
@@ -37,7 +37,7 @@ implOfCmnMenuTouchCheck:
 	call [rel _ZN4diva15PlaySoundEffectE]
 
 	popaq
-implOfCmnMenuTouchCheckExit:
+.exit:
 	mov edx, eax
 	mov rax, [rel whereCmnMenuTouchCheck]
 	add rax, 7

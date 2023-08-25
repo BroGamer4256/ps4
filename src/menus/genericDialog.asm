@@ -30,10 +30,10 @@ implOfPlayGenericDialogOut:
 	add rsp, 0x10
 	test al, 0
 	popaq
-	je implOfPlayGenericDialogOutSkip
+	je .skip
 	call [rel originalPlayGenericDialogOut]
 	ret
-implOfPlayGenericDialogOutSkip:
+.skip:
 	mov rcx, [rel wherePlayGenericDialogOut]
 	add rcx, 0x11
 	jmp rcx
