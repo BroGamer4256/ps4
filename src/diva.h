@@ -601,6 +601,27 @@ struct PvDbEntry {
 	~PvDbEntry () = delete;
 };
 
+enum ModuleAttr : i32 {
+	Swimsuit     = 1 << 0,
+	NoSwap       = 1 << 1,
+	FutureSound  = 1 << 2,
+	ColorfulTone = 1 << 3,
+	Tshirt       = 1 << 4,
+};
+
+struct ModuleData {
+	i32 id;
+	i32 sort_index;
+	i32 chara;
+	i32 cos;
+	INSERT_PADDING (0x70);
+	string name;
+	i32 shop_price;
+	u64 unk_0xA8;
+	u64 unk_0xB0;
+	ModuleAttr attr;
+};
+
 struct AetDbSceneEntry {
 	stringRange name;
 	i32 id;

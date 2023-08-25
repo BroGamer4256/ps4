@@ -211,6 +211,53 @@ HOOK (u32 *, SetCursorColor, 0x14065E410, void *a1, u32 *rgbaColor) {
 	return rgbaColor;
 }
 
+i32 choiceListPackId[16] = {0};
+
+extern "C" {
+HOOK (void, LoadChoiceList, 0x140691D4D);
+const char *
+realLoadChoiceList (u64 This, i32 moduleId, i32 index) {
+	auto modules   = (vector<ModuleData *> *)(This + 0x70);
+	auto moduleOpt = modules->at (moduleId);
+	if (!moduleOpt.has_value ()) return "choice_list_mdl_base_etc";
+	auto module = *moduleOpt.value ();
+	if (module == 0) return "choice_list_mdl_base_etc";
+
+	if ((module->attr & (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) == (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) {
+		StopAet (&choiceListPackId[index]);
+		return "choice_list_mdl_base_etc";
+	} else if (module->attr & (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) {
+		auto layouts = *(u64 *)(This + 0x1C8);
+		if (layouts == 0) return "choice_list_mdl_base_etc";
+		auto offset = *(i32 *)(This + 0x1AC);
+		auto layout = *(AetLayoutData **)(layouts + ((index + offset) * 16));
+		if (layout == 0) return "choice_list_mdl_base_etc";
+		AetLayerArgs args;
+
+		if (module->attr & ModuleAttr::FutureSound) args.create ("AET_NSWGAM_CUSTOM_MAIN", "choice_list_pack_f", 0x10, AetAction::NONE);
+		else args.create ("AET_NSWGAM_CUSTOM_MAIN", "choice_list_pack_t", 0x10, AetAction::NONE);
+
+		args.position = layout->position;
+		args.color.w  = layout->opacity;
+		if (index == 5) args.scale = Vec3{1.2, 1.2, 1.2};
+		else if (index == 11) args.color.w = 0.0;
+		args.play (&choiceListPackId[index]);
+
+		if (module->attr & ModuleAttr::FutureSound) return "choice_list_mdl_base_f";
+		else return "choice_list_mdl_base_t";
+	} else {
+		StopAet (&choiceListPackId[index]);
+		return "choice_list_mdl_base_etc";
+	}
+}
+}
+
+HOOK (void, DestroyModuleSelect, 0x1406910D0, u64 This) {
+	for (size_t i = 0; i < COUNTOFARR (choiceListPackId); i++)
+		StopAet (&choiceListPackId[i]);
+	originalDestroyModuleSelect (This);
+}
+
 void
 init () {
 	INSTALL_HOOK (CustomizeSelInit);
@@ -222,6 +269,8 @@ init () {
 	INSTALL_HOOK (ButtonFxListIn);
 	INSTALL_HOOK (ButtonFxUnload);
 	INSTALL_HOOK (SetCursorColor);
+	INSTALL_HOOK (LoadChoiceList);
+	INSTALL_HOOK (DestroyModuleSelect);
 
 	taskAddition addition;
 	addition.loop    = CustomizeSelLoop;
@@ -229,10 +278,10 @@ init () {
 	addTaskAddition ("CustomizeSel", addition);
 
 	// Use the right font
-	// Module select
+	// Modules
 	WRITE_MEMORY (0x140692A3A, i8, 0x00);
 	WRITE_MEMORY (0x140692A3D, i8, 0x10);
-	// Hairstyle
+	// Hairstyles
 	WRITE_MEMORY (0x140689C45, i8, 0x00);
 	WRITE_MEMORY (0x140689C48, i8, 0x10);
 	// Accessories
