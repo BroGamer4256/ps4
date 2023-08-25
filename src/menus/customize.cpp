@@ -239,8 +239,12 @@ realLoadChoiceList (u64 This, i32 moduleId, i32 index) {
 
 		args.position = layout->position;
 		args.color.w  = layout->opacity;
-		if (index == 5) args.scale = Vec3{1.2, 1.2, 1.2};
-		else if (index == 11) args.color.w = 0.0;
+		if (index == 5) {
+			args.scale = Vec3{1.2, 1.2, 1.2};
+			args.position.y -= 5;
+		} else if (index == 11) {
+			args.color.w = 0.0;
+		}
 		args.play (&choiceListPackId[index]);
 
 		if (module->attr & ModuleAttr::FutureSound) return "choice_list_mdl_base_f";
