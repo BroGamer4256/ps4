@@ -219,19 +219,19 @@ const char *
 realLoadModuleChoiceList (u64 This, i32 moduleId, i32 index) {
 	auto modules   = (vector<ModuleData *> *)(This + 0x70);
 	auto moduleOpt = modules->at (moduleId);
-	if (!moduleOpt.has_value ()) return "choice_list_mdl_base_etc";
+	if (!moduleOpt.has_value ()) return "choice_list_mdl_base_etc_sel";
 	auto module = **moduleOpt;
-	if (module == 0) return "choice_list_mdl_base_etc";
+	if (module == 0) return "choice_list_mdl_base_etc_sel";
 
 	if ((module->attr & (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) == (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) {
 		StopAet (&choiceListPackId[index]);
-		return "choice_list_mdl_base_etc";
+		return "choice_list_mdl_base_etc_sel";
 	} else if (module->attr & (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) {
 		auto layouts = *(u64 *)(This + 0x1C8);
-		if (layouts == 0) return "choice_list_mdl_base_etc";
+		if (layouts == 0) return "choice_list_mdl_base_etc_sel";
 		auto offset = *(i32 *)(This + 0x1AC);
 		auto layout = *(AetLayoutData **)(layouts + ((index + offset) * 16));
-		if (layout == 0) return "choice_list_mdl_base_etc";
+		if (layout == 0) return "choice_list_mdl_base_etc_sel";
 		AetLayerArgs args;
 
 		if (module->attr & ModuleAttr::FutureSound) args.create ("AET_NSWGAM_CUSTOM_MAIN", "choice_list_pack_f", 0x10, AetAction::NONE);
@@ -247,11 +247,11 @@ realLoadModuleChoiceList (u64 This, i32 moduleId, i32 index) {
 		}
 		args.play (&choiceListPackId[index]);
 
-		if (module->attr & ModuleAttr::FutureSound) return "choice_list_mdl_base_f";
-		else return "choice_list_mdl_base_t";
+		if (module->attr & ModuleAttr::FutureSound) return "choice_list_mdl_base_f_sel";
+		else return "choice_list_mdl_base_t_sel";
 	} else {
 		StopAet (&choiceListPackId[index]);
-		return "choice_list_mdl_base_etc";
+		return "choice_list_mdl_base_etc_sel";
 	}
 }
 
@@ -266,9 +266,9 @@ realLoadHairstyleChoiceList (u64 This, i32 hairstyleId, i32 index) {
 
 	auto hairstyles   = (vector<CustomizeItemData *> *)(This + 0x108);
 	auto hairstyleOpt = hairstyles->at (hairstyleId);
-	if (!hairstyleOpt.has_value ()) return "choice_list_mdl_base_etc";
+	if (!hairstyleOpt.has_value ()) return "choice_list_mdl_base_etc_sel";
 	auto hairstyle = **hairstyleOpt;
-	if (hairstyle == 0) return "choice_list_mdl_base_etc";
+	if (hairstyle == 0) return "choice_list_mdl_base_etc_sel";
 	ModuleData *module = 0;
 	for (auto it = modules.begin (); it != modules.end (); it++) {
 		if (it == 0 || *it == 0) continue;
@@ -277,17 +277,17 @@ realLoadHairstyleChoiceList (u64 This, i32 hairstyleId, i32 index) {
 			break;
 		}
 	}
-	if (module == 0) return "choice_list_mdl_base_etc";
+	if (module == 0) return "choice_list_mdl_base_etc_sel";
 
 	if ((module->attr & (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) == (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) {
 		StopAet (&choiceListPackId[index]);
-		return "choice_list_mdl_base_etc";
+		return "choice_list_mdl_base_etc_sel";
 	} else if (module->attr & (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) {
 		auto layouts = *(u64 *)(This + 0x1F0);
-		if (layouts == 0) return "choice_list_mdl_base_etc";
+		if (layouts == 0) return "choice_list_mdl_base_etc_sel";
 		auto offset = *(i32 *)(This + 0x1D4);
 		auto layout = *(AetLayoutData **)(layouts + ((index + offset) * 16));
-		if (layout == 0) return "choice_list_mdl_base_etc";
+		if (layout == 0) return "choice_list_mdl_base_etc_sel";
 		AetLayerArgs args;
 
 		if (module->attr & ModuleAttr::FutureSound) args.create ("AET_NSWGAM_CUSTOM_MAIN", "choice_list_pack_f", 0x10, AetAction::NONE);
@@ -303,14 +303,12 @@ realLoadHairstyleChoiceList (u64 This, i32 hairstyleId, i32 index) {
 		}
 		args.play (&choiceListPackId[index]);
 
-		if (module->attr & ModuleAttr::FutureSound) return "choice_list_mdl_base_f";
-		else return "choice_list_mdl_base_t";
+		if (module->attr & ModuleAttr::FutureSound) return "choice_list_mdl_base_f_sel";
+		else return "choice_list_mdl_base_t_sel";
 	} else {
 		StopAet (&choiceListPackId[index]);
-		return "choice_list_mdl_base_etc";
+		return "choice_list_mdl_base_etc_sel";
 	}
-
-	return "choice_list_mdl_base_etc";
 }
 }
 

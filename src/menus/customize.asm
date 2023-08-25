@@ -51,8 +51,7 @@ implOfLoadModuleChoiceList:
 	pop rax
 
 	mov r9, [rel whereLoadModuleChoiceList]
-	add r9, 6
-	add r9, 7
+	add r9, 6 + 7
 	jmp r9
 
 section .text
@@ -88,6 +87,5 @@ implOfLoadHairstyleChoiceList:
 	pop rax
 
 	mov r9, [rel whereLoadHairstyleChoiceList]
-	add r9, 6
-	add r9, 7
+	add r9, 6 + 7
 	jmp r9
