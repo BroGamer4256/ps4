@@ -214,27 +214,13 @@ HOOK (u32 *, SetCursorColor, 0x14065E410, void *a1, u32 *rgbaColor) {
 i32 choiceListPackId[16] = {0};
 
 extern "C" {
-HOOK (void, LoadModuleChoiceList, 0x140691D47);
-const char *
-realLoadModuleChoiceList (u64 This, i32 moduleId, i32 index) {
-	auto modules   = (vector<ModuleData *> *)(This + 0x70);
-	auto moduleOpt = modules->at (moduleId);
-	if (!moduleOpt.has_value ()) return "choice_list_mdl_base_etc_sel";
-	auto module = **moduleOpt;
-	if (module == 0) return "choice_list_mdl_base_etc_sel";
-
-	if ((module->attr & (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) == (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) {
+void
+LoadChoiceListPlayTxt (AetLayoutData *layout, ModuleAttr attr, i32 index) {
+	if ((attr & (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) == (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) {
 		StopAet (&choiceListPackId[index]);
-		return "choice_list_mdl_base_etc_sel";
-	} else if (module->attr & (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) {
-		auto layouts = *(u64 *)(This + 0x1C8);
-		if (layouts == 0) return "choice_list_mdl_base_etc_sel";
-		auto offset = *(i32 *)(This + 0x1AC);
-		auto layout = *(AetLayoutData **)(layouts + ((index + offset) * 16));
-		if (layout == 0) return "choice_list_mdl_base_etc_sel";
+	} else if (attr & (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) {
 		AetLayerArgs args;
-
-		if (module->attr & ModuleAttr::FutureSound) args.create ("AET_NSWGAM_CUSTOM_MAIN", "choice_list_pack_f", 0x10, AetAction::NONE);
+		if (attr & ModuleAttr::FutureSound) args.create ("AET_NSWGAM_CUSTOM_MAIN", "choice_list_pack_f", 0x10, AetAction::NONE);
 		else args.create ("AET_NSWGAM_CUSTOM_MAIN", "choice_list_pack_t", 0x10, AetAction::NONE);
 
 		args.position = layout->position;
@@ -246,13 +232,32 @@ realLoadModuleChoiceList (u64 This, i32 moduleId, i32 index) {
 			args.color.w = 0.0;
 		}
 		args.play (&choiceListPackId[index]);
-
-		if (module->attr & ModuleAttr::FutureSound) return "choice_list_mdl_base_f_sel";
-		else return "choice_list_mdl_base_t_sel";
 	} else {
 		StopAet (&choiceListPackId[index]);
-		return "choice_list_mdl_base_etc_sel";
 	}
+}
+
+HOOK (void, LoadModuleChoiceList, 0x140691D47);
+const char *
+realLoadModuleChoiceList (u64 This, i32 moduleId, i32 index) {
+	auto modules   = (vector<ModuleData *> *)(This + 0x70);
+	auto moduleOpt = modules->at (moduleId);
+	if (!moduleOpt.has_value ()) return "choice_list_mdl_base_etc_sel";
+	auto module = **moduleOpt;
+	if (module == 0) return "choice_list_mdl_base_etc_sel";
+
+	auto layouts = *(u64 *)(This + 0x1C8);
+	if (layouts == 0) return "choice_list_mdl_base_etc_sel";
+	auto offset = *(i32 *)(This + 0x1AC);
+	auto layout = *(AetLayoutData **)(layouts + ((index + offset) * 16));
+	if (layout == 0) return "choice_list_mdl_base_etc_sel";
+
+	LoadChoiceListPlayTxt (layout, module->attr, index);
+
+	if ((module->attr & (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) == (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) return "choice_list_mdl_base_etc_sel";
+	else if (module->attr & ModuleAttr::FutureSound) return "choice_list_mdl_base_f_sel";
+	else if (module->attr & ModuleAttr::ColorfulTone) return "choice_list_mdl_base_t_sel";
+	else return "choice_list_mdl_base_etc_sel";
 }
 
 vector<ModuleData *> modules;
@@ -279,36 +284,18 @@ realLoadHairstyleChoiceList (u64 This, i32 hairstyleId, i32 index) {
 	}
 	if (module == 0) return "choice_list_mdl_base_etc_sel";
 
-	if ((module->attr & (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) == (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) {
-		StopAet (&choiceListPackId[index]);
-		return "choice_list_mdl_base_etc_sel";
-	} else if (module->attr & (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) {
-		auto layouts = *(u64 *)(This + 0x1F0);
-		if (layouts == 0) return "choice_list_mdl_base_etc_sel";
-		auto offset = *(i32 *)(This + 0x1D4);
-		auto layout = *(AetLayoutData **)(layouts + ((index + offset) * 16));
-		if (layout == 0) return "choice_list_mdl_base_etc_sel";
-		AetLayerArgs args;
+	auto layouts = *(u64 *)(This + 0x1F0);
+	if (layouts == 0) return "choice_list_mdl_base_etc_sel";
+	auto offset = *(i32 *)(This + 0x1D4);
+	auto layout = *(AetLayoutData **)(layouts + ((index + offset) * 16));
+	if (layout == 0) return "choice_list_mdl_base_etc_sel";
 
-		if (module->attr & ModuleAttr::FutureSound) args.create ("AET_NSWGAM_CUSTOM_MAIN", "choice_list_pack_f", 0x10, AetAction::NONE);
-		else args.create ("AET_NSWGAM_CUSTOM_MAIN", "choice_list_pack_t", 0x10, AetAction::NONE);
+	LoadChoiceListPlayTxt (layout, module->attr, index);
 
-		args.position = layout->position;
-		args.color.w  = layout->opacity;
-		if (index == 5) {
-			args.scale = Vec3{1.2, 1.2, 1.2};
-			args.position.y -= 5;
-		} else if (index == 11) {
-			args.color.w = 0.0;
-		}
-		args.play (&choiceListPackId[index]);
-
-		if (module->attr & ModuleAttr::FutureSound) return "choice_list_mdl_base_f_sel";
-		else return "choice_list_mdl_base_t_sel";
-	} else {
-		StopAet (&choiceListPackId[index]);
-		return "choice_list_mdl_base_etc_sel";
-	}
+	if ((module->attr & (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) == (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) return "choice_list_mdl_base_etc_sel";
+	else if (module->attr & ModuleAttr::FutureSound) return "choice_list_mdl_base_f_sel";
+	else if (module->attr & ModuleAttr::ColorfulTone) return "choice_list_mdl_base_t_sel";
+	else return "choice_list_mdl_base_etc_sel";
 }
 }
 
@@ -321,6 +308,9 @@ HOOK (void, DestroyModuleSelect, 0x1406910D0, u64 This) {
 HOOK (void, DestroyHairstyleSelect, 0x140688550, u64 This) {
 	for (size_t i = 0; i < COUNTOFARR (choiceListPackId); i++)
 		StopAet (&choiceListPackId[i]);
+	modules.first        = 0;
+	modules.last         = 0;
+	modules.capacity_end = 0;
 	originalDestroyHairstyleSelect (This);
 }
 
