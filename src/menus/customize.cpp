@@ -220,9 +220,16 @@ LoadChoiceListPlayTxt (AetLayoutData *layout, ModuleAttr attr, i32 index) {
 		StopAet (&choiceListPackId[index]);
 	} else if (attr & (ModuleAttr::FutureSound | ModuleAttr::ColorfulTone)) {
 		AetLayerArgs args;
-		if (attr & ModuleAttr::FutureSound) args.create ("AET_NSWGAM_CUSTOM_MAIN", "choice_list_pack_f", 0x10, AetAction::NONE);
-		else args.create ("AET_NSWGAM_CUSTOM_MAIN", "choice_list_pack_t", 0x10, AetAction::NONE);
+		auto priority = index;
+		if (index > 5) {
+			priority = -priority;
+			priority += 10;
+		}
+		priority *= 2;
+		priority += 10;
 
+		if (attr & ModuleAttr::FutureSound) args.create ("AET_NSWGAM_CUSTOM_MAIN", "choice_list_pack_f", priority, AetAction::NONE);
+		else args.create ("AET_NSWGAM_CUSTOM_MAIN", "choice_list_pack_t", priority, AetAction::NONE);
 		args.position = layout->position;
 		args.color.w  = layout->opacity;
 		if (index == 5) {
@@ -297,6 +304,10 @@ realLoadHairstyleChoiceList (u64 This, i32 hairstyleId, i32 index) {
 	else if (module->attr & ModuleAttr::ColorfulTone) return "choice_list_mdl_base_t_sel";
 	else return "choice_list_mdl_base_etc_sel";
 }
+
+HOOK (void, SetModuleChoiceListPriority, 0x140691DB7);
+HOOK (void, SetModuleSprPriority, 0x140692C4A);
+HOOK (void, Memset, 0x14097B0E0);
 }
 
 HOOK (void, DestroyModuleSelect, 0x1406910D0, u64 This) {
@@ -325,10 +336,15 @@ init () {
 	INSTALL_HOOK (ButtonFxListIn);
 	INSTALL_HOOK (ButtonFxUnload);
 	INSTALL_HOOK (SetCursorColor);
+
 	INSTALL_HOOK (LoadModuleChoiceList);
 	INSTALL_HOOK (LoadHairstyleChoiceList);
 	INSTALL_HOOK (DestroyModuleSelect);
 	INSTALL_HOOK (DestroyHairstyleSelect);
+
+	INSTALL_HOOK (SetModuleChoiceListPriority);
+	INSTALL_HOOK (SetModuleSprPriority);
+	INSTALL_HOOK (Memset);
 
 	taskAddition addition;
 	addition.loop    = CustomizeSelLoop;
@@ -345,5 +361,7 @@ init () {
 	// Accessories
 	WRITE_MEMORY (0x14068DC1A, i8, 0x00);
 	WRITE_MEMORY (0x14068DC1D, i8, 0x10);
+
+	WRITE_NOP (0x140691DC4, 6);
 }
 } // namespace customize

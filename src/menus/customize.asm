@@ -8,6 +8,15 @@ extern implOfLoadHairstyleChoiceList
 extern whereLoadHairstyleChoiceList
 extern realLoadHairstyleChoiceList
 
+extern implOfSetModuleChoiceListPriority
+extern whereSetModuleChoiceListPriority
+
+extern implOfSetModuleSprPriority
+extern whereSetModuleSprPriority
+
+extern implOfMemset
+extern originalMemset
+
 section .text
 strlen:
 	mov r8d, -1
@@ -54,7 +63,6 @@ implOfLoadModuleChoiceList:
 	add r9, 6 + 7
 	jmp r9
 
-section .text
 implOfLoadHairstyleChoiceList:
 	push rax
 	push rbx
@@ -89,3 +97,37 @@ implOfLoadHairstyleChoiceList:
 	mov r9, [rel whereLoadHairstyleChoiceList]
 	add r9, 6 + 7
 	jmp r9
+
+implOfSetModuleChoiceListPriority:
+	mov r9d, ebx
+	cmp r9d, 5
+	jle .lesser
+	neg r9d
+	add r9d, 10
+.lesser:
+	imul r9d, 2
+	add r9d, 9
+
+	mov rax, [rel whereSetModuleChoiceListPriority]
+	add rax, 8
+	jmp rax
+
+implOfSetModuleSprPriority:
+	mov eax, r11d
+	cmp eax, 5
+	jle .lesser
+	neg eax
+	add eax, 10
+.lesser:
+	imul eax, 2
+	add eax, 10
+
+	mov rdx, [rel whereSetModuleSprPriority]
+	add rdx, 5 + 3 + 3
+	jmp rdx
+
+implOfMemset:
+	push r11
+	call [rel originalMemset]
+	pop r11
+	ret
