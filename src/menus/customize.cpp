@@ -51,7 +51,7 @@ CustomizeSelLoop (u64 task) {
 		previousInputType = input;
 		char buf[128];
 		sprintf (buf, "footer_button_%02d_%02d", currentMenu + 1, (i32)input);
-		diva::AetLayerArgs layer ("AET_NSWGAM_CUSTOM_MAIN", buf, 0x11, AetAction::NONE);
+		diva::AetLayerArgs layer ("AET_NSWGAM_CUSTOM_MAIN", buf, 21, AetAction::NONE);
 		layer.play (&footerButtonId);
 	}
 	return false;
@@ -67,7 +67,7 @@ CustomizeSelDestroy (u64 task) {
 HOOK (void, PlayCustomizeSelFooter, 0x15F9811D0, void *a1, PlayCustomizeSelFooterArgs *args) {
 	char buf[128];
 	sprintf (buf, "footer_button_%02d_%02d", args->screen + 1, (i32)diva::getInputType ());
-	diva::AetLayerArgs layer ("AET_NSWGAM_CUSTOM_MAIN", buf, 0x11, AetAction::NONE);
+	diva::AetLayerArgs layer ("AET_NSWGAM_CUSTOM_MAIN", buf, 21, AetAction::NONE);
 	layer.play (&footerButtonId);
 	currentMenu       = args->screen;
 	previousInputType = diva::getInputType ();
@@ -267,29 +267,36 @@ realLoadModuleChoiceList (u64 This, i32 moduleId, i32 index) {
 	else return "choice_list_mdl_base_etc_sel";
 }
 
-vector<ModuleData *> modules;
 HOOK (void, LoadHairstyleChoiceList, 0x1406892F8);
 const char *
 realLoadHairstyleChoiceList (u64 This, i32 hairstyleId, i32 index) {
-	if (modules.length () == 0) {
-		FUNCTION_PTR (void, GetModulesData, 0x1406801C0, u64, vector<ModuleData *> *);
-		GetModulesData (*(u64 *)(This + 8), &modules);
-	}
+	auto taskData = *(u64 *)0x14CC6F178;
+	auto modules  = (vector<ModuleData> *)(taskData + 0x1A0);
 
 	auto hairstyles   = (vector<CustomizeItemData *> *)(This + 0x108);
 	auto hairstyleOpt = hairstyles->at (hairstyleId);
-	if (!hairstyleOpt.has_value ()) return "choice_list_mdl_base_etc_sel";
+	if (!hairstyleOpt.has_value ()) {
+		printf ("Hairstyle with offset %d lookup failed\n", hairstyleId);
+		return "choice_list_mdl_base_etc_sel";
+	}
 	auto hairstyle = **hairstyleOpt;
-	if (hairstyle == 0) return "choice_list_mdl_base_etc_sel";
+	if (hairstyle == 0) {
+		printf ("Hairstyle with offset %d is NULL\n", hairstyleId);
+		return "choice_list_mdl_base_etc_sel";
+	}
+	if (hairstyle->bind_module == -1) return "choice_list_mdl_base_etc_sel";
 	ModuleData *module = 0;
-	for (auto it = modules.begin (); it != modules.end (); it++) {
-		if (it == 0 || *it == 0) continue;
-		if ((*it)->id == hairstyle->bind_module) {
-			module = *it;
+	for (auto it = modules->begin (); it != modules->end (); it++) {
+		if (it == 0) continue;
+		if (it->id == hairstyle->bind_module) {
+			module = it;
 			break;
 		}
 	}
-	if (module == 0) return "choice_list_mdl_base_etc_sel";
+	if (module == 0) {
+		printf ("Failed to find module %d\n", hairstyle->bind_module);
+		return "choice_list_mdl_base_etc_sel";
+	}
 
 	auto layouts = *(u64 *)(This + 0x1F0);
 	if (layouts == 0) return "choice_list_mdl_base_etc_sel";
@@ -322,6 +329,23 @@ HOOK (void, DestroyHairstyleSelect, 0x140688550, u64 This) {
 	originalDestroyHairstyleSelect (This);
 }
 
+HOOK (void, PlayCharaNum, 0x140686690, u64 a1, i32 a2, bool a3) {
+	if (a2 == 3) {
+		for (size_t i = 0; i < COUNTOFARR (choiceListPackId); i++) {
+			auto layer = aets->find (choiceListPackId[i]);
+			if (!layer.has_value ()) continue;
+			layer.value ()->color.w = 0.0;
+		}
+	} else {
+		for (size_t i = 0; i < COUNTOFARR (choiceListPackId); i++) {
+			auto layer = aets->find (choiceListPackId[i]);
+			if (!layer.has_value ()) continue;
+			layer.value ()->color.w = 1.0;
+		}
+	}
+	originalPlayCharaNum (a1, a2, a3);
+}
+
 void
 init () {
 	INSTALL_HOOK (CustomizeSelInit);
@@ -343,6 +367,8 @@ init () {
 	INSTALL_HOOK (SetModuleSprPriority);
 	INSTALL_HOOK (Memset);
 
+	INSTALL_HOOK (PlayCharaNum);
+
 	taskAddition addition;
 	addition.loop    = CustomizeSelLoop;
 	addition.destroy = CustomizeSelDestroy;
@@ -360,5 +386,17 @@ init () {
 	WRITE_MEMORY (0x14068DC1D, i8, 0x10);
 
 	WRITE_NOP (0x140691DC4, 6);
+
+	WRITE_MEMORY (0x1406920B4, i32, 22); // Module name box priority
+	WRITE_MEMORY (0x140692D50, i32, 23); // Module name text priority
+	WRITE_MEMORY (0x14069217B, i32, 22); // VP cost box priority
+	WRITE_MEMORY (0x1406930EE, i32, 23); // VP cost text priority
+	WRITE_MEMORY (0x14069222E, i32, 24); // Module selected priority
+	WRITE_NOP (0x14069223D, 4);
+	WRITE_MEMORY (0x140692398, i32, 21); // Reccomended module priority
+	WRITE_NOP (0x1406923A3, 4);
+
+	WRITE_MEMORY (0x140677FA9, i32, 25); // Choice_conf priority
+	WRITE_MEMORY (0x140677E86, i32, 26); // Choice_conf button priority
 }
 } // namespace customize

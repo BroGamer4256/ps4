@@ -487,7 +487,7 @@ struct AetData {
 	f32 startTime;
 	f32 endTime;
 	i32 flags;
-	i32 layerNo;
+	i32 priority;
 	i32 unk_0x30;
 	f32 loopStart;
 	f32 loopEnd;

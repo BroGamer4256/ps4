@@ -106,6 +106,8 @@ FUNCTION_PTR (diva::string *, AppendLayerSuffix, 0x14022D070, void *a1, diva::st
 HOOK (void, CmnMenuTouchCheck, 0x14022C590);
 
 __declspec (dllexport) void init () {
+	freopen ("CONOUT$", "w", stdout);
+
 	auto file   = fopen ("config.toml", "r");
 	auto config = toml_parse_file (file, NULL, 0);
 	fclose (file);

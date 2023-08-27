@@ -69,7 +69,9 @@ GenericDialogDisplay (u64 This) {
 }
 
 HOOK (void, GenericDialogPlay, 0x15ECE1320, void *a1, i32 dialogId) {
-	AetLayerArgs helpBaseArgs ("AET_NSWGAM_CMN_MAIN", "cmn_win_help_base", 0x13, AetAction::IN_LOOP);
+	auto priority = 0x13;
+	if (dialogId == 0x07 || dialogId == 0x0B) priority = 0x19;
+	AetLayerArgs helpBaseArgs ("AET_NSWGAM_CMN_MAIN", "cmn_win_help_base", priority, AetAction::IN_LOOP);
 	helpBaseArgs.play (&helpBaseId);
 	playedOut = false;
 
@@ -80,10 +82,12 @@ HOOK (bool, DestroyGenericDialog, 0x1401B0480) {
 	if (*GenericDialog == 0) return false;
 
 	if (!playedOut) {
-		AetLayerArgs helpBaseArgs ("AET_NSWGAM_CMN_MAIN", "cmn_win_help_base", 0x13, AetAction::OUT_ONCE);
-		helpBaseArgs.play (&helpBaseId);
+		playedOut  = true;
+		auto layer = aets->find (helpBaseId);
+		if (!layer) return false;
 
-		playedOut = true;
+		AetLayerArgs helpBaseArgs ("AET_NSWGAM_CMN_MAIN", "cmn_win_help_base", layer.value ()->priority, AetAction::OUT_ONCE);
+		helpBaseArgs.play (&helpBaseId);
 	}
 
 	if (auto helpBase = aets->find (helpBaseId)) {
@@ -172,5 +176,11 @@ init () {
 
 	WRITE_MEMORY (0x14060AB29, u8, 0x8B, 0x4C, 0x24, 0x78, 0x89, 0x8D, 0xF0, 0x00, 0x00, 0x00);
 	WRITE_NOP (0x14060ACE5, 9);
+
+	WRITE_MEMORY (0x1406628D4, u8, 0x19);
+	WRITE_MEMORY (0x1406629FF, u8, 0x1A);
+	WRITE_MEMORY (0x1406672DE, i32, 0x1B);
+	WRITE_MEMORY (0x140667389, i32, 0x1B);
+	WRITE_MEMORY (0x140667065, i32, 0x1B);
 }
 } // namespace genericDialog
