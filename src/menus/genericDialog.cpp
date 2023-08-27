@@ -132,6 +132,8 @@ realPlayGenericDialogOut (u64 This) {
 	}
 	return true;
 }
+HOOK (void, SetHelpPageNo10Color, 0x140667300);
+HOOK (void, SetHelpPageNo01Color, 0x1406673AB);
 }
 
 void
@@ -165,10 +167,10 @@ init () {
 	INSTALL_HOOK (GetKeyStr);
 	INSTALL_HOOK (SetKeyAnmOpacity);
 	INSTALL_HOOK (PlayGenericDialogOut);
+	INSTALL_HOOK (SetHelpPageNo10Color);
+	INSTALL_HOOK (SetHelpPageNo01Color);
 
 	WRITE_MEMORY (0x14060AB29, u8, 0x8B, 0x4C, 0x24, 0x78, 0x89, 0x8D, 0xF0, 0x00, 0x00, 0x00);
 	WRITE_NOP (0x14060ACE5, 9);
-
-	WRITE_MEMORY (0x140667303, f32, 0.5);
 }
 } // namespace genericDialog

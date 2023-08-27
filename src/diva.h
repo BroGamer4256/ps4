@@ -614,6 +614,8 @@ struct ModuleData {
 	i32 sort_index;
 	i32 chara;
 	i32 cos;
+	// 0x6C: spr set id
+	// 0x74: sprite id
 	INSERT_PADDING (0x70);
 	string name;
 	i32 shop_price;

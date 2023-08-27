@@ -9,6 +9,12 @@ extern wherePlayGenericDialogOut
 extern originalPlayGenericDialogOut
 extern realPlayGenericDialogOut
 
+extern implOfSetHelpPageNo10Color
+extern whereSetHelpPageNo10Color
+
+extern implOfSetHelpPageNo01Color
+extern whereSetHelpPageNo01Color
+
 section .text
 implOfSetKeyAnmOpacity:
 	pushaq
@@ -37,3 +43,25 @@ implOfPlayGenericDialogOut:
 	mov rcx, [rel wherePlayGenericDialogOut]
 	add rcx, 0x11
 	jmp rcx
+
+implOfSetHelpPageNo10Color:
+	mov rax, [rel whereSetHelpPageNo10Color]
+	add rax, 7
+	jmp SetHelpPageNoColor
+
+implOfSetHelpPageNo01Color:
+	mov rax, [rel whereSetHelpPageNo01Color]
+	add rax, 7
+	jmp SetHelpPageNoColor
+
+SetHelpPageNoColor:
+	movss xmm0, dword [rbx + 0x60]
+	mov ecx, __?float32?__(255.0)
+	movd xmm1, ecx
+	mulss xmm0, xmm1
+	cvttss2si ecx, xmm0
+	shl ecx, 0x18
+	or ecx, 0xFFFFFF
+	mov [rbp + 0x8], ecx
+
+	jmp rax
