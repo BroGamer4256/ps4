@@ -319,9 +319,6 @@ HOOK (void, DestroyModuleSelect, 0x1406910D0, u64 This) {
 HOOK (void, DestroyHairstyleSelect, 0x140688550, u64 This) {
 	for (size_t i = 0; i < COUNTOFARR (choiceListPackId); i++)
 		StopAet (&choiceListPackId[i]);
-	modules.first        = 0;
-	modules.last         = 0;
-	modules.capacity_end = 0;
 	originalDestroyHairstyleSelect (This);
 }
 
