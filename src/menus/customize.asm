@@ -14,6 +14,9 @@ extern whereSetModuleChoiceListPriority
 extern implOfSetModuleSprPriority
 extern whereSetModuleSprPriority
 
+extern implOfSetModuleSelectedPriority
+extern whereSetModuleSelectedPriority
+
 extern implOfMemset
 extern originalMemset
 
@@ -125,6 +128,19 @@ implOfSetModuleSprPriority:
 	mov rdx, [rel whereSetModuleSprPriority]
 	add rdx, 5 + 3 + 3
 	jmp rdx
+
+implOfSetModuleSelectedPriority:
+	mov r9d, r15d
+	cmp r9d, 5
+	jl .lesser
+	sub r9d, 5
+.lesser:
+	imul r9d, 2
+	add r9d, 10
+
+	mov r8, [rel whereSetModuleSelectedPriority]
+	add r8, 6 + 4 + 2
+	jmp r8
 
 implOfMemset:
 	push r11

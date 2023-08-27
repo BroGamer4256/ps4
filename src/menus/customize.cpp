@@ -314,6 +314,7 @@ realLoadHairstyleChoiceList (u64 This, i32 hairstyleId, i32 index) {
 
 HOOK (void, SetModuleChoiceListPriority, 0x140691DB7);
 HOOK (void, SetModuleSprPriority, 0x140692C4A);
+HOOK (void, SetModuleSelectedPriority, 0x14069222C);
 HOOK (void, Memset, 0x14097B0E0);
 }
 
@@ -365,6 +366,7 @@ init () {
 
 	INSTALL_HOOK (SetModuleChoiceListPriority);
 	INSTALL_HOOK (SetModuleSprPriority);
+	INSTALL_HOOK (SetModuleSelectedPriority);
 	INSTALL_HOOK (Memset);
 
 	INSTALL_HOOK (PlayCharaNum);
@@ -391,7 +393,6 @@ init () {
 	WRITE_MEMORY (0x140692D50, i32, 23); // Module name text priority
 	WRITE_MEMORY (0x14069217B, i32, 22); // VP cost box priority
 	WRITE_MEMORY (0x1406930EE, i32, 23); // VP cost text priority
-	WRITE_MEMORY (0x14069222E, i32, 24); // Module selected priority
 	WRITE_NOP (0x14069223D, 4);
 	WRITE_MEMORY (0x140692398, i32, 21); // Reccomended module priority
 	WRITE_NOP (0x1406923A3, 4);

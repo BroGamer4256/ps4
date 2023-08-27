@@ -69,8 +69,9 @@ GenericDialogDisplay (u64 This) {
 }
 
 HOOK (void, GenericDialogPlay, 0x15ECE1320, void *a1, i32 dialogId) {
+	if (dialogId == 0x0B) return originalGenericDialogPlay (a1, dialogId);
 	auto priority = 0x13;
-	if (dialogId == 0x07 || dialogId == 0x0B) priority = 0x19;
+	if (dialogId == 0x07) priority = 0x19;
 	AetLayerArgs helpBaseArgs ("AET_NSWGAM_CMN_MAIN", "cmn_win_help_base", priority, AetAction::IN_LOOP);
 	helpBaseArgs.play (&helpBaseId);
 	playedOut = false;
@@ -84,9 +85,9 @@ HOOK (bool, DestroyGenericDialog, 0x1401B0480) {
 	if (!playedOut) {
 		playedOut  = true;
 		auto layer = aets->find (helpBaseId);
-		if (!layer) return false;
+		if (!layer) return originalDestroyGenericDialog ();
 
-		AetLayerArgs helpBaseArgs ("AET_NSWGAM_CMN_MAIN", "cmn_win_help_base", layer.value ()->priority, AetAction::OUT_ONCE);
+		AetLayerArgs helpBaseArgs ("AET_NSWGAM_CMN_MAIN", "cmn_win_help_base", 0x13, AetAction::OUT_ONCE);
 		helpBaseArgs.play (&helpBaseId);
 	}
 
@@ -95,8 +96,10 @@ HOOK (bool, DestroyGenericDialog, 0x1401B0480) {
 			StopAet (&helpBaseId);
 			return originalDestroyGenericDialog ();
 		}
+		return true;
+	} else {
+		return originalDestroyGenericDialog ();
 	}
-	return true;
 }
 
 HOOK (void, GenericDialogPlaySongSlect, 0x140664BD0, u64 This) {
