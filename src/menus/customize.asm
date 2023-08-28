@@ -10,18 +10,18 @@ extern realLoadHairstyleChoiceList
 
 extern implOfSetModuleChoiceListPriority
 extern whereSetModuleChoiceListPriority
-
-extern implOfSetModuleSprPriority
-extern whereSetModuleSprPriority
-
-extern implOfSetModuleSelectedPriority
-extern whereSetModuleSelectedPriority
-
 extern implOfSetHairstyleChoiceListPriority
 extern whereSetHairstyleChoiceListPriority
 
+extern implOfSetModuleSprPriority
+extern whereSetModuleSprPriority
 extern implOfSetHairstyleSprPriority
 extern whereSetHairstyleSprPriority
+
+extern implOfSetModuleSelectedPriority
+extern whereSetModuleSelectedPriority
+extern implOfSetHairstyleSelectedPriority
+extern whereSetHairstyleSelectedPriority
 
 extern implOfMemset
 extern originalMemset
@@ -107,12 +107,11 @@ implOfLoadHairstyleChoiceList:
 	add r9, 6 + 7
 	jmp r9
 
-implOfSetHairstyleChoiceListPriority:
-	mov rax, [rel whereSetHairstyleChoiceListPriority]
-	jmp SetChoiceListPriority
 implOfSetModuleChoiceListPriority:
 	mov rax, [rel whereSetModuleChoiceListPriority]
 	jmp SetChoiceListPriority
+implOfSetHairstyleChoiceListPriority:
+	mov rax, [rel whereSetHairstyleChoiceListPriority]
 SetChoiceListPriority:
 	mov r9d, ebx
 	cmp r9d, 5
@@ -126,17 +125,16 @@ SetChoiceListPriority:
 	add rax, 6
 	jmp rax
 
-implOfSetHairstyleSprPriority:
-	mov rdx, [rel whereSetHairstyleSprPriority]
-	add rdx, 5 + 4 + 3 + 3
-	mov eax, esi
-	mov esi, [rsp+0x20]
-	jmp SetSprPriority
 implOfSetModuleSprPriority:
 	mov rdx, [rel whereSetModuleSprPriority]
 	add rdx, 5 + 3 + 3
 	mov eax, r11d
 	jmp SetSprPriority
+implOfSetHairstyleSprPriority:
+	mov rdx, [rel whereSetHairstyleSprPriority]
+	add rdx, 5 + 4 + 3 + 3
+	mov eax, esi
+	mov esi, [rsp+0x20]
 SetSprPriority:
 	cmp eax, 5
 	jle .lesser
@@ -149,6 +147,13 @@ SetSprPriority:
 	jmp rdx
 
 implOfSetModuleSelectedPriority:
+	mov r8, [rel whereSetModuleSelectedPriority]
+	add r8, 6 + 4 + 2
+	jmp SetSelectedPriority
+implOfSetHairstyleSelectedPriority:
+	mov r8, [rel whereSetHairstyleSelectedPriority]
+	add r8, 6 + 5
+SetSelectedPriority:
 	mov r9d, r15d
 	cmp r9d, 5
 	jl .lesser
@@ -157,8 +162,6 @@ implOfSetModuleSelectedPriority:
 	imul r9d, 2
 	add r9d, 10
 
-	mov r8, [rel whereSetModuleSelectedPriority]
-	add r8, 6 + 4 + 2
 	jmp r8
 
 implOfMemset:

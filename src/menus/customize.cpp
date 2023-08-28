@@ -249,7 +249,10 @@ const char *
 realLoadModuleChoiceList (u64 This, i32 moduleId, i32 index) {
 	auto modules   = (vector<ModuleData *> *)(This + 0x70);
 	auto moduleOpt = modules->at (moduleId);
-	if (!moduleOpt.has_value ()) return "choice_list_mdl_base_etc_sel";
+	if (!moduleOpt.has_value ()) {
+		StopAet (&choiceListPackId[index]);
+		return "choice_list_mdl_base_etc_sel";
+	}
 	auto module = **moduleOpt;
 	if (module == 0) return "choice_list_mdl_base_etc_sel";
 
@@ -276,7 +279,7 @@ realLoadHairstyleChoiceList (u64 This, i32 hairstyleId, i32 index) {
 	auto hairstyles   = (vector<CustomizeItemData *> *)(This + 0x108);
 	auto hairstyleOpt = hairstyles->at (hairstyleId);
 	if (!hairstyleOpt.has_value ()) {
-		printf ("Hairstyle with offset %d lookup failed\n", hairstyleId);
+		StopAet (&choiceListPackId[index]);
 		return "choice_list_mdl_base_etc_sel";
 	}
 	auto hairstyle = **hairstyleOpt;
@@ -318,6 +321,7 @@ HOOK (void, SetHairstyleChoiceListPriority, 0x140689375);
 HOOK (void, SetModuleSprPriority, 0x140692C4A);
 HOOK (void, SetHairstyleSprPriority, 0x140689F56);
 HOOK (void, SetModuleSelectedPriority, 0x14069222C);
+HOOK (void, SetHairstyleSelectedPriority, 0x140689889);
 
 HOOK (void, Memset, 0x14097B0E0);
 }
@@ -356,6 +360,7 @@ init () {
 	INSTALL_HOOK (SetModuleSprPriority);
 	INSTALL_HOOK (SetHairstyleSprPriority);
 	INSTALL_HOOK (SetModuleSelectedPriority);
+	INSTALL_HOOK (SetHairstyleSelectedPriority);
 	INSTALL_HOOK (Memset);
 
 	taskAddition addition;
@@ -375,12 +380,18 @@ init () {
 	WRITE_MEMORY (0x14068DC1D, i8, 0x10);
 
 	WRITE_MEMORY (0x1406920B4, i32, 22); // Module name box priority
+	WRITE_MEMORY (0x14068965F, i32, 22); // Hairstyle name box priority
 	WRITE_MEMORY (0x140692D50, i32, 23); // Module name text priority
-	WRITE_MEMORY (0x14069217B, i32, 22); // VP cost box priority
-	WRITE_MEMORY (0x1406930EE, i32, 23); // VP cost text priority
-	WRITE_NOP (0x14069223D, 4);
+	WRITE_MEMORY (0x14068A05C, i32, 23); // Hairstyle name text priority
+	WRITE_MEMORY (0x14069217B, i32, 22); // Module VP cost box priority
+	WRITE_MEMORY (0x1406897C7, i32, 22); // Hairstyle VP cost box priority
+	WRITE_MEMORY (0x1406930EE, i32, 23); // Module VP cost text priority
+	WRITE_MEMORY (0x14068A457, i32, 23); // Hairstyle VP cost text priority
 	WRITE_MEMORY (0x140692398, i32, 21); // Reccomended module priority
 	WRITE_NOP (0x1406923A3, 4);
+
+	WRITE_NOP (0x14069223D, 4);
+	WRITE_NOP (0x140689899, 4);
 
 	WRITE_MEMORY (0x140677FA9, i32, 25); // Choice_conf priority
 	WRITE_MEMORY (0x140677E86, i32, 26); // Choice_conf button priority
