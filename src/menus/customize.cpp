@@ -247,6 +247,10 @@ LoadChoiceListPlayTxt (AetLayoutData *layout, ModuleAttr attr, i32 index) {
 HOOK (void, LoadModuleChoiceList, 0x140691D47);
 const char *
 realLoadModuleChoiceList (u64 This, i32 moduleId, i32 index) {
+	if (moduleId == -1) {
+		StopAet (&choiceListPackId[index]);
+		return "choice_list_mdl_base_etc_sel";
+	}
 	auto modules   = (vector<ModuleData *> *)(This + 0x70);
 	auto moduleOpt = modules->at (moduleId);
 	if (!moduleOpt.has_value ()) {
@@ -273,6 +277,10 @@ realLoadModuleChoiceList (u64 This, i32 moduleId, i32 index) {
 HOOK (void, LoadHairstyleChoiceList, 0x1406892F8);
 const char *
 realLoadHairstyleChoiceList (u64 This, i32 hairstyleId, i32 index) {
+	if (hairstyleId == -1) {
+		StopAet (&choiceListPackId[index]);
+		return "choice_list_mdl_base_etc_sel";
+	}
 	auto taskData = *(u64 *)0x14CC6F178;
 	auto modules  = (vector<ModuleData> *)(taskData + 0x1A0);
 
@@ -287,7 +295,10 @@ realLoadHairstyleChoiceList (u64 This, i32 hairstyleId, i32 index) {
 		printf ("Hairstyle with offset %d is NULL\n", hairstyleId);
 		return "choice_list_mdl_base_etc_sel";
 	}
-	if (hairstyle->bind_module == -1) return "choice_list_mdl_base_etc_sel";
+	if (hairstyle->bind_module == -1) {
+		StopAet (&choiceListPackId[index]);
+		return "choice_list_mdl_base_etc_sel";
+	}
 	ModuleData *module = 0;
 	for (auto it = modules->begin (); it != modules->end (); it++) {
 		if (it == 0) continue;

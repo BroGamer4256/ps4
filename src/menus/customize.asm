@@ -51,6 +51,7 @@ implOfLoadModuleChoiceList:
 	sub rsp, 0x200
 
 	mov rcx, rdi
+	mov rdx, rsi
 	mov r8, rbx
 	call realLoadModuleChoiceList
 	mov rdx, rax
@@ -86,6 +87,7 @@ implOfLoadHairstyleChoiceList:
 	sub rsp, 0x200
 
 	mov rcx, rdi
+	mov rdx, r14
 	mov r8, rbx
 	call realLoadHairstyleChoiceList
 	mov rdx, rax
