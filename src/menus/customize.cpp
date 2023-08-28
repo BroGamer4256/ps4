@@ -21,13 +21,13 @@ i32 gameOptionsArrowsUpId   = 0;
 i32 gameOptionsArrowsDownId = 0;
 
 struct PlayCustomizeSelFooterArgs {
-	diva::string footerName;
+	string footerName;
 	i32 screen;
 };
 
 // Fixes the header/footer being present on customize
 HOOK (bool, CustomizeSelInit, 0x140687D10, u64 This) {
-	diva::CmnMenuDestroy (0x14114C370);
+	CmnMenuDestroy (0x14114C370);
 	pvSel::hide ();
 	return originalCustomizeSelInit (This);
 }
@@ -46,12 +46,12 @@ HOOK (bool, CustomizeSelIsLoaded, 0x140687CD0) {
 
 bool
 CustomizeSelLoop (u64 task) {
-	InputType input = diva::getInputType ();
+	InputType input = getInputType ();
 	if (currentMenu != -1 && input != previousInputType) {
 		previousInputType = input;
 		char buf[128];
 		sprintf (buf, "footer_button_%02d_%02d", currentMenu + 1, (i32)input);
-		diva::AetLayerArgs layer ("AET_NSWGAM_CUSTOM_MAIN", buf, 21, AetAction::NONE);
+		AetLayerArgs layer ("AET_NSWGAM_CUSTOM_MAIN", buf, 21, AetAction::NONE);
 		layer.play (&footerButtonId);
 	}
 	return false;
@@ -66,11 +66,11 @@ CustomizeSelDestroy (u64 task) {
 
 HOOK (void, PlayCustomizeSelFooter, 0x15F9811D0, void *a1, PlayCustomizeSelFooterArgs *args) {
 	char buf[128];
-	sprintf (buf, "footer_button_%02d_%02d", args->screen + 1, (i32)diva::getInputType ());
-	diva::AetLayerArgs layer ("AET_NSWGAM_CUSTOM_MAIN", buf, 21, AetAction::NONE);
+	sprintf (buf, "footer_button_%02d_%02d", args->screen + 1, (i32)getInputType ());
+	AetLayerArgs layer ("AET_NSWGAM_CUSTOM_MAIN", buf, 21, AetAction::NONE);
 	layer.play (&footerButtonId);
 	currentMenu       = args->screen;
-	previousInputType = diva::getInputType ();
+	previousInputType = getInputType ();
 	originalPlayCustomizeSelFooter (a1, args);
 }
 
@@ -86,11 +86,11 @@ HOOK (void, PlayTshirtEditFooter, 0x140710680, void *a1, i32 index) {
 	else if (index == 2) realIndex = 7;
 
 	char buf[128];
-	sprintf (buf, "footer_button_%02d_%02d", realIndex + 1, (i32)diva::getInputType ());
-	diva::AetLayerArgs layer ("AET_NSWGAM_CUSTOM_MAIN", buf, 0x11, AetAction::NONE);
+	sprintf (buf, "footer_button_%02d_%02d", realIndex + 1, (i32)getInputType ());
+	AetLayerArgs layer ("AET_NSWGAM_CUSTOM_MAIN", buf, 0x11, AetAction::NONE);
 	layer.play (&footerButtonId);
 	currentMenu       = realIndex;
-	previousInputType = diva::getInputType ();
+	previousInputType = getInputType ();
 
 	originalPlayTshirtEditFooter (a1, index);
 }
@@ -156,9 +156,9 @@ HOOK (void *, GameOptionsLoop, 0x14066E0E0, u64 a1, i32 a2, bool a3) {
 		StopAet (&gameOptionsArrowsDownId);
 		previousOption = -1;
 	} else if (a2 == 1) {
-		diva::AetLayerArgs args ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_up", 0x10, AetAction::IN_LOOP);
+		AetLayerArgs args ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_up", 0x10, AetAction::IN_LOOP);
 		args.play (&gameOptionsArrowsUpId);
-		diva::AetLayerArgs bottomArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_down", 0x10, AetAction::IN_LOOP);
+		AetLayerArgs bottomArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_down", 0x10, AetAction::IN_LOOP);
 		bottomArgs.play (&gameOptionsArrowsDownId);
 	} else {
 		i32 selectedOption = *(i32 *)(a1 + 0x60);
@@ -170,22 +170,22 @@ HOOK (void *, GameOptionsLoop, 0x14066E0E0, u64 a1, i32 a2, bool a3) {
 			if (previousOption != -1) {
 				if (selectedOption == 0) {
 					if (auto layer = aets->find (gameOptionsArrowsUpId)) {
-						diva::AetLayerArgs topArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_up", 0x10, AetAction::IN_ONCE);
+						AetLayerArgs topArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_up", 0x10, AetAction::IN_ONCE);
 						topArgs.play (&gameOptionsArrowsUpId);
-						diva::AetLayerArgs bottomArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_down", 0x10, AetAction::SPECIAL_LOOP);
+						AetLayerArgs bottomArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_down", 0x10, AetAction::SPECIAL_LOOP);
 						bottomArgs.play (&gameOptionsArrowsDownId);
 					}
 				} else if (selectedOption == 8) {
 					if (auto layer = aets->find (gameOptionsArrowsDownId)) {
-						diva::AetLayerArgs topArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_up", 0x10, AetAction::SPECIAL_LOOP);
+						AetLayerArgs topArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_up", 0x10, AetAction::SPECIAL_LOOP);
 						topArgs.play (&gameOptionsArrowsUpId);
-						diva::AetLayerArgs bottomArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_down", 0x10, AetAction::IN_ONCE);
+						AetLayerArgs bottomArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_down", 0x10, AetAction::IN_ONCE);
 						bottomArgs.play (&gameOptionsArrowsDownId);
 					}
 				} else {
-					diva::AetLayerArgs topArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_up", 0x10, AetAction::SPECIAL_LOOP);
+					AetLayerArgs topArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_up", 0x10, AetAction::SPECIAL_LOOP);
 					topArgs.play (&gameOptionsArrowsUpId);
-					diva::AetLayerArgs bottomArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_down", 0x10, AetAction::SPECIAL_LOOP);
+					AetLayerArgs bottomArgs ("AET_NSWGAM_CUSTOM_MAIN", "setting_menu_bg_arrow_down", 0x10, AetAction::SPECIAL_LOOP);
 					bottomArgs.play (&gameOptionsArrowsDownId);
 				}
 			}
