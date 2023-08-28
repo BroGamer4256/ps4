@@ -334,23 +334,6 @@ HOOK (void, DestroyHairstyleSelect, 0x140688550, u64 This) {
 	originalDestroyHairstyleSelect (This);
 }
 
-HOOK (void, PlayCharaNum, 0x140686690, u64 a1, i32 a2, bool a3) {
-	if (a2 == 3) {
-		for (size_t i = 0; i < COUNTOFARR (choiceListPackId); i++) {
-			auto layer = aets->find (choiceListPackId[i]);
-			if (!layer.has_value ()) continue;
-			layer.value ()->color.w = 0.0;
-		}
-	} else {
-		for (size_t i = 0; i < COUNTOFARR (choiceListPackId); i++) {
-			auto layer = aets->find (choiceListPackId[i]);
-			if (!layer.has_value ()) continue;
-			layer.value ()->color.w = 1.0;
-		}
-	}
-	originalPlayCharaNum (a1, a2, a3);
-}
-
 void
 init () {
 	INSTALL_HOOK (CustomizeSelInit);
@@ -374,8 +357,6 @@ init () {
 	INSTALL_HOOK (SetHairstyleSprPriority);
 	INSTALL_HOOK (SetModuleSelectedPriority);
 	INSTALL_HOOK (Memset);
-
-	INSTALL_HOOK (PlayCharaNum);
 
 	taskAddition addition;
 	addition.loop    = CustomizeSelLoop;
