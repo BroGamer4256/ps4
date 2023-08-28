@@ -294,7 +294,8 @@ realLoadHairstyleChoiceList (u64 This, i32 hairstyleId, i32 index) {
 		}
 	}
 	if (module == 0) {
-		printf ("Failed to find module %d\n", hairstyle->bind_module);
+		StopAet (&choiceListPackId[index]);
+		printf ("Failed to find module %d for %s\n", hairstyle->bind_module, hairstyle->name.c_str ());
 		return "choice_list_mdl_base_etc_sel";
 	}
 
@@ -312,9 +313,12 @@ realLoadHairstyleChoiceList (u64 This, i32 hairstyleId, i32 index) {
 	else return "choice_list_mdl_base_etc_sel";
 }
 
-HOOK (void, SetModuleChoiceListPriority, 0x140691DB7);
+HOOK (void, SetModuleChoiceListPriority, 0x140691DC4);
+HOOK (void, SetHairstyleChoiceListPriority, 0x140689375);
 HOOK (void, SetModuleSprPriority, 0x140692C4A);
+HOOK (void, SetHairstyleSprPriority, 0x140689F56);
 HOOK (void, SetModuleSelectedPriority, 0x14069222C);
+
 HOOK (void, Memset, 0x14097B0E0);
 }
 
@@ -365,7 +369,9 @@ init () {
 	INSTALL_HOOK (DestroyHairstyleSelect);
 
 	INSTALL_HOOK (SetModuleChoiceListPriority);
+	INSTALL_HOOK (SetHairstyleChoiceListPriority);
 	INSTALL_HOOK (SetModuleSprPriority);
+	INSTALL_HOOK (SetHairstyleSprPriority);
 	INSTALL_HOOK (SetModuleSelectedPriority);
 	INSTALL_HOOK (Memset);
 
@@ -386,8 +392,6 @@ init () {
 	// Accessories
 	WRITE_MEMORY (0x14068DC1A, i8, 0x00);
 	WRITE_MEMORY (0x14068DC1D, i8, 0x10);
-
-	WRITE_NOP (0x140691DC4, 6);
 
 	WRITE_MEMORY (0x1406920B4, i32, 22); // Module name box priority
 	WRITE_MEMORY (0x140692D50, i32, 23); // Module name text priority
