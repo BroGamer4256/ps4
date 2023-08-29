@@ -214,8 +214,9 @@ HOOK (void, RunTaskDisp, 0x1402C9B70, Task *task) {
 	if ((task->state == TaskState::RUNNING || task->state == TaskState::SUSPENDED) && task->op != TaskOp::INIT && task->op != TaskOp::DESTROY) {
 		auto it = taskAdditions.equal_range (task->name);
 		for (auto functions = it.first; functions != it.second; functions++) {
-			if (auto func = functions->second.display)
+			if (auto func = functions->second.display) {
 				if (func.value () ((u64)task)) return;
+			}
 		}
 	}
 
