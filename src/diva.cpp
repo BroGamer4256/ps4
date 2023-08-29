@@ -12,7 +12,6 @@ SIG_SCAN (sigOperatorDelete, 0x1409B1E90,
           "\xC8\xE8\x00\x00\x00\x00\x89\x03\x48\x83\xC4\x20\x5B\xC3",
           "xxxxxxxxxxxxxxxxxx????xx????xxxxx????xxxxx????xxx????xxxxxxxx");
 
-FUNCTION_PTR (bool, CmnMenuDestroy, 0x1401AAE50, u64 This);
 FUNCTION_PTR (void *, GetInputState, 0x1402AC970, i32 a1);
 FUNCTION_PTR (bool, IsButtonTapped, 0x1402AB260, void *state, Button button);
 FUNCTION_PTR (void *, CreateAetLayerData, 0x14028D560, AetLayerArgs *args, i32 aetSceneId, const char *layerName, i32 priority, AetAction action);
@@ -212,10 +211,12 @@ HOOK (void, RunTask, 0x1402C9AC0, Task *task) {
 }
 
 HOOK (void, RunTaskDisp, 0x1402C9B70, Task *task) {
-	auto functions = taskAdditions.find (task->name);
-	if (functions != taskAdditions.end ()) {
-		if (auto func = functions->second.display)
-			if (func.value () ((u64)task)) return;
+	if ((task->state == TaskState::RUNNING || task->state == TaskState::SUSPENDED) && task->op != TaskOp::INIT && task->op != TaskOp::DESTROY) {
+		auto it = taskAdditions.equal_range (task->name);
+		for (auto functions = it.first; functions != it.second; functions++) {
+			if (auto func = functions->second.display)
+				if (func.value () ((u64)task)) return;
+		}
 	}
 
 	originalRunTaskDisp (task);

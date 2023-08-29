@@ -741,7 +741,6 @@ stringRange::_stringRangeBase (const char *str);
 template <>
 wstringRange::_stringRangeBase (const wchar_t *str);
 
-FUNCTION_PTR_H (bool, CmnMenuDestroy, u64 This);
 FUNCTION_PTR_H (void *, GetInputState, i32 a1);
 FUNCTION_PTR_H (bool, IsButtonTapped, void *state, Button button);
 FUNCTION_PTR_H (void, GetComposition, AetComposition *composition, i32 id);

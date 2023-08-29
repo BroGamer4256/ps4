@@ -4,24 +4,32 @@
 
 i32 theme;
 
-using diva::AetAction;
-using diva::Button;
-using diva::State;
-using diva::SubState;
+using namespace diva;
 
 bool wantsToSettings = false;
 HOOK (void, ChangeSubGameState, 0x1527E49E0, State state, SubState subState) {
+	auto cmnMenu = (Task *)(0x14114C370);
+	if (cmnMenu->state != TaskState::RUNNING) {
+		cmnMenu->request = TaskRequest::RUN;
+
+		if (auto layer = aets->find (*(i32 *)((u64)cmnMenu + 0x70))) layer.value ()->color.w = 1.0;
+	}
 	if (state == State::MENU_SWITCH) {
 		state = State::CS_MENU;
 	} else if (subState == SubState::CS_OPTION_MENU) {
 		state           = State::MENU_SWITCH;
 		subState        = SubState::OPTION_MENU_SWITCH;
 		wantsToSettings = true;
-		diva::CmnMenuDestroy (0x14114C370);
+
+		cmnMenu->request = TaskRequest::HIDE;
+		if (auto layer = aets->find (*(i32 *)((u64)cmnMenu + 0x70))) layer.value ()->color.w = 0.0;
 	} else if (subState == SubState::MENU_SWITCH) {
 		if (wantsToSettings) {
 			subState        = SubState::OPTION_MENU_SWITCH;
 			wantsToSettings = false;
+
+			cmnMenu->request = TaskRequest::HIDE;
+			if (auto layer = aets->find (*(i32 *)((u64)cmnMenu + 0x70))) layer.value ()->color.w = 0.0;
 		} else {
 			state    = State::CS_MENU;
 			subState = SubState::CS_MENU;
