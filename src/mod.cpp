@@ -12,6 +12,7 @@ HOOK (void, ChangeSubGameState, 0x1527E49E0, State state, SubState subState) {
 	if (cmnMenu->state != TaskState::RUNNING) {
 		cmnMenu->request = TaskRequest::RUN;
 
+		if (auto layer = aets->find (*(i32 *)((u64)cmnMenu + 0x6C))) layer.value ()->color.w = 1.0;
 		if (auto layer = aets->find (*(i32 *)((u64)cmnMenu + 0x70))) layer.value ()->color.w = 1.0;
 	}
 	if (state == State::MENU_SWITCH) {
@@ -22,6 +23,7 @@ HOOK (void, ChangeSubGameState, 0x1527E49E0, State state, SubState subState) {
 		wantsToSettings = true;
 
 		cmnMenu->request = TaskRequest::HIDE;
+		if (auto layer = aets->find (*(i32 *)((u64)cmnMenu + 0x6C))) layer.value ()->color.w = 0.0;
 		if (auto layer = aets->find (*(i32 *)((u64)cmnMenu + 0x70))) layer.value ()->color.w = 0.0;
 	} else if (subState == SubState::MENU_SWITCH) {
 		if (wantsToSettings) {
@@ -29,6 +31,7 @@ HOOK (void, ChangeSubGameState, 0x1527E49E0, State state, SubState subState) {
 			wantsToSettings = false;
 
 			cmnMenu->request = TaskRequest::HIDE;
+			if (auto layer = aets->find (*(i32 *)((u64)cmnMenu + 0x6C))) layer.value ()->color.w = 0.0;
 			if (auto layer = aets->find (*(i32 *)((u64)cmnMenu + 0x70))) layer.value ()->color.w = 0.0;
 		} else {
 			state    = State::CS_MENU;

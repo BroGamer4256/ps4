@@ -30,6 +30,7 @@ HOOK (bool, CustomizeSelInit, 0x140687D10, u64 This) {
 	auto cmnMenu       = (Task *)(0x14114C370);
 	cmnMenu->state     = TaskState::HIDDEN;
 	cmnMenu->nextState = TaskState::HIDDEN;
+	if (auto layer = aets->find (*(i32 *)((u64)cmnMenu + 0x6C))) layer.value ()->color.w = 0.0;
 	if (auto layer = aets->find (*(i32 *)((u64)cmnMenu + 0x70))) layer.value ()->color.w = 0.0;
 	pvSel::hide ();
 	return originalCustomizeSelInit (This);
@@ -67,6 +68,7 @@ CustomizeSelDestroy (u64 task) {
 	auto cmnMenu = (Task *)(0x14114C370);
 	if (cmnMenu->state != TaskState::RUNNING) {
 		cmnMenu->request = TaskRequest::RUN;
+		if (auto layer = aets->find (*(i32 *)((u64)cmnMenu + 0x6C))) layer.value ()->color.w = 1.0;
 		if (auto layer = aets->find (*(i32 *)((u64)cmnMenu + 0x70))) layer.value ()->color.w = 1.0;
 	}
 	return false;
