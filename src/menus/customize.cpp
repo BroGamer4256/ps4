@@ -359,6 +359,18 @@ HOOK (void, DestroyHairstyleSelect, 0x140688550, u64 This) {
 	originalDestroyHairstyleSelect (This);
 }
 
+HOOK (u64, ModulePreviewInit, 0x1406962E0, u64 a1) {
+	for (size_t i = 0; i < COUNTOFARR (choiceListPackId); i++)
+		StopAet (&choiceListPackId[i]);
+	return originalModulePreviewInit (a1);
+}
+
+HOOK (u64, HairstylePreviewInit, 0x14068BC90, u64 a1) {
+	for (size_t i = 0; i < COUNTOFARR (choiceListPackId); i++)
+		StopAet (&choiceListPackId[i]);
+	return originalHairstylePreviewInit (a1);
+}
+
 void
 init () {
 	INSTALL_HOOK (CustomizeSelInit);
@@ -373,8 +385,6 @@ init () {
 
 	INSTALL_HOOK (LoadModuleChoiceList);
 	INSTALL_HOOK (LoadHairstyleChoiceList);
-	INSTALL_HOOK (DestroyModuleSelect);
-	INSTALL_HOOK (DestroyHairstyleSelect);
 
 	INSTALL_HOOK (SetModuleChoiceListPriority);
 	INSTALL_HOOK (SetHairstyleChoiceListPriority);
@@ -383,6 +393,11 @@ init () {
 	INSTALL_HOOK (SetModuleSelectedPriority);
 	INSTALL_HOOK (SetHairstyleSelectedPriority);
 	INSTALL_HOOK (Memset);
+
+	INSTALL_HOOK (DestroyModuleSelect);
+	INSTALL_HOOK (DestroyHairstyleSelect);
+	INSTALL_HOOK (ModulePreviewInit);
+	INSTALL_HOOK (HairstylePreviewInit);
 
 	taskAddition addition;
 	addition.loop    = CustomizeSelLoop;
