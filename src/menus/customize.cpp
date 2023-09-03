@@ -371,6 +371,28 @@ HOOK (u64, HairstylePreviewInit, 0x14068BC90, u64 a1) {
 	return originalHairstylePreviewInit (a1);
 }
 
+extern "C" {
+HOOK (void, UpdateBG10SpriteColor, 0x14060D60D);
+HOOK (void, UpdateBG10TextColor, 0x14060D999);
+f32
+UpdateBG10Color () {
+	auto args = (AetLayerArgs *)0x14CC07620;
+	AetComposition comp;
+	GetComposition (&comp, args->id);
+	if (auto layer = comp.find (string ("popup_txt"))) {
+		auto opacity = layer.value ()->opacity;
+		// Update button opacity
+		auto noArgs = (AetLayerArgs *)0x14CC07818;
+		if (auto noLayer = aets->find (noArgs->id)) noLayer.value ()->color.w = opacity;
+		auto yesArgs = (AetLayerArgs *)0x14CC07A10;
+		if (auto yesLayer = aets->find (yesArgs->id)) yesLayer.value ()->color.w = opacity;
+
+		return opacity;
+	}
+	return 1.0;
+}
+}
+
 void
 init () {
 	INSTALL_HOOK (CustomizeSelInit);
@@ -431,5 +453,8 @@ init () {
 
 	WRITE_MEMORY (0x140677FA9, i32, 25); // Choice_conf priority
 	WRITE_MEMORY (0x140677E86, i32, 26); // Choice_conf button priority
+
+	INSTALL_HOOK (UpdateBG10SpriteColor);
+	INSTALL_HOOK (UpdateBG10TextColor);
 }
 } // namespace customize

@@ -26,6 +26,12 @@ extern whereSetHairstyleSelectedPriority
 extern implOfMemset
 extern originalMemset
 
+extern implOfUpdateBG10SpriteColor
+extern whereUpdateBG10SpriteColor
+extern implOfUpdateBG10TextColor
+extern whereUpdateBG10TextColor
+extern UpdateBG10Color
+
 section .text
 strlen:
 	mov r8d, -1
@@ -171,3 +177,43 @@ implOfMemset:
 	call [rel originalMemset]
 	pop r11
 	ret
+
+implOfUpdateBG10SpriteColor:
+	pushaq
+	sub rsp, 0x20
+	call UpdateBG10Color
+
+	mov eax, __?float32?__(255.0)
+	movd xmm1, eax
+	mulss xmm0, xmm1
+	cvttss2si eax, xmm0
+	shl eax, 0x18
+	or eax, 0xFFFFFF
+	mov [rbp + 0x208], eax
+
+	add rsp, 0x20
+	popaq
+
+	mov rax, [rel whereUpdateBG10SpriteColor]
+	add rax, 10
+	jmp rax
+
+implOfUpdateBG10TextColor:
+	pushaq
+	sub rsp, 0x20
+	call UpdateBG10Color
+
+	mov eax, __?float32?__(255.0)
+	movd xmm1, eax
+	mulss xmm0, xmm1
+	cvttss2si eax, xmm0
+	shl eax, 0x18
+	or eax, 0xFFFFFF
+	mov [rbp + 0x190], eax
+
+	add rsp, 0x20
+	popaq
+
+	mov rax, [rel whereUpdateBG10TextColor]
+	add rax, 9
+	jmp rax
