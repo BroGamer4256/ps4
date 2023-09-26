@@ -185,5 +185,10 @@ init () {
 	WRITE_MEMORY (0x1406672DE, i32, 0x1B);
 	WRITE_MEMORY (0x140667389, i32, 0x1B);
 	WRITE_MEMORY (0x140667065, i32, 0x1B);
+
+	// sub_base_bg04::key_sub_base
+	WRITE_MEMORY (0x14067AB53, u8, 0x8B, 0x50, 0x60, 0x89, 0x55, 0xC8, 0x90);
+	WRITE_NOP (0x14067AB75, 3);
+	WRITE_NOP (0x14067AB7B, 7);
 }
 } // namespace genericDialog
