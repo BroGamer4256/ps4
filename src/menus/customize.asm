@@ -32,6 +32,10 @@ extern implOfUpdateBG10TextColor
 extern whereUpdateBG10TextColor
 extern UpdateBG10Color
 
+extern implOfUpdateBg05TextColor
+extern whereUpdateBg05TextColor
+extern UpdateBG05Color
+
 section .text
 strlen:
 	mov r8d, -1
@@ -216,4 +220,24 @@ implOfUpdateBG10TextColor:
 
 	mov rax, [rel whereUpdateBG10TextColor]
 	add rax, 9
+	jmp rax
+
+implOfUpdateBg05TextColor:
+	pushaq
+	sub rsp, 0x20
+	call UpdateBG05Color
+
+	mov eax, __?float32?__(255.0)
+	movd xmm1, eax
+	mulss xmm0, xmm1
+	cvttss2si eax, xmm0
+	shl eax, 0x18
+	or eax, 0xFFFFFF
+	mov [rbp + 0x208], eax
+
+	add rsp, 0x20
+
+	popaq
+	mov rax, [rel whereUpdateBg05TextColor]
+	add rax, 10
 	jmp rax

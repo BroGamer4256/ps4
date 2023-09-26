@@ -391,6 +391,15 @@ UpdateBG10Color () {
 	}
 	return 1.0;
 }
+HOOK (void, UpdateBg05TextColor, 0x14060DB43);
+f32
+UpdateBG05Color () {
+	auto args = (AetLayerArgs *)0x14CC07428;
+	AetComposition comp;
+	GetComposition (&comp, args->id);
+	if (auto layer = comp.find (string ("popup_txt"))) return layer.value ()->opacity;
+	return 1.0;
+}
 }
 
 void
@@ -454,7 +463,11 @@ init () {
 	WRITE_MEMORY (0x140677FA9, i32, 25); // Choice_conf priority
 	WRITE_MEMORY (0x140677E86, i32, 26); // Choice_conf button priority
 
+	WRITE_MEMORY (0x14066375F, u8, 0x16); // Not enough VP base
+	WRITE_MEMORY (0x15ED7435B, u8, 0x16); // Cannot change hairstyle base
+
 	INSTALL_HOOK (UpdateBG10SpriteColor);
 	INSTALL_HOOK (UpdateBG10TextColor);
+	INSTALL_HOOK (UpdateBg05TextColor);
 }
 } // namespace customize

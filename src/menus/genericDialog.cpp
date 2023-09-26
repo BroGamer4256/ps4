@@ -69,7 +69,7 @@ GenericDialogDisplay (u64 This) {
 }
 
 HOOK (void, GenericDialogPlay, 0x15ECE1320, void *a1, i32 dialogId) {
-	if (dialogId == 0x0B) return originalGenericDialogPlay (a1, dialogId);
+	if (dialogId == 0x0B || dialogId == 0x0C) return originalGenericDialogPlay (a1, dialogId);
 	auto priority = 0x13;
 	if (dialogId == 0x07) priority = 0x19;
 	AetLayerArgs helpBaseArgs ("AET_NSWGAM_CMN_MAIN", "cmn_win_help_base", priority, AetAction::IN_LOOP);
