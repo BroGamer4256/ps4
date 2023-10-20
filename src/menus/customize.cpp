@@ -436,15 +436,9 @@ init () {
 	addTaskAddition ("CustomizeSel", addition);
 
 	// Use the right font
-	// Modules
-	WRITE_MEMORY (0x140692A3A, i8, 0x00);
-	WRITE_MEMORY (0x140692A3D, i8, 0x10);
-	// Hairstyles
-	WRITE_MEMORY (0x140689C45, i8, 0x00);
-	WRITE_MEMORY (0x140689C48, i8, 0x10);
-	// Accessories
-	WRITE_MEMORY (0x14068DC1A, i8, 0x00);
-	WRITE_MEMORY (0x14068DC1D, i8, 0x10);
+	WRITE_MEMORY (0x140692A3D, i8, 0x10); // Modules
+	WRITE_MEMORY (0x140689C48, i8, 0x10); // Hairstyles
+	WRITE_MEMORY (0x14068DC1D, i8, 0x10); // Accessories
 
 	WRITE_MEMORY (0x1406920B4, i32, 22); // Module name box priority
 	WRITE_MEMORY (0x14068965F, i32, 22); // Hairstyle name box priority
@@ -465,6 +459,8 @@ init () {
 
 	WRITE_MEMORY (0x14066375F, u8, 0x16); // Not enough VP base
 	WRITE_MEMORY (0x15ED7435B, u8, 0x16); // Cannot change hairstyle base
+
+	WRITE_MEMORY (0x140698306, u8, 0xC7, 0x45, 0xE0, 0x00, 0x00, 0x5C, 0x43, 0x90, 0x90, 0x90); // Squish FX text
 
 	INSTALL_HOOK (UpdateBG10SpriteColor);
 	INSTALL_HOOK (UpdateBG10TextColor);
