@@ -130,7 +130,13 @@ HOOK (void, PlayGenericDialogOut, 0x14066650B);
 bool
 realPlayGenericDialogOut (u64 This) {
 	auto dialogId = *(i32 *)(This + 0x4);
-	if (dialogId == 0x0E || dialogId == 0x18 || dialogId == 0x21) {
+	if (dialogId == 0x01) {
+		auto args = (AetLayerArgs *)(This + 0x208);
+		args->create ("AET_NSWGAM_CMN_MAIN", "cmn_msg_autosave2", 0, AetAction::OUT_ONCE);
+		args->flags |= 8;
+		args->play (&args->id);
+		return false;
+	} else if (dialogId == 0x0E || dialogId == 0x18 || dialogId == 0x21) {
 		auto args = (AetLayerArgs *)(This + 0x208);
 		args->create ("AET_NSWGAM_CMN_MAIN", "cmn_msg_autosave", 0, AetAction::OUT_ONCE);
 		args->flags |= 8;
@@ -191,7 +197,6 @@ init () {
 	WRITE_NOP (0x14067AB75, 3);
 	WRITE_NOP (0x14067AB7B, 7);
 
-	WRITE_MEMORY (0x140666BCA, u8, 0x00);
-	WRITE_MEMORY (0x140666BF2, u8, 0x00);
+	WRITE_MEMORY (0x140666BF5, u8, 0x11);
 }
 } // namespace genericDialog
