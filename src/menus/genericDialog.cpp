@@ -142,6 +142,12 @@ realPlayGenericDialogOut (u64 This) {
 		args->flags |= 8;
 		args->play (&args->id);
 		return false;
+	} else if (dialogId == 0x02) {
+		auto args = (AetLayerArgs *)(This + 0x208);
+		args->create ("AET_NSWGAM_CMN_MAIN", "cmn_msg_difficulty", 0, AetAction::OUT_ONCE);
+		args->flags |= 8;
+		args->play (&args->id);
+		return false;
 	}
 	return true;
 }
