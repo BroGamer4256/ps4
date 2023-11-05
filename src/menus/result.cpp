@@ -10,7 +10,6 @@ i32 gainedPoints;
 
 HOOK (u64, GetStageResultSwitch, 0x14064BF50) { return 0x1412C1F00; }
 HOOK (bool, StageResultSwitchFinished, 0x14064C0D0, u64 task) { return *(i32 *)(task + 0x68) == 0x5A; }
-HOOK (bool, StageResultSwitchLoaded, 0x1401E8060) { return *(i32 *)(implOfGetStageResultSwitch () + 0x68) != 0; }
 
 bool
 GameResultLoop (u64 task) {
@@ -91,7 +90,6 @@ void
 init () {
 	INSTALL_HOOK (GetStageResultSwitch);
 	INSTALL_HOOK (StageResultSwitchFinished);
-	INSTALL_HOOK (StageResultSwitchLoaded);
 	INSTALL_HOOK (GetPoints);
 	INSTALL_HOOK (GetRankData);
 	INSTALL_HOOK (PlayRankGauge);
@@ -105,6 +103,6 @@ init () {
 	pvGameAddition.init = PVGameInit;
 	diva::addTaskAddition ("PVGAME", pvGameAddition);
 
-	WRITE_NOP (0x140244554, 6); // Fix tutorial not ending
+	WRITE_MEMORY (0x14064C0C3, u8, 0x68); // Fix game not going into results
 }
 } // namespace result
