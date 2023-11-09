@@ -83,7 +83,29 @@ std::set<std::string> themeStrings = {"option_sub_menu_eachsong",
                                       "savedata_warning_dialog",
                                       "cmn_win_m"};
 
-HOOK (void *, PlayAetLayerH, 0x1402CA220, diva::AetLayerArgs *args, i32 *id) {
+void
+HandleLayer (AetLayer *layer) {
+	if (layer->itemType == AetItemType::AET_ITEM_TYPE_AUDIO) layer->flags &= ~0x8000;
+	else if (layer->itemType == AetItemType::AET_ITEM_TYPE_COMPOSITION)
+		for (u32 i = 0; i != layer->item.comp->layersCount; i++)
+			HandleLayer (&layer->item.comp->layers[i]);
+}
+
+HOOK (i32 *, PlayAetLayerH, 0x1402CA220, diva::AetLayerArgs *args, i32 id) {
+	if (id != 0) {
+		// This is *supposed to* prevent AET SEs from playing twice
+		// By giving them a flag when played and removing that flag when the layer is replayed
+		// But some layers are played once per frame so this dosent do anything for those
+		// So some users will still experience duplicate SEs
+		// The real solution to this is to remove them from the AETs and make them played from code
+		auto aet = aets->find (id);
+		if (aet.has_value ()) {
+			auto comp = aet.value ()->comp;
+			if (comp)
+				for (u32 i = 0; i != comp->layersCount; i++)
+					HandleLayer (&comp->layers[i]);
+		}
+	}
 	if (args->layerName == 0) return originalPlayAetLayerH (args, id);
 	if (themeStrings.find (args->layerName) != themeStrings.end ()) {
 		if (strcmp (args->layerName, "gam_btn_retry") == 0 && diva::IsSurvival ()) {
@@ -116,9 +138,11 @@ FUNCTION_PTR (float, GetLayerFrame, 0x1402CA120, i32 id, char *layer_name);
 FUNCTION_PTR (diva::string *, AppendLayerSuffix, 0x14022D070, void *a1, diva::string *base_layer_name);
 HOOK (void, CmnMenuTouchCheck, 0x14022C590);
 
-__declspec (dllexport) void init () {
-	freopen ("CONOUT$", "w", stdout);
+FUNCTION_PTR (void, CtrlLayerReturn, 0x140290BA1);
+FUNCTION_PTR (void, CtrlLayerContinue, 0x14029028C);
+HOOK (void, CtrlLayer, 0x140290280);
 
+__declspec (dllexport) void init () {
 	auto file   = fopen ("config.toml", "r");
 	auto config = toml_parse_file (file, NULL, 0);
 	fclose (file);
@@ -137,6 +161,7 @@ __declspec (dllexport) void init () {
 	INSTALL_HOOK (OpenNpCommerce);
 	INSTALL_HOOK (OpenCredits);
 	INSTALL_HOOK (CmnMenuTouchCheck);
+	INSTALL_HOOK (CtrlLayer);
 
 	// Turn on FT mode 1.00 Samyuu, 1.03 BroGamer
 	WRITE_MEMORY (0x1414AB9E3, u8, 1);

@@ -464,25 +464,65 @@ struct AetLayerVideo {
 	void *_3d;
 };
 
+enum class AetItemType : u8 {
+	AET_ITEM_TYPE_NONE        = 0,
+	AET_ITEM_TYPE_VIDEO       = 1,
+	AET_ITEM_TYPE_AUDIO       = 2,
+	AET_ITEM_TYPE_COMPOSITION = 3,
+};
+
+struct AetVideoSrc {
+	char *spriteName;
+	i32 spriteIndex;
+};
+
+struct AetVideo {
+	u8 color[3];
+	u16 width;
+	u16 height;
+	f32 fpf;
+	u32 sources_count;
+	AetVideoSrc *sources;
+};
+
+struct AetAudio {
+	u32 soundIndex;
+};
+
+struct AetLayer;
+struct AetComp {
+	u32 layersCount;
+	AetLayer *layers;
+};
+
+union AetItem {
+	void *none;
+	AetVideo *video;
+	AetAudio *audio;
+	AetComp *comp;
+};
+
 struct AetLayer {
 	char *name;
 	f32 startTime;
 	f32 endTime;
 	f32 offsetTime;
 	f32 timeScale;
-	i32 flags;
-	void *unk_0x20;
-	u64 unk_0x28;
+	u16 flags;
+	u8 quality;
+	AetItemType itemType;
+	AetItem item;
 	u32 markerCount;
 	void *markers;
 	AetLayerVideo *video;
+	u64 unk_0x40;
 	u64 unk_0x48;
 };
 
 struct AetData {
 	void *vftable;
 	void *scene;
-	void *composition;
+	AetComp *comp;
 	AetLayer *layer;
 	f32 startTime;
 	f32 endTime;

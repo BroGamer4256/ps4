@@ -1,10 +1,15 @@
 %include "cmn.asm"
 
-extern implOfCmnMenuTouchCheck
 extern AppendLayerSuffix
 extern GetLayerFrame
 extern _ZN4diva15PlaySoundEffectE
+
+extern implOfCmnMenuTouchCheck
 extern whereCmnMenuTouchCheck
+
+extern implOfCtrlLayer
+extern CtrlLayerReturn
+extern CtrlLayerContinue
 
 section .text
 implOfCmnMenuTouchCheck:
@@ -45,4 +50,19 @@ implOfCmnMenuTouchCheck:
 	cmp edi, edx
 	mov edi, 1
 
+	jmp rax
+
+implOfCtrlLayer:
+	mov ax, 0x8000
+	and ax, [rdx + 0x18]
+	jne .played
+	roundss xmm2, xmm2, 3
+	xorps xmm0, xmm0
+	ucomiss xmm2, xmm0
+	jne .played
+	or word [rdx + 0x18], 0x8000
+	mov rax, [rel CtrlLayerContinue]
+	jmp rax
+.played:
+	mov rax, [rel CtrlLayerReturn]
 	jmp rax
