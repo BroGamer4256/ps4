@@ -37,6 +37,8 @@ Vec4 startButton;
 Vec4 startButtonLeft;
 Vec4 startButtonRight;
 
+void *nswgamPVSelTask = malloc (0x27540);
+
 void
 updateStyleAets (Style newStyle) {
 	int i;
@@ -273,6 +275,7 @@ PVSelLoop (u64 This) {
 
 	if (style == -1) {
 		style = GetCurrentStyle ();
+		if (style == -1) style = STYLE_FT;
 		initStyle (getStyle (style, isMovie), input);
 		lastInputType = input;
 	}
@@ -302,7 +305,8 @@ PVSelLoop (u64 This) {
 		}
 	} else if (clickedPos.x == 0) hasClicked = false;
 
-	*(i32 *)(pvLoadData + 0x1D08) = style;
+	*(i32 *)(pvLoadData + 0x1D08)           = style;
+	*(u8 *)((u64)nswgamPVSelTask + 0x27538) = (u8)style; // Fix Future Tone Customization
 
 	return false;
 }
@@ -328,6 +332,7 @@ bool
 PvSelDisplay (u64 This) {
 	// Disable on playlist
 	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(0x14CC10480)) return false;
+	else if (selectorId == 0) return false;
 
 	AetComposition compositionData;
 	GetComposition (&compositionData, selectorId);
@@ -354,5 +359,7 @@ init () {
 	addition.destroy = PvSelDestroy;
 	addition.display = PvSelDisplay;
 	addTaskAddition ("PVsel", addition);
+
+	WRITE_MEMORY (0x14CC5EF18, void *, nswgamPVSelTask);
 }
 } // namespace pvSel

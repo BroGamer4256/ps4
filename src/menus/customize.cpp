@@ -71,6 +71,8 @@ CustomizeSelDestroy (u64 task) {
 		if (auto layer = aets->find (*(i32 *)((u64)cmnMenu + 0x6C))) layer.value ()->color.w = 1.0;
 		if (auto layer = aets->find (*(i32 *)((u64)cmnMenu + 0x70))) layer.value ()->color.w = 1.0;
 	}
+	u64 pvLoadData                = GetPvLoadData ();
+	*(i32 *)(pvLoadData + 0x1D08) = -1;
 	return false;
 }
 
@@ -465,5 +467,7 @@ init () {
 	INSTALL_HOOK (UpdateBG10SpriteColor);
 	INSTALL_HOOK (UpdateBG10TextColor);
 	INSTALL_HOOK (UpdateBg05TextColor);
+
+	WRITE_MEMORY (0x140696A23, u8, 0x48, 0x8B, 0x53, 0x18, 0xEB, 0xAB); // Some weird jank to start fade in 1 frame earlier
 }
 } // namespace customize
