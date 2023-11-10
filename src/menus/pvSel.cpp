@@ -83,9 +83,6 @@ getStyle (i32 currentStyle, bool isMovie) {
 	else return (Style)currentStyle;
 }
 
-FUNCTION_PTR (void, FillRectangle, 0x1402c5520, void *, Vec4 *);
-FUNCTION_PTR (void, Test, 0x1402c53d0, void *);
-
 void
 initOptionsSelectTouch () {
 	AetLayerArgs optSelectorData ("AET_PS4_MENU_MAIN", "conf_set_touch", 0, AetAction::NONE);
