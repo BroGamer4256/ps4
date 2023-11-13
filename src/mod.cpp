@@ -142,6 +142,11 @@ FUNCTION_PTR (void, CtrlLayerReturn, 0x140290BA1);
 FUNCTION_PTR (void, CtrlLayerContinue, 0x14029028C);
 HOOK (void, CtrlLayer, 0x140290280);
 
+HOOK (void, GetBgmIndexCsMenu, 0x1401B27B8);
+HOOK (void, GetBgmIndexCsGalleryIn, 0x1401AE540);
+HOOK (void, GetBgmIndexCsGalleryLoop, 0x1401AE5D0);
+HOOK (void, GetBgmIndexCsGalleryOut, 0x1401AE660);
+
 __declspec (dllexport) void init () {
 	auto file   = fopen ("config.toml", "r");
 	auto config = toml_parse_file (file, NULL, 0);
@@ -162,6 +167,10 @@ __declspec (dllexport) void init () {
 	INSTALL_HOOK (OpenCredits);
 	INSTALL_HOOK (CmnMenuTouchCheck);
 	INSTALL_HOOK (CtrlLayer);
+	INSTALL_HOOK (GetBgmIndexCsMenu);
+	INSTALL_HOOK (GetBgmIndexCsGalleryIn);
+	INSTALL_HOOK (GetBgmIndexCsGalleryLoop);
+	INSTALL_HOOK (GetBgmIndexCsGalleryOut);
 
 	// Turn on FT mode 1.00 Samyuu, 1.03 BroGamer
 	WRITE_MEMORY (0x1414AB9E3, u8, 1);

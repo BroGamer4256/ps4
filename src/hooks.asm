@@ -11,6 +11,18 @@ extern implOfCtrlLayer
 extern CtrlLayerReturn
 extern CtrlLayerContinue
 
+extern implOfGetBgmIndexCsMenu
+extern whereGetBgmIndexCsMenu
+
+extern implOfGetBgmIndexCsGalleryIn
+extern whereGetBgmIndexCsGalleryIn
+
+extern implOfGetBgmIndexCsGalleryLoop
+extern whereGetBgmIndexCsGalleryLoop
+
+extern implOfGetBgmIndexCsGalleryOut
+extern whereGetBgmIndexCsGalleryOut
+
 section .text
 implOfCmnMenuTouchCheck:
 	cmp edi, eax
@@ -66,3 +78,39 @@ implOfCtrlLayer:
 .played:
 	mov rax, [rel CtrlLayerReturn]
 	jmp rax
+
+implOfGetBgmIndexCsMenu:
+	mov eax, 0
+	cmp r8d, 2
+	cmovg r8d, eax
+	mov [r14 + 0x5d28], r8b
+	mov rax, [rel whereGetBgmIndexCsMenu]
+	add rax, 7
+	jmp rax
+
+implOfGetBgmIndexCsGalleryIn:
+	mov edx, 0
+	cmp r8d, 2
+	cmovg r8d, edx
+	mov r9d, 0x0B
+	mov rdx, [rel whereGetBgmIndexCsGalleryIn]
+	add rdx, 6
+	jmp rdx
+
+implOfGetBgmIndexCsGalleryLoop:
+	mov edx, 0
+	cmp r8d, 2
+	cmovg r8d, edx
+	mov r9d, 0x0B
+	mov rdx, [rel whereGetBgmIndexCsGalleryLoop]
+	add rdx, 6
+	jmp rdx
+
+implOfGetBgmIndexCsGalleryOut:
+	mov edx, 0
+	cmp r8d, 2
+	cmovg r8d, edx
+	mov r9d, 0x0B
+	mov rdx, [rel whereGetBgmIndexCsGalleryOut]
+	add rdx, 6
+	jmp rdx
