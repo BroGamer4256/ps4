@@ -217,6 +217,9 @@ __declspec (dllexport) void init () {
 	WRITE_MEMORY (0x140BE9C50, u64, 0x140C879D0);
 	WRITE_MEMORY (0x140BE9C60, u64, 0x140C879E8);
 
+	// Fix songs with weird difficulties
+	WRITE_MEMORY (0x140BE92C0, u64, 0x140C86940, 0x140C86940);
+
 	diva::init ();
 	exitMenu::init ();
 	pvSel::init ();
