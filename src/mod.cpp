@@ -142,7 +142,7 @@ FUNCTION_PTR (void, CtrlLayerReturn, 0x140290BA1);
 FUNCTION_PTR (void, CtrlLayerContinue, 0x14029028C);
 HOOK (void, CtrlLayer, 0x140290280);
 
-HOOK (void, GetBgmIndexCsMenu, 0x1401B27B8);
+HOOK (void, GetBgmIndexCsMenu, 0x1401B27F8);
 HOOK (void, GetBgmIndexCsGalleryIn, 0x1401AE540);
 HOOK (void, GetBgmIndexCsGalleryLoop, 0x1401AE5D0);
 HOOK (void, GetBgmIndexCsGalleryOut, 0x1401AE660);

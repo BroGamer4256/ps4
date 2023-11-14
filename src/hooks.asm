@@ -80,37 +80,32 @@ implOfCtrlLayer:
 	jmp rax
 
 implOfGetBgmIndexCsMenu:
-	mov eax, 0
-	cmp r8d, 2
-	cmovg r8d, eax
-	mov [r14 + 0x5d28], r8b
 	mov rax, [rel whereGetBgmIndexCsMenu]
-	add rax, 7
+	mov r8d, [r14 + 0x5D28]
+	cmp r8d, 2
+	jg .skip
+	mov edx, [r14 + 0x5D2C]
+	add rax, 0x07
+	jmp rax
+.skip:
+	add rax, 0x18
 	jmp rax
 
 implOfGetBgmIndexCsGalleryIn:
-	mov edx, 0
-	cmp r8d, 2
-	cmovg r8d, edx
-	mov r9d, 0x0B
 	mov rdx, [rel whereGetBgmIndexCsGalleryIn]
-	add rdx, 6
-	jmp rdx
-
+	jmp GetBgmIndex
 implOfGetBgmIndexCsGalleryLoop:
-	mov edx, 0
-	cmp r8d, 2
-	cmovg r8d, edx
-	mov r9d, 0x0B
 	mov rdx, [rel whereGetBgmIndexCsGalleryLoop]
-	add rdx, 6
-	jmp rdx
-
+	jmp GetBgmIndex
 implOfGetBgmIndexCsGalleryOut:
-	mov edx, 0
-	cmp r8d, 2
-	cmovg r8d, edx
-	mov r9d, 0x0B
 	mov rdx, [rel whereGetBgmIndexCsGalleryOut]
-	add rdx, 6
+	jmp GetBgmIndex
+GetBgmIndex:
+	cmp r8d, 2
+	jg .skip
+	mov r9d, 0x0B
+	add rdx, 0x06
+	jmp rdx
+.skip:
+	add rdx, 0x3A
 	jmp rdx
