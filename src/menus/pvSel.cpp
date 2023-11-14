@@ -9,7 +9,6 @@ typedef enum Style : i32 {
 
 using namespace diva;
 
-bool loaded     = false;
 bool hasClicked = false;
 i32 pvId        = 0;
 char buttonName[16];
@@ -259,9 +258,8 @@ PVSelLoop (u64 This) {
 
 	// Allow swapping of visual style on song select
 	// Disable on playlists
-	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(0x14CC10480)) return false;
+	if (*(u8 *)(0x14CC10480)) return false;
 
-	loaded       = true;
 	auto entry   = getPvDbEntry (*(i32 *)(This + 0x36A30));
 	bool isMovie = false;
 	if (entry) isMovie = isMovieOnly (*entry);
@@ -313,17 +311,13 @@ PVSelLoop (u64 This) {
 
 void
 hide () {
-	if (!loaded) return;
-
 	StopAet (&keyHelpId);
 	StopAet (&selectorImgId);
 	StopAet (&selectorId);
-	loaded = false;
 }
 
 bool
 PvSelDestroy (u64 This) {
-	if (*(i32 *)(This + 0x36A08) != 0) return false;
 	hide ();
 	return false;
 }
@@ -331,7 +325,7 @@ PvSelDestroy (u64 This) {
 bool
 PvSelDisplay (u64 This) {
 	// Disable on playlist
-	if (*(i32 *)(This + 0x36A08) != 0 || *(u8 *)(0x14CC10480)) return false;
+	if (*(u8 *)(0x14CC10480)) return false;
 	else if (selectorId == 0) return false;
 
 	AetComposition compositionData;

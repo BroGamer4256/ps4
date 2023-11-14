@@ -92,7 +92,7 @@ getInputType () {
 
 bool
 isMovieOnly (PvDbEntry *entry) {
-	if (entry && entry->extreme.first)
+	if (entry && entry->extreme.length () > 0)
 		if (entry->extreme.first->isMovieOnly) return true;
 
 	return false;
