@@ -92,8 +92,10 @@ getInputType () {
 
 bool
 isMovieOnly (PvDbEntry *entry) {
-	if (entry && entry->extreme.length () > 0)
-		if (entry->extreme.first->isMovieOnly) return true;
+	if (!entry) return false;
+	for (auto i = 0; i < 5; i++)
+		for (auto it = entry->difficulties[i].begin (); it != entry->difficulties[i].end (); it++)
+			if (it->isMovieOnly) return true;
 
 	return false;
 }

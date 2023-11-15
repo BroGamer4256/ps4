@@ -630,11 +630,7 @@ struct PvDbEntry {
 	f32 sabiPlayTime;
 	u64 unk_90;
 	vector<PvDbPlaceholder> performers;
-	vector<PvDbDifficulty> easy;
-	vector<PvDbDifficulty> normal;
-	vector<PvDbDifficulty> hard;
-	vector<PvDbDifficulty> extreme;
-	vector<PvDbDifficulty> encore;
+	vector<PvDbDifficulty> difficulties[5];
 	INSERT_PADDING (0x288);
 	i32 pack;
 
