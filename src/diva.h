@@ -784,7 +784,6 @@ FUNCTION_PTR_H (void, PlaySoundEffect, const char *name, f32 volume);
 FUNCTION_PTR_H (u64, GetPvLoadData);
 FUNCTION_PTR_H (i32, GetCurrentStyle);
 FUNCTION_PTR_H (InputType, NormalizeInputType, i32 inputType);
-FUNCTION_PTR_H (void, StopAet, i32 *id);
 FUNCTION_PTR_H (void, GetFSCTRankData, i32 *fsRank, i32 *ctRank, i32 *fsPoints, i32 *ctPoints);
 FUNCTION_PTR_H (bool, IsSurvival);
 FUNCTION_PTR_H (bool, SurvivalCleared);
@@ -800,6 +799,7 @@ bool isMovieOnly (PvDbEntry *entry);
 std::optional<PvDbEntry *> getPvDbEntry (i32 id);
 Vec4 getPlaceholderRect (AetLayoutData layer);
 Vec2 getClickedPos (void *inputState);
+void StopAet (i32 *id);
 void addTaskAddition (const char *name, taskAddition addition);
 void init ();
 } // namespace diva

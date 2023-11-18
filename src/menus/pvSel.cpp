@@ -20,6 +20,7 @@ InputType lastInputType;
 Vec4 touchArea;
 Vec3 keyHelpLoc;
 Vec3 txtLoc;
+bool playing = true;
 
 bool optSelectorInited = false;
 i32 optSelectorId      = 0;
@@ -259,6 +260,7 @@ PVSelLoop (u64 This) {
 	// Allow swapping of visual style on song select
 	// Disable on playlists
 	if (*(u8 *)(0x14CC10480)) return false;
+	else if (!playing) return false;
 
 	auto entry   = getPvDbEntry (*(i32 *)(This + 0x36A30));
 	bool isMovie = false;
@@ -311,9 +313,15 @@ PVSelLoop (u64 This) {
 
 void
 hide () {
+	playing = false;
 	StopAet (&keyHelpId);
 	StopAet (&selectorImgId);
 	StopAet (&selectorId);
+}
+
+void
+unhide () {
+	playing = true;
 }
 
 bool
@@ -327,6 +335,7 @@ PvSelDisplay (u64 This) {
 	// Disable on playlist
 	if (*(u8 *)(0x14CC10480)) return false;
 	else if (selectorId == 0) return false;
+	else if (!playing) return false;
 
 	AetComposition compositionData;
 	GetComposition (&compositionData, selectorId);

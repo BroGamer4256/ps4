@@ -23,6 +23,18 @@ extern whereGetBgmIndexCsGalleryLoop
 extern implOfGetBgmIndexCsGalleryOut
 extern whereGetBgmIndexCsGalleryOut
 
+extern implOfGetBgmIndexCsResult1
+extern whereGetBgmIndexCsResult1
+
+extern implOfGetBgmIndexCsResult2
+extern whereGetBgmIndexCsResult2
+
+extern implOfGetBgmIndexCsResult3
+extern whereGetBgmIndexCsResult3
+
+extern implOfGetBgmIndexCsResult4
+extern whereGetBgmIndexCsResult4
+
 section .text
 implOfCmnMenuTouchCheck:
 	cmp edi, eax
@@ -93,14 +105,14 @@ implOfGetBgmIndexCsMenu:
 
 implOfGetBgmIndexCsGalleryIn:
 	mov rdx, [rel whereGetBgmIndexCsGalleryIn]
-	jmp GetBgmIndex
+	jmp GetBgmIndexCsGallery
 implOfGetBgmIndexCsGalleryLoop:
 	mov rdx, [rel whereGetBgmIndexCsGalleryLoop]
-	jmp GetBgmIndex
+	jmp GetBgmIndexCsGallery
 implOfGetBgmIndexCsGalleryOut:
 	mov rdx, [rel whereGetBgmIndexCsGalleryOut]
-	jmp GetBgmIndex
-GetBgmIndex:
+	jmp GetBgmIndexCsGallery
+GetBgmIndexCsGallery:
 	cmp r8d, 2
 	jg .skip
 	mov r9d, 0x0B
@@ -109,3 +121,37 @@ GetBgmIndex:
 .skip:
 	add rdx, 0x3A
 	jmp rdx
+
+implOfGetBgmIndexCsResult1:
+	mov rax, [rel whereGetBgmIndexCsResult1]
+	mov rcx, 0x45
+	mov rdx, 0x06
+	mov r9d, 0x06
+	jmp GetBgmIndexCsResult
+implOfGetBgmIndexCsResult2:
+	mov rax, [rel whereGetBgmIndexCsResult2]
+	mov rcx, 0x45
+	mov rdx, 0x06
+	mov r9d, 0x06
+	jmp GetBgmIndexCsResult
+implOfGetBgmIndexCsResult3:
+	mov rax, [rel whereGetBgmIndexCsResult3]
+	mov rcx, 0x49
+	mov rdx, 0x0D
+	mov r9d, 0x06
+	mov r8, [rdi + r8 * 0x8 + 0xBE9C50]
+	jmp GetBgmIndexCsResult
+implOfGetBgmIndexCsResult4:
+	mov rax, [rel whereGetBgmIndexCsResult4]
+	mov rcx, 0x45
+	mov rdx, 0x06
+	mov r9d, 0x05
+	jmp GetBgmIndexCsResult
+GetBgmIndexCsResult:
+	cmp r8, 2
+	jg .skip
+	add rax, rdx
+	jmp rax
+.skip:
+	add rax, rcx
+	jmp rax

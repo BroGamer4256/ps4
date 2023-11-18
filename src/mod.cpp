@@ -146,6 +146,10 @@ HOOK (void, GetBgmIndexCsMenu, 0x1401B27F8);
 HOOK (void, GetBgmIndexCsGalleryIn, 0x1401AE540);
 HOOK (void, GetBgmIndexCsGalleryLoop, 0x1401AE5D0);
 HOOK (void, GetBgmIndexCsGalleryOut, 0x1401AE660);
+HOOK (void, GetBgmIndexCsResult1, 0x140235BE1);
+HOOK (void, GetBgmIndexCsResult2, 0x140237B1F);
+HOOK (void, GetBgmIndexCsResult3, 0x140237DFC);
+HOOK (void, GetBgmIndexCsResult4, 0x140237746);
 
 __declspec (dllexport) void init () {
 	auto file   = fopen ("config.toml", "r");
@@ -171,6 +175,10 @@ __declspec (dllexport) void init () {
 	INSTALL_HOOK (GetBgmIndexCsGalleryIn);
 	INSTALL_HOOK (GetBgmIndexCsGalleryLoop);
 	INSTALL_HOOK (GetBgmIndexCsGalleryOut);
+	INSTALL_HOOK (GetBgmIndexCsResult1);
+	INSTALL_HOOK (GetBgmIndexCsResult2);
+	INSTALL_HOOK (GetBgmIndexCsResult3);
+	INSTALL_HOOK (GetBgmIndexCsResult4);
 
 	// Turn on FT mode 1.00 Samyuu, 1.03 BroGamer
 	WRITE_MEMORY (0x1414AB9E3, u8, 1);

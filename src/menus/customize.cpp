@@ -73,6 +73,7 @@ CustomizeSelDestroy (u64 task) {
 	}
 	u64 pvLoadData                = GetPvLoadData ();
 	*(i32 *)(pvLoadData + 0x1D08) = -1;
+	pvSel::unhide ();
 	return false;
 }
 

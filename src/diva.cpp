@@ -23,7 +23,7 @@ FUNCTION_PTR (u64, GetPvLoadData, 0x14040B2A0);
 FUNCTION_PTR (i32, GetCurrentStyle, 0x1401D64F0);
 FUNCTION_PTR (InputType, NormalizeInputType, 0x1402ACAA0, i32 inputType);
 FUNCTION_PTR (void, FreeSubLayers, 0x1401AC240, AetComposition *sublayerData, AetComposition *sublayerData2, void *first_element);
-FUNCTION_PTR (void, StopAet, 0x1402CA330, i32 *id);
+FUNCTION_PTR (void, RealStopAet, 0x1402CA330, i32 *id);
 FUNCTION_PTR (void *, operatorNew, sigOperatorNew (), u64);
 FUNCTION_PTR (void *, operatorDelete, sigOperatorDelete (), void *);
 FUNCTION_PTR (void, FreeString, 0x14014BCD0, string *);
@@ -134,6 +134,12 @@ getClickedPos (void *inputState) {
 	float y = initialVec.y / (float)rect.bottom * 1080;
 
 	return Vec2 (x, y);
+}
+
+void
+StopAet (i32 *id) {
+	RealStopAet (id);
+	if (id != 0) *id = 0;
 }
 
 AetLayerArgs::AetLayerArgs (const char *sceneName, const char *layerName, i32 priority, AetAction action) { this->create (sceneName, layerName, priority, action); }

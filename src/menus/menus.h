@@ -5,6 +5,7 @@ void init ();
 namespace pvSel {
 void init ();
 void hide ();
+void unhide ();
 } // namespace pvSel
 namespace gallery {
 void init ();
