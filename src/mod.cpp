@@ -106,8 +106,8 @@ HOOK (i32 *, PlayAetLayerH, 0x1402CA220, diva::AetLayerArgs *args, i32 id) {
 					HandleLayer (&comp->layers[i]);
 		}
 	}
-	if (args->layerName == 0) return originalPlayAetLayerH (args, id);
-	if (themeStrings.find (args->layerName) != themeStrings.end ()) {
+	if (args == 0 || args->layerName == 0 || (u64)args->layerName == (u64)(i64)-1) return originalPlayAetLayerH (args, id);
+	if (themeStrings.find (std::string (args->layerName)) != themeStrings.end ()) {
 		if (strcmp (args->layerName, "gam_btn_retry") == 0 && diva::IsSurvival ()) {
 			args->StartMarker = diva::string ("st_sp_02");
 			args->EndMarker   = diva::string ("ed_sp_02");
@@ -149,7 +149,7 @@ HOOK (void, GetBgmIndexCsGalleryOut, 0x1401AE660);
 HOOK (void, GetBgmIndexCsResult1, 0x140235BE1);
 HOOK (void, GetBgmIndexCsResult2, 0x140237B1F);
 HOOK (void, GetBgmIndexCsResult3, 0x140237DFC);
-HOOK (void, GetBgmIndexCsResult4, 0x140237746);
+HOOK (void, GetBgmIndexCsResult4, 0x140237730);
 
 __declspec (dllexport) void init () {
 	auto file   = fopen ("config.toml", "r");

@@ -134,18 +134,11 @@ implOfGetBgmIndexCsResult2:
 	mov rdx, 0x06
 	mov r9d, 0x06
 	jmp GetBgmIndexCsResult
-implOfGetBgmIndexCsResult3:
-	mov rax, [rel whereGetBgmIndexCsResult3]
-	mov rcx, 0x49
-	mov rdx, 0x0D
-	mov r9d, 0x06
-	mov r8, [rdi + r8 * 0x8 + 0xBE9C50]
-	jmp GetBgmIndexCsResult
 implOfGetBgmIndexCsResult4:
 	mov rax, [rel whereGetBgmIndexCsResult4]
-	mov rcx, 0x45
-	mov rdx, 0x06
-	mov r9d, 0x05
+	mov rcx, 0x5B
+	mov rdx, 0x07
+	mov r8d, [rbx + 0x1F8]
 	jmp GetBgmIndexCsResult
 GetBgmIndexCsResult:
 	cmp r8, 2
@@ -154,4 +147,16 @@ GetBgmIndexCsResult:
 	jmp rax
 .skip:
 	add rax, rcx
+	jmp rax
+
+implOfGetBgmIndexCsResult3:
+	mov rax, [rel whereGetBgmIndexCsResult3]
+	cmp r8, 2
+	jg .skip
+	mov r9d, 0x06
+	mov r8, [rdi + r8 * 0x8 + 0xBE9C50]
+	add rax, 0x0C
+	jmp rax
+.skip:
+	add rax, 0x49
 	jmp rax
