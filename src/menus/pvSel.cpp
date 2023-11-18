@@ -325,6 +325,12 @@ unhide () {
 }
 
 bool
+PvSelInit (u64 This) {
+	unhide ();
+	return false;
+}
+
+bool
 PvSelDestroy (u64 This) {
 	hide ();
 	return false;
@@ -358,6 +364,7 @@ PvSelDisplay (u64 This) {
 void
 init () {
 	taskAddition addition;
+	addition.init    = PvSelInit;
 	addition.loop    = PVSelLoop;
 	addition.destroy = PvSelDestroy;
 	addition.display = PvSelDisplay;
