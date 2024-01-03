@@ -259,8 +259,7 @@ PVSelLoop (u64 This) {
 
 	// Allow swapping of visual style on song select
 	// Disable on playlists
-	if (*(u8 *)(0x14CC10480)) return false;
-	else if (!playing) return false;
+	if (*(u8 *)(0x14CC10480) || !playing) return false;
 
 	auto entry   = getPvDbEntry (*(i32 *)(This + 0x36A30));
 	bool isMovie = false;
@@ -327,6 +326,9 @@ unhide () {
 bool
 PvSelInit (u64 This) {
 	unhide ();
+	u64 pvLoadData = GetPvLoadData ();
+	if (pvLoadData) *(i32 *)(pvLoadData + 0x1D08) = -1;
+
 	return false;
 }
 
@@ -339,9 +341,7 @@ PvSelDestroy (u64 This) {
 bool
 PvSelDisplay (u64 This) {
 	// Disable on playlist
-	if (*(u8 *)(0x14CC10480)) return false;
-	else if (selectorId == 0) return false;
-	else if (!playing) return false;
+	if (*(u8 *)(0x14CC10480) || selectorId == 0 || !playing) return false;
 
 	AetComposition compositionData;
 	GetComposition (&compositionData, selectorId);
