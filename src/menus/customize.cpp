@@ -508,6 +508,7 @@ HOOK (void, DrawMdlIcon, 0x1406940F0, u64 a1, i32 a2, u8 isIn) {
 		auto charaGuest = (i32 *)(data + 0xB0);
 		auto charaNo    = (i32 *)(data + 0xC8);
 		for (size_t i = 0; i < entry.value ()->performers.length (); i++) {
+			if (entry.value ()->performers.at (i).value ()->type != 0 && entry.value ()->performers.at (i).value ()->type != 6) continue;
 			auto charaListIndex = entry.value ()->performers.at (i).value ()->chara;
 			if (charaListIndex == -1) charaListIndex = 0;
 			if (charaListIndex > 5) charaListIndex -= 2;
