@@ -120,19 +120,19 @@ struct string {
 	~string () { FreeString (this); }
 
 	bool operator== (string &rhs) {
-		if (!this->c_str () || !rhs.c_str () || (u64)this->c_str () == (u64)-1 || (u64)rhs.c_str () == (u64)-1) return false;
+		if (!this->c_str () || !rhs.c_str ()) return false;
 		return strcmp (this->c_str (), rhs.c_str ()) == 0;
 	}
 	bool operator== (char *rhs) {
-		if (!this->c_str () || !rhs || (u64)this->c_str () == (u64)-1 || (u64)rhs == (u64)-1) return false;
+		if (!this->c_str () || !rhs) return false;
 		return strcmp (this->c_str (), rhs) == 0;
 	}
 	auto operator<=> (string &rhs) {
-		if (!this->c_str () || !rhs.c_str () || (u64)this->c_str () == (u64)-1 || (u64)rhs.c_str () == (u64)-1) return 1;
+		if (!this->c_str () || !rhs.c_str ()) return 1;
 		return strcmp (this->c_str (), rhs.c_str ());
 	}
 	auto operator<=> (char *rhs) {
-		if (!this->c_str () || !rhs || (u64)this->c_str () == (u64)-1 || (u64)rhs == (u64)-1) return 1;
+		if (!this->c_str () || !rhs) return 1;
 		return strcmp (this->c_str (), rhs);
 	}
 };
@@ -204,11 +204,10 @@ struct map {
 
 	std::optional<V *> find (K key) {
 		auto ptr = this->root->parent;
-		while (!ptr->isNull) {
+		while (!ptr->isNull)
 			if (key == ptr->key) return std::optional (&ptr->value);
-			if (key > ptr->key) ptr = ptr->right;
-			if (key < ptr->key) ptr = ptr->left;
-		}
+			else if (key > ptr->key) ptr = ptr->right;
+			else if (key < ptr->key) ptr = ptr->left;
 		return std::nullopt;
 	}
 
