@@ -628,6 +628,21 @@ struct PvDbDifficulty {
 	~PvDbDifficulty () = delete;
 };
 
+struct PvDbPerformer {
+	i32 type;
+	i32 chara;
+	i32 costume;
+	i32 pv_costume[5];
+	bool fixed;
+	i32 exclude;
+	i32 size;
+	i32 pseudo_same_id;
+	i32 item[4];
+	i32 unk;
+
+	~PvDbPerformer () = delete;
+};
+
 struct PvDbEntry {
 	i32 id;
 	i32 date;
@@ -640,7 +655,7 @@ struct PvDbEntry {
 	f32 sabiStartTime;
 	f32 sabiPlayTime;
 	u64 unk_90;
-	vector<PvDbPlaceholder> performers;
+	vector<PvDbPerformer> performers;
 	vector<PvDbDifficulty> difficulties[5];
 	INSERT_PADDING (0x288);
 	i32 pack;

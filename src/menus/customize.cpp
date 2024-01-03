@@ -408,7 +408,7 @@ UpdateBG05Color () {
 i32 mdlPlateIndex[10]    = {0};
 const char *characters[] = {"mdl_plate_mei", "mdl_plate_other", "mdl_plate_rand", "mdl_plate_mik", "mdl_plate_rin", "mdl_plate_len", "mdl_plate_luk", "mdl_plate_kai"};
 i32 characterOffsets[]   = {3, 2, 1, 0, 7, 6, 5, 4};
-i32 mdlIconIndex[8]      = {0};
+i32 mdlIconIndex[8][6]   = {{0}};
 bool inited              = false;
 i32 oldChara             = 0;
 HOOK (void, DrawMdlPlate, 0x140693830, u64 a1, i32 a2, u8 isIn) {
@@ -481,9 +481,10 @@ HOOK (void, DrawMdlPlate, 0x140693830, u64 a1, i32 a2, u8 isIn) {
 }
 
 HOOK (void, DrawMdlIcon, 0x1406940F0, u64 a1, i32 a2, u8 isIn) {
+	for (i32 i = 0; i < 8; i++)
+		for (i32 j = 0; j < 6; j++)
+			StopAet (&mdlIconIndex[i][j]);
 	if (!isIn) {
-		for (i32 i = 0; i < 8; i++)
-			StopAet (&mdlIconIndex[i]);
 		inited = false;
 		return;
 	}
@@ -502,28 +503,37 @@ HOOK (void, DrawMdlIcon, 0x1406940F0, u64 a1, i32 a2, u8 isIn) {
 	AetComposition comp;
 	GetComposition (&comp, (*charaList.value ())->id);
 
-	auto charaData  = (vector<i32[0x11]> *)(*(u64 *)(data + 0x18) + 0x98);
-	auto charaGuest = (i32 *)(data + 0xB0);
-	auto charaNo    = (i32 *)(data + 0xC8);
-	for (size_t i = 0; i < charaData->length (); i++) {
-		auto charaListIndex = (*charaData->at (i).value ())[1];
-		if (charaListIndex > 5) charaListIndex -= 2;
-		charaListIndex += characterOffsets[selectedChara];
-		while (charaListIndex > 7)
-			charaListIndex -= 8;
-		bool isGuest = charaGuest[i] == 1;
-		char placeholderName[64];
-		sprintf (placeholderName, "p_chara_list%02d_c", charaListIndex + 1);
-		if (auto layout = comp.find (string (placeholderName))) {
-			AetComposition offsetComp;
-			GetComposition (&offsetComp, mdlPlateIndex[charaListIndex + 1]);
-			if (auto layoutOffset = offsetComp.find (string ("p_chara_list_part_c"))) {
-				char buf[64];
-				sprintf (buf, "mdl_icon_part_%c%02d", isGuest ? 'g' : 'v', charaNo[i]);
-				AetLayerArgs args ("AET_NSWGAM_CUSTOM_MAIN", buf, 12, AetAction::NONE);
-				args.position = layout.value ()->position + layoutOffset.value ()->position;
-				args.color.w  = layout.value ()->opacity;
-				args.play (&mdlIconIndex[i]);
+	auto pvId = **(i32 **)(data + 0x18);
+	if (auto entry = getPvDbEntry (pvId)) {
+		auto charaGuest = (i32 *)(data + 0xB0);
+		auto charaNo    = (i32 *)(data + 0xC8);
+		for (size_t i = 0; i < entry.value ()->performers.length (); i++) {
+			auto charaListIndex = entry.value ()->performers.at (i).value ()->chara;
+			if (charaListIndex == -1) charaListIndex = 0;
+			if (charaListIndex > 5) charaListIndex -= 2;
+			charaListIndex += characterOffsets[selectedChara];
+			while (charaListIndex > 7)
+				charaListIndex -= 8;
+			bool isGuest = charaGuest[i] == 1;
+			char placeholderName[64];
+			sprintf (placeholderName, "p_chara_list%02d_c", charaListIndex + 1);
+			if (auto layout = comp.find (string (placeholderName))) {
+				AetComposition offsetComp;
+				GetComposition (&offsetComp, mdlPlateIndex[charaListIndex + 1]);
+				if (auto layoutOffset = offsetComp.find (string ("p_chara_list_part_c"))) {
+					char buf[64];
+					sprintf (buf, "mdl_icon_part_%c%02d", isGuest ? 'g' : 'v', charaNo[i]);
+
+					i32 j = 0;
+					for (; j < 6; j++)
+						if (mdlIconIndex[charaListIndex][j] == 0) break;
+
+					AetLayerArgs args ("AET_NSWGAM_CUSTOM_MAIN", buf, 12, AetAction::NONE);
+					args.position.x = layout.value ()->position.x + layoutOffset.value ()->position.x + (layoutOffset.value ()->width * j);
+					args.position.y = layout.value ()->position.y + layoutOffset.value ()->position.y;
+					args.color.w    = layout.value ()->opacity;
+					args.play (&mdlIconIndex[charaListIndex][j]);
+				}
 			}
 		}
 	}
@@ -568,22 +578,29 @@ HOOK (void, DisplayMdl, 0x1406947B0, u64 a1) {
 		}
 	}
 
-	auto charaData = (vector<i32[0x11]> *)(*(u64 *)(data + 0x18) + 0x98);
-	for (size_t i = 0; i < charaData->length (); i++) {
-		auto charaListIndex = (*charaData->at (i).value ())[1];
-		if (charaListIndex > 5) charaListIndex -= 2;
-		charaListIndex += characterOffsets[selectedChara];
-		while (charaListIndex > 7)
-			charaListIndex -= 8;
-		char placeholderName[64];
-		sprintf (placeholderName, "p_chara_list%02d_c", charaListIndex + 1);
-		if (auto layer = aets->find (mdlIconIndex[i])) {
-			if (auto layout = comp.find (string (placeholderName))) {
-				AetComposition offsetComp;
-				GetComposition (&offsetComp, mdlPlateIndex[charaListIndex + 1]);
-				if (auto layoutOffset = offsetComp.find (string ("p_chara_list_part_c"))) {
-					layer.value ()->position = layout.value ()->position + layoutOffset.value ()->position;
-					layer.value ()->color.w  = layout.value ()->opacity;
+	auto pvId = **(i32 **)(data + 0x18);
+	if (auto entry = getPvDbEntry (pvId)) {
+		for (size_t i = 0; i < entry.value ()->performers.length (); i++) {
+			auto charaListIndex = entry.value ()->performers.at (i).value ()->chara;
+			if (charaListIndex == -1) charaListIndex = 0;
+			if (charaListIndex > 5) charaListIndex -= 2;
+			charaListIndex += characterOffsets[selectedChara];
+			while (charaListIndex > 7)
+				charaListIndex -= 8;
+			char placeholderName[64];
+			sprintf (placeholderName, "p_chara_list%02d_c", charaListIndex + 1);
+			for (auto j = 0; j < 6; j++) {
+				if (mdlIconIndex[charaListIndex][j] == 0) break;
+				if (auto layer = aets->find (mdlIconIndex[charaListIndex][j])) {
+					if (auto layout = comp.find (string (placeholderName))) {
+						AetComposition offsetComp;
+						GetComposition (&offsetComp, mdlPlateIndex[charaListIndex + 1]);
+						if (auto layoutOffset = offsetComp.find (string ("p_chara_list_part_c"))) {
+							layer.value ()->position.x = layout.value ()->position.x + layoutOffset.value ()->position.x + (layoutOffset.value ()->width * j);
+							layer.value ()->position.y = layout.value ()->position.y + layoutOffset.value ()->position.y;
+							layer.value ()->color.w    = layout.value ()->opacity;
+						}
+					}
 				}
 			}
 		}
