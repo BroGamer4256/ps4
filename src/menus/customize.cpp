@@ -530,7 +530,7 @@ HOOK (void, DrawMdlIcon, 0x1406940F0, u64 a1, i32 a2, u8 isIn) {
 						if (mdlIconIndex[charaListIndex][j] == 0) break;
 
 					AetLayerArgs args ("AET_NSWGAM_CUSTOM_MAIN", buf, 12, AetAction::NONE);
-					args.position.x = layout.value ()->position.x + layoutOffset.value ()->position.x + (layoutOffset.value ()->width * j);
+					args.position.x = layout.value ()->position.x + layoutOffset.value ()->position.x + (layoutOffset.value ()->width / 1.5 * j);
 					args.position.y = layout.value ()->position.y + layoutOffset.value ()->position.y;
 					args.color.w    = layout.value ()->opacity;
 					args.play (&mdlIconIndex[charaListIndex][j]);
@@ -597,7 +597,7 @@ HOOK (void, DisplayMdl, 0x1406947B0, u64 a1) {
 						AetComposition offsetComp;
 						GetComposition (&offsetComp, mdlPlateIndex[charaListIndex + 1]);
 						if (auto layoutOffset = offsetComp.find (string ("p_chara_list_part_c"))) {
-							layer.value ()->position.x = layout.value ()->position.x + layoutOffset.value ()->position.x + (layoutOffset.value ()->width * j);
+							layer.value ()->position.x = layout.value ()->position.x + layoutOffset.value ()->position.x + (layoutOffset.value ()->width / 1.5 * j);
 							layer.value ()->position.y = layout.value ()->position.y + layoutOffset.value ()->position.y;
 							layer.value ()->color.w    = layout.value ()->opacity;
 						}
