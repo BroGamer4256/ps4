@@ -433,10 +433,10 @@ HOOK (void, DrawMdlPlate, 0x140693830, u64 a1, i32 a2, u8 isIn) {
 
 	if (inited) {
 		char layerName[64];
-		if (oldChara == 7 && selectedChara == 0) strcpy (layerName, "mdl_chara_list_down");
-		else if (oldChara == 0 && selectedChara == 7) strcpy (layerName, "mdl_chara_list_up");
-		else if (oldChara < selectedChara) strcpy (layerName, "mdl_chara_list_down");
-		else if (oldChara > selectedChara) strcpy (layerName, "mdl_chara_list_up");
+		if (oldChara == 7 && selectedChara == 0) strcpy (layerName, "mdl_chara_list_up");
+		else if (oldChara == 0 && selectedChara == 7) strcpy (layerName, "mdl_chara_list_down");
+		else if (oldChara < selectedChara) strcpy (layerName, "mdl_chara_list_up");
+		else if (oldChara > selectedChara) strcpy (layerName, "mdl_chara_list_down");
 		else strcpy (layerName, "mdl_chara_list_loop");
 		strcpy ((*(charaList.value ()))->layerName, layerName);
 		(*(charaList.value ()))->play (&(*charaList.value ())->id);
