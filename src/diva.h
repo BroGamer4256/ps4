@@ -789,6 +789,13 @@ struct UpdateKeyAnmData {
 	}
 };
 
+struct CoverSong {
+	i32 vocalCharaNum;
+	string name;
+	string vocalDispName;
+	string fileName;
+};
+
 #pragma pack(pop)
 
 extern vector<PvDbEntry *> *pvs;
